@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EassyOffice — Why EassyOffice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --black:#090909;--off-black:#111;--card:#161616;--card-h:#1d1d1d;
+  --border:#272727;--border-l:#333;--white:#f0f0f0;
+  --wd:rgba(240,240,240,.6);--wm:rgba(240,240,240,.3);--wf:rgba(240,240,240,.06);
+  --green:#22c55e;--r-xl:18px;--r-lg:13px;--r-md:10px;--r-sm:7px;
+}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  opacity:.45;}
+.sgrid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:64px 64px;}
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:60px 24px 120px;}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:64px;animation:fadeUp .5s ease both;}
+.nav-brand{display:flex;align-items:center;gap:10px;}
+.nav-wordmark{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--white);letter-spacing:-.2px;}
+.nav-links{display:flex;align-items:center;gap:6px;}
+.nav-link{font-size:11px;font-weight:500;color:var(--wm);padding:6px 13px;border-radius:var(--r-sm);border:1px solid transparent;text-decoration:none;transition:all .16s;font-family:'DM Mono',monospace;letter-spacing:.3px;}
+.nav-link:hover{color:var(--wd);border-color:var(--border);}
+.nav-link.active{color:var(--white);background:var(--wf);border-color:var(--border-l);}
+
+/* HERO */
+.hero{margin-bottom:72px;animation:fadeUp .6s .05s ease both;}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--wf);border:1px solid var(--border);padding:5px 12px;border-radius:100px;font-size:10px;font-family:'DM Mono',monospace;color:var(--wm);letter-spacing:.8px;text-transform:uppercase;margin-bottom:22px;}
+.eyebrow .dot{width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 5px var(--green);}
+h1{font-size:clamp(34px,6vw,62px);font-weight:700;letter-spacing:-2.5px;line-height:1.03;margin-bottom:20px;}
+h1 em{font-style:normal;color:rgba(240,240,240,.25);}
+.hero-sub{font-size:15px;color:var(--wd);font-weight:300;max-width:500px;line-height:1.85;}
+
+/* SECTION LABEL */
+.slabel{font-size:9px;color:var(--wm);text-transform:uppercase;letter-spacing:1.8px;font-weight:700;margin-bottom:20px;font-family:'DM Mono',monospace;}
+
+/* FEATURE GRID */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:52px;}
+@media(max-width:620px){.feat-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:400px){.feat-grid{grid-template-columns:1fr;}}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:22px 20px;transition:all .2s;animation:fadeUp .5s ease both;}
+.feat-card:hover{border-color:var(--border-l);background:var(--card-h);transform:translateY(-2px);}
+.feat-icon{font-size:22px;margin-bottom:13px;display:block;}
+.feat-title{font-size:13px;font-weight:700;margin-bottom:6px;letter-spacing:-.2px;}
+.feat-desc{font-size:11.5px;color:var(--wm);line-height:1.7;}
+
+/* TOOLS ROW */
+.tools-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:52px;animation:fadeUp .5s .1s ease both;}
+@media(max-width:520px){.tools-row{grid-template-columns:1fr;}}
+.tool-block{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:20px 18px 18px;position:relative;overflow:hidden;}
+.tool-block::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(255,255,255,.025),transparent 60%);pointer-events:none;}
+.tool-name{font-size:13px;font-weight:700;margin-bottom:10px;}
+.tool-sub{font-size:11px;color:var(--wm);line-height:1.6;margin-bottom:14px;}
+.tool-list{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.tool-list li{font-size:10.5px;color:var(--wd);font-family:'DM Mono',monospace;letter-spacing:.2px;}
+.tool-list li::before{content:'→ ';color:var(--border-l);}
+
+/* PLATFORM NOTE */
+.platform-note{background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.14);border-radius:var(--r-xl);padding:28px;margin-bottom:52px;animation:fadeUp .5s .1s ease both;}
+.pn-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.18);border-radius:100px;padding:5px 13px;font-size:10px;font-family:'DM Mono',monospace;color:#4ade80;letter-spacing:.6px;text-transform:uppercase;margin-bottom:14px;}
+.pn-badge .dot{width:5px;height:5px;background:#4ade80;border-radius:50%;box-shadow:0 0 5px #4ade80;}
+.pn-title{font-size:16px;font-weight:700;margin-bottom:10px;letter-spacing:-.3px;}
+.pn-body{font-size:12.5px;color:var(--wd);line-height:1.85;font-weight:300;margin-bottom:14px;}
+.pn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(max-width:520px){.pn-grid{grid-template-columns:1fr;}}
+.pn-item{background:rgba(0,0,0,.2);border:1px solid rgba(34,197,94,.08);border-radius:var(--r-lg);padding:14px 15px;display:flex;align-items:flex-start;gap:11px;}
+.pn-ic{font-size:15px;flex-shrink:0;margin-top:1px;}
+.pn-t{font-size:11.5px;font-weight:700;color:#4ade80;margin-bottom:3px;}
+.pn-d{font-size:10.5px;color:var(--wm);line-height:1.6;font-family:'DM Mono',monospace;}
+
+/* COMPARISON TABLE */
+.compare-wrap{margin-bottom:52px;animation:fadeUp .5s .1s ease both;}
+.ctable{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;}
+.ctable th{font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1.2px;color:var(--wm);padding:14px 18px;text-align:left;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2);}
+.ctable th:not(:first-child){text-align:center;}
+.ctable td{font-size:12.5px;color:var(--wd);padding:13px 18px;border-bottom:1px solid var(--border);}
+.ctable tr:last-child td{border-bottom:none;}
+.ctable td:not(:first-child){text-align:center;font-family:'DM Mono',monospace;font-size:11px;}
+.yes{color:#4ade80;}.no{color:rgba(240,68,68,.6);}
+.hl td{background:rgba(34,197,94,.025);}
+.th-us{color:#4ade80 !important;}
+
+/* CTA */
+.cta{text-align:center;padding:0 0 4px;animation:fadeUp .5s .1s ease both;}
+.cta-h{font-size:clamp(22px,4vw,34px);font-weight:700;letter-spacing:-1px;margin-bottom:10px;}
+.cta-s{font-size:13px;color:var(--wm);margin-bottom:28px;}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;background:var(--white);color:var(--black);padding:13px 28px;border-radius:var(--r-lg);font-size:13px;font-weight:700;text-decoration:none;transition:all .18s;}
+.cta-btn:hover{background:#e0e0e0;transform:translateY(-1px);}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:52px 0;}
+
+/* FOOTER */
+.footer{text-align:center;margin-top:52px;}
+.priv{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:8px 16px;font-size:11px;color:var(--wm);}
+.pdot{width:5px;height:5px;background:#4ade80;border-radius:50%;box-shadow:0 0 5px #4ade80;flex-shrink:0;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:100px;}
+</style>
+</head>
+<body>
+<div class="sgrid"></div>
+<div class="wrap">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-brand">
+      <span class="nav-wordmark">EassyOffice</span>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">↗ Tools</a>
+      <a href="features.html" class="nav-link active">Why Us</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="eyebrow"><span class="dot"></span>Why EassyOffice</div>
+    <h1>PDF tools built for<br><em>people, not servers.</em></h1>
+    <p class="hero-sub">No accounts. No uploads. No fine print. Just fast, private PDF processing — entirely in your browser, completely free.</p>
+  </div>
+
+  <!-- CORE FEATURES -->
+  <div class="slabel">Core Features</div>
+  <div class="feat-grid">
+    <div class="feat-card" style="animation-delay:.04s">
+      <span class="feat-icon">🔒</span>
+      <div class="feat-title">Zero Upload Policy</div>
+      <div class="feat-desc">Your files never leave your device. All processing happens locally in your browser — we receive nothing, ever.</div>
+    </div>
+    <div class="feat-card" style="animation-delay:.08s">
+      <span class="feat-icon">⚡</span>
+      <div class="feat-title">Instant Processing</div>
+      <div class="feat-desc">No server queues. PDF operations run at full local CPU speed — merge hundreds of pages in seconds.</div>
+    </div>
+    <div class="feat-card" style="animation-delay:.12s">
+      <span class="feat-icon">♾️</span>
+      <div class="feat-title">Truly Unlimited</div>
+      <div class="feat-desc">Merge any number of PDFs. Split into as many parts as you need. No file caps, no page limits, no paywalls.</div>
+    </div>
+    <div class="feat-card" style="animation-delay:.16s">
+      <span class="feat-icon">🌐</span>
+      <div class="feat-title">Works Offline</div>
+      <div class="feat-desc">Once loaded, every tool works without internet. Perfect for confidential documents in restricted environments.</div>
+    </div>
+    <div class="feat-card" style="animation-delay:.2s">
+      <span class="feat-icon">🆓</span>
+      <div class="feat-title">Free Forever</div>
+      <div class="feat-desc">No subscription tiers, no trial expiry, no credit card required. Every tool is 100% free with no hidden catch.</div>
+    </div>
+    <div class="feat-card" style="animation-delay:.24s">
+      <span class="feat-icon">📱</span>
+      <div class="feat-title">Any Device</div>
+      <div class="feat-desc">Fully responsive — works on desktop, tablet, and mobile. Same features, same speed, same privacy everywhere.</div>
+    </div>
+  </div>
+
+  <!-- TOOL BREAKDOWN -->
+  <div class="slabel">What's Included</div>
+  <div class="tools-row">
+    <div class="tool-block">
+      <div class="tool-name">🔗 PDF Merge</div>
+      <div class="tool-sub">Combine multiple PDFs into a single document in any order you choose.</div>
+      <ul class="tool-list">
+        <li>Drag-and-drop reorder</li>
+        <li>Live page &amp; size stats</li>
+        <li>Custom output filename</li>
+        <li>No file-count limit</li>
+      </ul>
+    </div>
+    <div class="tool-block">
+      <div class="tool-name">✂️ PDF Split</div>
+      <div class="tool-sub">Extract individual pages or define custom ranges — each range becomes its own file.</div>
+      <ul class="tool-list">
+        <li>Every-page mode</li>
+        <li>Custom range mode</li>
+        <li>Syntax: 1-3, 5, 7-end</li>
+        <li>Instant download per file</li>
+      </ul>
+    </div>
+    <div class="tool-block">
+      <div class="tool-name">🗜 PDF Compress</div>
+      <div class="tool-sub">Reduce file size with three presets or full custom control over every parameter.</div>
+      <ul class="tool-list">
+        <li>Extreme / Recommended / Less</li>
+        <li>DPI &amp; image quality slider</li>
+        <li>Grayscale &amp; B&amp;W modes</li>
+        <li>Metadata stripping</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PLATFORM NOTE -->
+  <div class="slabel">Platform Note</div>
+  <div class="platform-note">
+    <div class="pn-badge"><span class="dot"></span>Privacy First</div>
+    <div class="pn-title">100% client-side — no servers involved</div>
+    <p class="pn-body">When you drop a file onto EassyOffice, it is read directly from your local filesystem into memory. Processing is performed using <strong>pdf-lib</strong> — a pure-JavaScript PDF library that runs entirely inside your browser tab. The finished file is handed straight back as a download. No bytes travel over the network at any point.</p>
+    <p class="pn-body" style="margin-bottom:20px;">This architecture makes EassyOffice well-suited for confidential documents — legal contracts, medical records, financial reports — where uploading to a third-party server is simply not an option.</p>
+    <div class="pn-grid">
+      <div class="pn-item">
+        <span class="pn-ic">🧠</span>
+        <div>
+          <div class="pn-t">In-browser processing</div>
+          <div class="pn-d">pdf-lib runs in JavaScript — no server, no plugin, no extension needed.</div>
+        </div>
+      </div>
+      <div class="pn-item">
+        <span class="pn-ic">📂</span>
+        <div>
+          <div class="pn-t">Local file access only</div>
+          <div class="pn-d">Files are read via the File API — browser policy blocks any outbound transfer.</div>
+        </div>
+      </div>
+      <div class="pn-item">
+        <span class="pn-ic">🚫</span>
+        <div>
+          <div class="pn-t">No file analytics</div>
+          <div class="pn-d">We have zero visibility into filenames, content, or page counts — nothing is logged.</div>
+        </div>
+      </div>
+      <div class="pn-item">
+        <span class="pn-ic">🔌</span>
+        <div>
+          <div class="pn-t">Offline capable</div>
+          <div class="pn-d">After the first page load, all tools work without an active internet connection.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARISON -->
+  <div class="compare-wrap">
+    <div class="slabel">EassyOffice vs typical PDF tools</div>
+    <table class="ctable">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th class="th-us">EassyOffice</th>
+          <th>Typical Online Tools</th>
+          <th>Desktop Software</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="hl">
+          <td>Files stay on your device</td>
+          <td class="yes">✓ Always</td>
+          <td class="no">✗ Uploaded</td>
+          <td class="yes">✓ Yes</td>
+        </tr>
+        <tr>
+          <td>No account required</td>
+          <td class="yes">✓ Yes</td>
+          <td class="no">✗ Often required</td>
+          <td class="yes">✓ Yes</td>
+        </tr>
+        <tr class="hl">
+          <td>Free with no limits</td>
+          <td class="yes">✓ Unlimited</td>
+          <td class="no">✗ Capped / paywalled</td>
+          <td class="no">✗ Paid licence</td>
+        </tr>
+        <tr>
+          <td>Works offline</td>
+          <td class="yes">✓ Yes</td>
+          <td class="no">✗ Requires internet</td>
+          <td class="yes">✓ Yes</td>
+        </tr>
+        <tr class="hl">
+          <td>Install required</td>
+          <td class="yes">✓ None</td>
+          <td class="yes">✓ None</td>
+          <td class="no">✗ Download &amp; install</td>
+        </tr>
+        <tr>
+          <td>Custom compress settings</td>
+          <td class="yes">✓ Full control</td>
+          <td class="no">✗ Limited presets</td>
+          <td class="yes">✓ Usually</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-h">Ready to try it?</div>
+    <p class="cta-s">Open a PDF right now — no sign-up, no wait, no upload.</p>
+    <a class="cta-btn" href="index.html">Go to PDF Tools →</a>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="priv"><span class="pdot"></span>100% private — files never leave your device</div>
+  </div>
+
+</div>
+</body>
+</html>
