@@ -329,7 +329,8 @@ h1 em{font-style:normal;color:rgba(240,240,240,.28);}
 </header>
 
 <!-- TABS -->
-  <div class="tabs">
+  
+<div class="tabs">
   <button class="tab active" onclick="showPanel('merge')">
     <span class="tab-ic">🔗</span> Merge
   </button>
@@ -342,30 +343,6 @@ h1 em{font-style:normal;color:rgba(240,240,240,.28);}
   <a href="payroll.html" class="tab" style="text-decoration: none;">
     <span class="tab-ic">💰</span> Payroll
   </a>
-</div>
-<div class="tabs">
-  <button class="tab active" id="tab-merge" onclick="T('merge')"><span class="tab-ic">🔗</span> Merge</button>
-  <button class="tab" id="tab-split" onclick="T('split')"><span class="tab-ic">✂️</span> Split</button>
-  <button class="tab" id="tab-compress" onclick="T('compress')"><span class="tab-ic">🗜</span> Compress</button>
-</div>
-
-<!-- ══ MERGE ══ -->
-<div class="panel active" id="panel-merge">
-  <div class="drop" id="mdrop"><input type="file" id="mi" accept=".pdf" multiple>
-    <div class="drop-ic">📄</div>
-    <div class="drop-title">Drop PDF files here</div>
-    <div class="drop-sub">or <u>browse to upload</u> — no file limit</div>
-  </div>
-  <div class="stats" id="mstats">
-    <div class="stat"><div class="stat-n" id="msf">0</div><div class="stat-l">Files</div></div>
-    <div class="stat"><div class="stat-n" id="msp">0</div><div class="stat-l">Pages</div></div>
-    <div class="stat"><div class="stat-n" id="mss">—</div><div class="stat-l">Size</div></div>
-  </div>
-  <div class="fs" id="mfs"><div class="slabel">Files — drag to reorder</div><div class="flist" id="mlist"></div></div>
-  <div class="outrow" id="moutr"><span class="out-lbl">Save as</span><input class="out-inp" id="moutn" value="merged" placeholder="filename"><span class="out-ext">.pdf</span></div>
-  <div class="prog" id="mprog"><div class="prog-top"><span id="mplbl">Working…</span><span id="mppct">0%</span></div><div class="prog-track"><div class="prog-fill" id="mpfill"></div></div></div>
-  <div class="scard" id="msc"><div class="scard-ic">✓</div><div class="scard-info"><div class="scard-title">Merge complete</div><div class="scard-sub" id="mscsub">—</div></div><a class="btn-dl" id="mdl" href="#" download="merged.pdf">↓ Download</a></div>
-  <div class="acts" id="macts"><button class="btn btn-g" id="mclr">✕ Clear</button><button class="btn btn-p" id="mgo">Merge PDFs →</button></div>
 </div>
 
 <!-- ══ SPLIT ══ -->
