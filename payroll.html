@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EassyOffice — Payroll Manager</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --black:#090909;--off-black:#111;--card:#161616;--card-h:#1d1d1d;
+  --border:#272727;--border-l:#333;--white:#f0f0f0;
+  --wd:rgba(240,240,240,.6);--wm:rgba(240,240,240,.3);--wf:rgba(240,240,240,.06);
+  --green:#22c55e;--amber:#f59e0b;--red:#ef4444;--blue:#3b82f6;
+  --r-xl:18px;--r-lg:13px;--r-md:10px;--r-sm:7px;
+}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");opacity:.45;}
+.sgrid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:64px 64px;}
+.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:52px 24px 100px;}
+
+/* HEADER */
+header{margin-bottom:36px;animation:fadeUp .65s ease both;}
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
+.logo-pill{margin-left:auto;font-size:10px;font-family:'DM Mono',monospace;color:var(--wm);background:var(--wf);border:1px solid var(--border);padding:3px 10px;border-radius:100px;letter-spacing:.6px;text-transform:uppercase;}
+.brand{font-size:15px;font-weight:700;letter-spacing:-.3px;}
+.sub-tag{font-size:12px;color:var(--wm);font-family:'DM Mono',monospace;}
+h1{font-size:clamp(26px,4vw,42px);font-weight:700;letter-spacing:-1.8px;line-height:1.06;margin-bottom:8px;}
+h1 em{font-style:normal;color:rgba(240,240,240,.28);}
+.sub{font-size:13px;color:var(--wd);font-weight:300;max-width:580px;line-height:1.8;}
+
+/* SHIFT LEGEND */
+.shift-legend{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;animation:fadeUp .45s .08s ease both;}
+.sleg{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 16px;display:flex;align-items:center;gap:12px;}
+.sleg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sleg-dot.morning{background:#f59e0b;box-shadow:0 0 6px #f59e0b55;}
+.sleg-dot.evening{background:#818cf8;box-shadow:0 0 6px #818cf855;}
+.sleg-info{flex:1;}
+.sleg-lb{font-size:12px;font-weight:700;margin-bottom:2px;}
+.sleg-tm{font-size:10px;color:var(--wm);font-family:'DM Mono',monospace;}
+.sleg-rule{font-size:9px;color:var(--wm);font-family:'DM Mono',monospace;margin-top:1px;}
+.sleg-badge{font-size:9px;font-family:'DM Mono',monospace;color:var(--wm);background:var(--wf);border:1px solid var(--border);padding:2px 7px;border-radius:100px;white-space:nowrap;}
+
+/* SHIFT EDITOR */
+.shift-editor{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:18px;animation:fadeUp .45s .12s ease both;}
+.se-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--wm);margin-bottom:13px;}
+.se-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.se-col{display:flex;flex-direction:column;gap:9px;}
+.se-row{display:flex;align-items:center;gap:8px;}
+.se-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.se-dot.morning{background:#f59e0b;}
+.se-dot.evening{background:#818cf8;}
+.se-lbl{font-size:10px;color:var(--wd);width:52px;flex-shrink:0;}
+.se-inp{background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-sm);padding:5px 9px;color:var(--white);font-family:'DM Mono',monospace;font-size:12px;outline:none;transition:border-color .16s;width:86px;}
+.se-inp:focus{border-color:rgba(240,240,240,.3);}
+.se-sep{font-size:9px;color:var(--wm);}
+.se-help{font-size:10px;color:var(--wm);font-family:'DM Mono',monospace;line-height:1.55;}
+.se-help b{color:var(--wd);}
+.midpoint-note{font-size:9px;color:var(--wm);font-family:'DM Mono',monospace;margin-top:8px;padding:6px 9px;background:var(--wf);border:1px solid var(--border);border-radius:var(--r-sm);display:flex;align-items:center;gap:6px;}
+
+/* DROP */
+.drop{border:1px dashed var(--border-l);border-radius:var(--r-xl);padding:44px 28px;text-align:center;cursor:pointer;position:relative;transition:all .22s;background:var(--card);margin-bottom:16px;animation:fadeUp .45s .18s ease both;}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.drop:hover,.drop.over{border-color:rgba(240,240,240,.3);background:var(--card-h);}
+.drop-ic{width:54px;height:54px;margin:0 auto 13px;background:var(--off-black);border:1px solid var(--border-l);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;animation:float 3.5s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.drop-title{font-size:14px;font-weight:600;margin-bottom:4px;}
+.drop-sub{font-size:12px;color:var(--wm);}
+.drop-sub u{color:var(--wd);cursor:pointer;text-underline-offset:3px;}
+
+/* MAPPER */
+.mapper{display:none;background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:16px;animation:fadeUp .3s ease both;}
+.mapper.on{display:block;}
+.mapper-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--wm);margin-bottom:13px;}
+.mapper-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:10px;}
+.map-item{display:flex;flex-direction:column;gap:5px;}
+.map-lbl{font-size:9px;font-weight:700;color:var(--wd);text-transform:uppercase;letter-spacing:.9px;}
+.map-sel{background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 10px;color:var(--white);font-family:'DM Mono',monospace;font-size:11px;outline:none;transition:border-color .16s;width:100%;-webkit-appearance:none;}
+.map-sel:focus{border-color:rgba(240,240,240,.28);}
+.file-info{display:flex;align-items:center;gap:8px;padding:9px 13px;background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.12);border-radius:var(--r-sm);margin-bottom:13px;font-size:11px;flex-wrap:wrap;}
+.file-info-name{font-weight:600;color:#4ade80;font-family:'DM Mono',monospace;}
+.file-info-meta{color:var(--wm);}
+.hint-box{background:var(--wf);border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 13px;font-size:11px;color:var(--wd);line-height:1.65;margin-bottom:13px;font-family:'DM Mono',monospace;}
+.hint-box b{color:var(--white);}
+
+/* PROGRESS */
+.prog{display:none;margin-bottom:16px;}
+.prog.on{display:block;}
+.prog-top{display:flex;justify-content:space-between;font-size:11px;color:var(--wd);margin-bottom:7px;font-family:'DM Mono',monospace;}
+.prog-track{height:2px;background:var(--border);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;width:0%;background:var(--white);border-radius:2px;transition:width .25s ease;}
+
+/* SUMMARY */
+.summary{display:none;grid-template-columns:repeat(6,1fr);gap:9px;margin-bottom:18px;animation:fadeUp .3s ease both;}
+.summary.on{display:grid;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 14px;}
+.sc-n{font-size:22px;font-weight:700;font-family:'DM Mono',monospace;line-height:1;margin-bottom:3px;}
+.sc-l{font-size:8px;color:var(--wm);text-transform:uppercase;letter-spacing:1.2px;font-weight:700;}
+.sc-n.amber{color:#fbbf24;}.sc-n.green{color:#4ade80;}.sc-n.purple{color:#a78bfa;}.sc-n.red{color:#f87171;}
+
+/* DASH TABS */
+.dash-tabs{display:none;border-radius:var(--r-lg) var(--r-lg) 0 0;overflow:hidden;border:1px solid var(--border);border-bottom:none;}
+.dash-tabs.on{display:flex;}
+.dash-tab{flex:1;padding:11px 14px;background:var(--card);border:none;color:var(--wm);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .16s;display:flex;align-items:center;justify-content:center;gap:7px;border-right:1px solid var(--border);}
+.dash-tab:last-child{border-right:none;}
+.dash-tab:hover{color:var(--wd);background:var(--card-h);}
+.dash-tab.active{background:var(--off-black);color:var(--white);}
+.tab-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.tab-dot.morning{background:#f59e0b;}
+.tab-dot.evening{background:#818cf8;}
+.tab-dot.all{background:var(--wd);}
+.tab-count{font-size:9px;font-family:'DM Mono',monospace;background:var(--wf);border:1px solid var(--border);padding:1px 6px;border-radius:100px;color:var(--wm);}
+.dash-tab.active .tab-count{background:rgba(240,240,240,.1);color:var(--wd);}
+
+/* TOOLBAR */
+.toolbar{display:none;align-items:center;gap:9px;margin-bottom:12px;flex-wrap:wrap;}
+.toolbar.on{display:flex;}
+.search-box{flex:1;min-width:170px;background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;color:var(--white);font-size:12px;font-family:'DM Mono',monospace;outline:none;transition:border-color .16s;}
+.search-box:focus{border-color:var(--border-l);}
+.search-box::placeholder{color:var(--wm);}
+.filter-sel{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 11px;color:var(--wd);font-size:11px;font-family:'DM Mono',monospace;outline:none;-webkit-appearance:none;cursor:pointer;}
+
+/* TABLE */
+.tbl-wrap{display:none;overflow-x:auto;margin-bottom:14px;border-radius:0 0 var(--r-lg) var(--r-lg);border:1px solid var(--border);}
+.tbl-wrap.on{display:block;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead{background:var(--off-black);}
+th{padding:9px 13px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:var(--wm);border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;transition:color .16s;}
+th:hover{color:var(--wd);}
+th .si{display:inline-block;margin-left:3px;opacity:.35;font-size:8px;}
+th.asc .si,th.desc .si{opacity:1;}
+td{padding:8px 13px;border-bottom:1px solid var(--border);color:var(--wd);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--wf);}
+.td-name{font-weight:600;color:var(--white);white-space:nowrap;}
+.td-mono{font-family:'DM Mono',monospace;font-size:11px;}
+.td-dim{color:var(--wm);}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:100px;font-size:9px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.4px;white-space:nowrap;margin-right:2px;}
+.badge-ok{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.18);color:#4ade80;}
+.badge-late{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);color:#fbbf24;}
+.badge-ot{background:rgba(129,140,248,.07);border:1px solid rgba(129,140,248,.18);color:#a5b4fc;}
+.badge-absent{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.18);color:#f87171;}
+.shift-pip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-family:'DM Mono',monospace;}
+.pip{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.pip.morning{background:#f59e0b;}
+.pip.evening{background:#818cf8;}
+.pip.unknown{background:var(--wm);}
+
+/* PAGINATION */
+.pag{display:none;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;font-size:11px;color:var(--wm);}
+.pag.on{display:flex;}
+.pag-btns{display:flex;gap:4px;}
+.pag-btn{background:var(--card);border:1px solid var(--border);color:var(--wd);padding:5px 11px;border-radius:var(--r-sm);cursor:pointer;font-size:11px;transition:all .15s;font-family:'DM Mono',monospace;}
+.pag-btn:hover:not(:disabled){border-color:var(--border-l);color:var(--white);}
+.pag-btn:disabled{opacity:.3;cursor:not-allowed;}
+.pag-btn.active{background:var(--white);color:var(--black);border-color:var(--white);}
+
+/* ACTIONS */
+.acts{display:none;gap:9px;flex-wrap:wrap;}
+.acts.on{display:flex;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:var(--r-lg);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s;letter-spacing:-.1px;}
+.btn-p{flex:1;background:var(--white);color:var(--black);min-width:160px;}
+.btn-p:hover{background:#e0e0e0;transform:translateY(-1px);}
+.btn-p:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.btn-g{background:var(--card);color:var(--wd);border:1px solid var(--border);}
+.btn-g:hover{border-color:var(--border-l);color:var(--white);}
+.btn-sm{padding:7px 13px;font-size:11px;border-radius:var(--r-sm);}
+
+/* ERROR / EMPTY */
+.error-msg{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:var(--r-sm);padding:10px 13px;font-size:11px;color:#f87171;margin-bottom:12px;display:none;font-family:'DM Mono',monospace;}
+.error-msg.on{display:block;}
+.empty{text-align:center;padding:44px 24px;color:var(--wm);}
+.empty-ic{font-size:28px;margin-bottom:8px;}
+.empty-t{font-size:13px;font-weight:600;color:var(--wd);margin-bottom:3px;}
+.empty-s{font-size:11px;}
+
+/* FOOTER */
+.footer{text-align:center;margin-top:40px;}
+.priv{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:7px 15px;font-size:11px;color:var(--wm);}
+.pdot{width:5px;height:5px;background:#4ade80;border-radius:50%;box-shadow:0 0 5px #4ade80;flex-shrink:0;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:100px;}
+
+@media(max-width:720px){
+  .summary{grid-template-columns:repeat(3,1fr);}
+  .shift-legend,.se-grid{grid-template-columns:1fr;}
+  .dash-tabs.on{flex-direction:column;}
+  .dash-tab{border-right:none;border-bottom:1px solid var(--border);}
+  .dash-tab:last-child{border-bottom:none;}
+}
+</style>
+</head>
+<body>
+<div class="sgrid"></div>
+<div class="wrap">
+
+<!-- HEADER -->
+<header>
+  <div class="logo-row">
+    <span class="brand">EassyOffice</span>
+    <span class="sub-tag">/ HRM</span>
+    <span class="logo-pill">Payroll Manager</span>
+  </div>
+  <h1>Payroll <em>&</em> Attendance</h1>
+  <p class="sub">Upload one attendance sheet — all employees, all shifts. Each row's shift is <b>auto-detected per day</b> from the punch-in time. Morning and evening records stay in one file, segregated automatically.</p>
+</header>
+
+<!-- SHIFT LEGEND -->
+<div class="shift-legend">
+  <div class="sleg">
+    <span class="sleg-dot morning"></span>
+    <div class="sleg-info">
+      <div class="sleg-lb">Morning Shift</div>
+      <div class="sleg-tm" id="leg-morning">09:00 – 17:00</div>
+      <div class="sleg-rule">Late if punch-in after shift start · OT after 8h</div>
+    </div>
+    <span class="sleg-badge">Auto-detected</span>
+  </div>
+  <div class="sleg">
+    <span class="sleg-dot evening"></span>
+    <div class="sleg-info">
+      <div class="sleg-lb">Evening Shift</div>
+      <div class="sleg-tm" id="leg-evening">12:00 – 20:00</div>
+      <div class="sleg-rule">Late if punch-in after shift start · OT after 8h</div>
+    </div>
+    <span class="sleg-badge">Auto-detected</span>
+  </div>
+</div>
+
+<!-- SHIFT BOUNDARY EDITOR -->
+<div class="shift-editor">
+  <div class="se-title">⚙ Shift Boundary Settings</div>
+  <div class="se-grid">
+    <div class="se-col">
+      <div class="se-row">
+        <span class="se-dot morning"></span>
+        <span class="se-lbl">Morning</span>
+        <input class="se-inp" id="mStart" type="time" value="09:00" oninput="onShiftChange()">
+        <span class="se-sep">–</span>
+        <input class="se-inp" id="mEnd" type="time" value="17:00" oninput="onShiftChange()">
+      </div>
+      <div class="se-row">
+        <span class="se-dot evening"></span>
+        <span class="se-lbl">Evening</span>
+        <input class="se-inp" id="eStart" type="time" value="12:00" oninput="onShiftChange()">
+        <span class="se-sep">–</span>
+        <input class="se-inp" id="eEnd" type="time" value="20:00" oninput="onShiftChange()">
+      </div>
+      <div class="midpoint-note">
+        🎯 Detection midpoint: <b id="midpointLabel">10:30</b> — punch-in before this = Morning, after = Evening
+      </div>
+    </div>
+    <div class="se-col" style="justify-content:center;">
+      <div class="se-help">
+        <b>How shift detection works:</b><br>
+        The system calculates the midpoint between the Morning and Evening start times. Each row's punch-in time is compared against that midpoint to classify it automatically.<br><br>
+        <b>Example:</b> Morning starts 09:00, Evening starts 12:00 → midpoint is 10:30. A punch-in at 09:05 = Morning. A punch-in at 12:10 = Evening. Same employee can have both shifts in the same month.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DROP ZONE -->
+<div class="drop" id="drop">
+  <input type="file" id="fileIn" accept=".xlsx,.xls,.csv">
+  <div class="drop-ic">📊</div>
+  <div class="drop-title">Drop your attendance Excel file</div>
+  <div class="drop-sub">or <u>browse to upload</u> — .xlsx, .xls, .csv · all shifts in one file</div>
+</div>
+
+<!-- ERROR -->
+<div class="error-msg" id="errMsg"></div>
+
+<!-- COLUMN MAPPER -->
+<div class="mapper" id="mapper">
+  <div class="file-info">
+    <span style="font-size:15px">📋</span>
+    <span class="file-info-name" id="fiName">—</span>
+    <span class="file-info-meta" id="fiMeta">—</span>
+  </div>
+  <div class="mapper-title">Map Your Columns</div>
+  <div class="hint-box">
+    <b>Shift is auto-detected per row</b> — no manual selection needed. Punch Record format: <b>09:00:00(in),13:00:00(out),14:00:00(in),18:00:00(out)</b>. Leave a field as "— Not available —" if absent from your file.
+  </div>
+  <div class="mapper-grid">
+    <div class="map-item"><span class="map-lbl">Attendance Date</span><select class="map-sel" id="col-date"></select></div>
+    <div class="map-item"><span class="map-lbl">Employee Code</span><select class="map-sel" id="col-code"></select></div>
+    <div class="map-item"><span class="map-lbl">Employee Name</span><select class="map-sel" id="col-name"></select></div>
+    <div class="map-item"><span class="map-lbl">In Time</span><select class="map-sel" id="col-in"></select></div>
+    <div class="map-item"><span class="map-lbl">Out Time</span><select class="map-sel" id="col-out"></select></div>
+    <div class="map-item"><span class="map-lbl">Punch Record</span><select class="map-sel" id="col-punch"></select></div>
+  </div>
+  <div style="margin-top:14px;display:flex;gap:9px;flex-wrap:wrap;">
+    <button class="btn btn-p btn-sm" onclick="processData()">Calculate Payroll →</button>
+    <button class="btn btn-g btn-sm" onclick="resetAll()">✕ Reset</button>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="prog" id="prog">
+  <div class="prog-top"><span id="progLbl">Processing…</span><span id="progPct">0%</span></div>
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="summary" id="summary">
+  <div class="sc"><div class="sc-n" id="sTotalEmp">0</div><div class="sc-l">Employees</div></div>
+  <div class="sc"><div class="sc-n" id="sTotalRec">0</div><div class="sc-l">Records</div></div>
+  <div class="sc"><div class="sc-n amber" id="sMorning">0</div><div class="sc-l">Morning</div></div>
+  <div class="sc"><div class="sc-n purple" id="sEvening">0</div><div class="sc-l">Evening</div></div>
+  <div class="sc"><div class="sc-n amber" id="sTotalLate">0</div><div class="sc-l">Late Arrivals</div></div>
+  <div class="sc"><div class="sc-n green" id="sTotalOT">0</div><div class="sc-l">OT Records</div></div>
+</div>
+
+<!-- SPLIT VIEW TABS -->
+<div class="dash-tabs" id="dashTabs">
+  <button class="dash-tab active" id="tab-all" onclick="switchView('all')">
+    <span class="tab-dot all"></span> All Records <span class="tab-count" id="cnt-all">0</span>
+  </button>
+  <button class="dash-tab" id="tab-morning" onclick="switchView('morning')">
+    <span class="tab-dot morning"></span> Morning Shift <span class="tab-count" id="cnt-morning">0</span>
+  </button>
+  <button class="dash-tab" id="tab-evening" onclick="switchView('evening')">
+    <span class="tab-dot evening"></span> Evening Shift <span class="tab-count" id="cnt-evening">0</span>
+  </button>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar" id="toolbar">
+  <input class="search-box" id="searchBox" placeholder="Search name or employee code…" oninput="filterTable()">
+  <select class="filter-sel" id="filterStatus" onchange="filterTable()">
+    <option value="all">All Status</option>
+    <option value="late">Late Only</option>
+    <option value="ot">OT Only</option>
+    <option value="normal">Normal Only</option>
+    <option value="absent">Absent Only</option>
+  </select>
+  <select class="filter-sel" id="filterEmp" onchange="filterTable()">
+    <option value="all">All Employees</option>
+  </select>
+</div>
+
+<!-- TABLE -->
+<div class="tbl-wrap" id="tblWrap">
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sortBy('dateSort')" id="h-dateSort">Date <span class="si">↕</span></th>
+        <th onclick="sortBy('code')" id="h-code">Code <span class="si">↕</span></th>
+        <th onclick="sortBy('name')" id="h-name">Name <span class="si">↕</span></th>
+        <th onclick="sortBy('shift')" id="h-shift">Shift <span class="si">↕</span></th>
+        <th onclick="sortBy('inMins')" id="h-inMins">In Time <span class="si">↕</span></th>
+        <th onclick="sortBy('outMins')" id="h-outMins">Out Time <span class="si">↕</span></th>
+        <th onclick="sortBy('totalMins')" id="h-totalMins">Total Hours <span class="si">↕</span></th>
+        <th onclick="sortBy('lateMins')" id="h-lateMins">Lateness <span class="si">↕</span></th>
+        <th onclick="sortBy('otMins')" id="h-otMins">Overtime <span class="si">↕</span></th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="tblBody"></tbody>
+  </table>
+</div>
+
+<!-- PAGINATION -->
+<div class="pag" id="pag">
+  <span id="pagInfo">—</span>
+  <div class="pag-btns" id="pagBtns"></div>
+</div>
+
+<!-- ACTIONS -->
+<div class="acts" id="acts">
+  <button class="btn btn-p" onclick="exportExcel()">↓ Export All (Excel)</button>
+  <button class="btn btn-g" onclick="exportExcelSplit()">↓ Export Split Sheets</button>
+  <button class="btn btn-g" onclick="exportCSV()">↓ Export CSV</button>
+  <button class="btn btn-g" onclick="resetAll()">✕ Reset</button>
+</div>
+
+<!-- FOOTER -->
+<div class="footer"><div class="priv"><span class="pdot"></span>100% private — files never leave your device</div></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   GLOBALS
+═══════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+let processedData = [], filteredData = [];
+let headers = [], fileRows = [];
+let currentView = 'all';
+let currentPage = 1;
+const PAGE_SIZE = 25;
+let sortCol = 'dateSort', sortDir = 'asc';
+const REQUIRED_MINS = 480; // 8 hours
+
+/* ═══════════════════════════════════════
+   SHIFT CONFIG HELPERS
+═══════════════════════════════════════ */
+function timeInputToMins(id) {
+  const v = $(id).value;
+  if (!v) return null;
+  const [h, m] = v.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function getMidpoint() {
+  const ms = timeInputToMins('mStart') ?? 540;
+  const es = timeInputToMins('eStart') ?? 720;
+  return Math.round((ms + es) / 2);
+}
+
+function getShiftCfg(shiftName) {
+  return shiftName === 'morning'
+    ? { start: timeInputToMins('mStart') ?? 540, end: timeInputToMins('mEnd') ?? 1020 }
+    : { start: timeInputToMins('eStart') ?? 720, end: timeInputToMins('eEnd') ?? 1200 };
+}
+
+/* Classify shift purely from punch-in time */
+function detectShift(inMins) {
+  if (inMins === null) return 'unknown';
+  return inMins < getMidpoint() ? 'morning' : 'evening';
+}
+
+/* Update legends and midpoint label live */
+function onShiftChange() {
+  const ms = $(  'mStart').value, me = $('mEnd').value;
+  const es = $('eStart').value, ee = $('eEnd').value;
+  $('leg-morning').textContent = `${ms} – ${me}`;
+  $('leg-evening').textContent = `${es} – ${ee}`;
+  const mp = getMidpoint();
+  $('midpointLabel').textContent = `${String(Math.floor(mp/60)).padStart(2,'0')}:${String(mp%60).padStart(2,'0')}`;
+}
+onShiftChange(); // init
+
+/* ═══════════════════════════════════════
+   FILE HANDLING
+═══════════════════════════════════════ */
+const drop = $('drop'), fileIn = $('fileIn');
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', e => {
+  e.preventDefault(); drop.classList.remove('over');
+  const f = [...e.dataTransfer.files].find(x => /\.(xlsx|xls|csv)$/i.test(x.name));
+  if (f) readFile(f); else showErr('Please drop an Excel (.xlsx/.xls) or CSV file.');
+});
+fileIn.addEventListener('change', () => { if (fileIn.files[0]) readFile(fileIn.files[0]); fileIn.value = ''; });
+
+function readFile(file) {
+  showErr('');
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'binary', cellDates: true, cellText: false, cellNF: false });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      if (!json.length) { showErr('The file appears to be empty.'); return; }
+      headers  = json[0].map(h => String(h).trim());
+      fileRows = json.slice(1).filter(r => r.some(c => c !== ''));
+      $('fiName').textContent = file.name;
+      $('fiMeta').textContent = `${fileRows.length} rows · Sheet: ${wb.SheetNames[0]}`;
+      buildMapper();
+      $('mapper').classList.add('on');
+      drop.style.display = 'none';
+    } catch (err) { showErr('Failed to read file: ' + err.message); }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function buildMapper() {
+  const autoKeys = {
+    'col-date':  ['date','attendance','day','att','attendancedate'],
+    'col-code':  ['code','empcode','employeecode','id','empid','employeeid'],
+    'col-name':  ['name','employee','empname','employeename'],
+    'col-in':    ['intime','in','checkin','timein','firstin','firstpunch'],
+    'col-out':   ['outtime','out','checkout','timeout','lastout','lastpunch'],
+    'col-punch': ['punch','punchrecord','record','punches','timerecord','punching']
+  };
+  Object.keys(autoKeys).forEach(sid => {
+    const sel = $(sid);
+    sel.innerHTML = '<option value="">— Not available —</option>';
+    headers.forEach((h, i) => {
+      const opt = document.createElement('option');
+      opt.value = i; opt.textContent = h || `Column ${i+1}`;
+      sel.appendChild(opt);
+    });
+    const keys = autoKeys[sid];
+    const matched = headers.findIndex(h =>
+      keys.some(k => h.toLowerCase().replace(/[\s_\-\.]/g,'').includes(k))
+    );
+    if (matched >= 0) sel.value = matched;
+  });
+}
+
+/* ═══════════════════════════════════════
+   TIME UTILITIES
+═══════════════════════════════════════ */
+function parseTimeToMins(v) {
+  if (!v && v !== 0) return null;
+  if (v instanceof Date) return v.getHours() * 60 + v.getMinutes();
+  const s = String(v).trim();
+  // HH:MM or HH:MM:SS, optional AM/PM
+  let m = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?(?:\s*(AM|PM))?$/i);
+  if (m) {
+    let h = parseInt(m[1]), mn = parseInt(m[2]);
+    if (m[3]) { if (m[3].toUpperCase()==='PM' && h<12) h+=12; if (m[3].toUpperCase()==='AM' && h===12) h=0; }
+    return h * 60 + mn;
+  }
+  const n = parseFloat(s);
+  if (!isNaN(n) && n > 0 && n < 1)  return Math.round(n * 1440);          // fraction of day
+  if (!isNaN(n) && n >= 1) { const f = n - Math.floor(n); if (f > 0) return Math.round(f * 1440); }
+  return null;
+}
+
+function minsToHHMM(m) {
+  if (m === null || isNaN(m) || m < 0) return '—';
+  return `${Math.floor(m/60)}h ${String(m%60).padStart(2,'0')}m`;
+}
+
+function minsToDisplay(m) {
+  if (m === null || isNaN(m)) return '—';
+  return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
+}
+
+function minsToDecimal(m) { return (m / 60).toFixed(2); }
+
+/* 15-minute block rounding engine */
+function round15(mins) {
+  if (mins <= 0) return 0;
+  const hrs = Math.floor(mins / 60);
+  const rem = mins % 60;
+  let r;
+  if      (rem <= 10) r = 0;
+  else if (rem <= 24) r = 15;
+  else if (rem <= 38) r = 30;
+  else if (rem <= 52) r = 45;
+  else                r = 60;
+  return hrs * 60 + r;
+}
+
+/* Parse punch record: "09:00:00(in),13:00:00(out),14:00:00(in),18:00:00(out)" */
+function parsePunchRecord(str) {
+  if (!str) return null;
+  const tokens = String(str).trim().split(',').map(t => t.trim());
+  const pairs  = [];
+  let lastIn   = null;
+
+  // Tagged format: 09:00:00(in) / 18:00:00(out)
+  for (const tok of tokens) {
+    const m = tok.match(/(\d{1,2}:\d{2}(?::\d{2})?)\s*\(\s*(in|out|i|o)\s*\)/i);
+    if (!m) continue;
+    const mins = parseTimeToMins(m[1]);
+    const type = m[2].toLowerCase();
+    if (type === 'in' || type === 'i') {
+      lastIn = mins;
+    } else if ((type === 'out' || type === 'o') && lastIn !== null) {
+      if (mins > lastIn) pairs.push({ in: lastIn, out: mins });
+      lastIn = null;
+    }
+  }
+
+  // Fallback: sequential alternating (no tags)
+  if (!pairs.length) {
+    const times = [];
+    tokens.forEach(t => { const m = t.match(/(\d{1,2}:\d{2}(?::\d{2})?)/); if (m) times.push(parseTimeToMins(m[1])); });
+    for (let i = 0; i + 1 < times.length; i += 2) {
+      if (times[i+1] > times[i]) pairs.push({ in: times[i], out: times[i+1] });
+    }
+  }
+  return pairs.length ? pairs : null;
+}
+
+function totalFromPunches(pairs) { return pairs.reduce((s, p) => s + (p.out - p.in), 0); }
+
+/* ═══════════════════════════════════════
+   CORE PROCESSING ENGINE
+═══════════════════════════════════════ */
+function processData() {
+  const getCol = sid => { const v = $(sid).value; return v === '' ? null : parseInt(v); };
+  const ci = {
+    date: getCol('col-date'), code: getCol('col-code'), name: getCol('col-name'),
+    in:   getCol('col-in'),   out:  getCol('col-out'),  punch: getCol('col-punch')
+  };
+  if (ci.name === null && ci.code === null) { showErr('Please map at least Employee Name or Code.'); return; }
+
+  showErr('');
+  $('prog').classList.add('on');
+  setP(0, 'Processing records…');
+
+  setTimeout(() => {
+    const results = [];
+
+    fileRows.forEach((row, idx) => {
+      setP(Math.round((idx / fileRows.length) * 92), `Row ${idx+1} of ${fileRows.length}…`);
+
+      const gv = col => (col !== null && col !== undefined) ? row[col] : '';
+      const dateRaw  = gv(ci.date);
+      const code     = String(gv(ci.code)  || '').trim();
+      const name     = String(gv(ci.name)  || '').trim();
+      const inRaw    = gv(ci.in);
+      const outRaw   = gv(ci.out);
+      const punchRaw = gv(ci.punch);
+
+      if (!name && !code) return; // blank row
+
+      /* ── Format date ── */
+      let dateStr = '—', dateSort = '';
+      if (dateRaw) {
+        if (dateRaw instanceof Date) {
+          dateStr  = dateRaw.toLocaleDateString('en-GB');
+          dateSort = dateRaw.toISOString().slice(0, 10);
+        } else {
+          const n = parseFloat(String(dateRaw));
+          if (!isNaN(n) && n > 40000) {
+            try {
+              const d = XLSX.SSF.parse_date_code(n);
+              dateStr  = `${String(d.d).padStart(2,'0')}/${String(d.m).padStart(2,'0')}/${d.y}`;
+              dateSort = `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
+            } catch(e) { dateStr = String(dateRaw).trim(); dateSort = dateStr; }
+          } else { dateStr = String(dateRaw).trim(); dateSort = dateStr; }
+        }
+      }
+
+      /* ── Resolve punch-in / worked time ── */
+      let totalMins = null, inMins = null, outMins = null;
+
+      // Priority 1: Punch Record column (most accurate)
+      if (ci.punch !== null && punchRaw) {
+        const pairs = parsePunchRecord(String(punchRaw));
+        if (pairs) {
+          totalMins = totalFromPunches(pairs);
+          inMins    = pairs[0].in;
+          outMins   = pairs[pairs.length - 1].out;
+        }
+      }
+
+      // Priority 2: Separate In / Out columns
+      if (totalMins === null) {
+        inMins  = parseTimeToMins(inRaw);
+        outMins = parseTimeToMins(outRaw);
+        if (inMins !== null && outMins !== null && outMins > inMins) {
+          totalMins = outMins - inMins;
+        }
+      }
+
+      /* ── Auto-detect shift from punch-in ── */
+      const shift = detectShift(inMins);      // 'morning' | 'evening' | 'unknown'
+      const cfg   = getShiftCfg(shift);       // { start, end }
+
+      /* ── Lateness: compare punch-in vs shift start ── */
+      let lateRaw = 0, lateMins = 0;
+      if (inMins !== null && inMins > cfg.start) {
+        lateRaw  = inMins - cfg.start;
+        lateMins = round15(lateRaw);
+      }
+
+      /* ── OT: anything beyond 8 hours of actual worked time ── */
+      let otRaw = 0, otMins = 0;
+      if (totalMins !== null && totalMins > REQUIRED_MINS) {
+        otRaw  = totalMins - REQUIRED_MINS;
+        otMins = round15(otRaw);
+      }
+
+      results.push({
+        date: dateStr, dateSort,
+        code, name,
+        shift,
+        inMins,  inTime:   inMins  !== null ? minsToDisplay(inMins)  : '—',
+        outMins, outTime:  outMins !== null ? minsToDisplay(outMins) : '—',
+        totalMins:    totalMins ?? 0,
+        totalHours:   totalMins !== null ? minsToDecimal(totalMins) : '0.00',
+        totalDisplay: totalMins !== null ? minsToHHMM(totalMins)    : '—',
+        lateRaw, lateMins, lateDisplay: lateMins > 0 ? minsToHHMM(lateMins) : '—',
+        otRaw,   otMins,   otDisplay:   otMins   > 0 ? minsToHHMM(otMins)   : '—',
+        absent: totalMins === null && inMins === null
+      });
+    });
+
+    setP(100, 'Done!');
+    processedData = results;
+
+    /* Build employee dropdown */
+    const empSet = [...new Set(results.map(r => r.name || r.code).filter(Boolean))].sort();
+    const empSel = $('filterEmp');
+    empSel.innerHTML = '<option value="all">All Employees</option>';
+    empSet.forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; empSel.appendChild(o); });
+
+    updateSummary();
+    switchView('all');
+
+    $('prog').classList.remove('on');
+    $('summary').classList.add('on');
+    $('dashTabs').classList.add('on');
+    $('toolbar').classList.add('on');
+    $('tblWrap').classList.add('on');
+    $('acts').classList.add('on');
+  }, 40);
+}
+
+/* ═══════════════════════════════════════
+   SUMMARY
+═══════════════════════════════════════ */
+function updateSummary() {
+  const emps = new Set(processedData.map(r => r.code || r.name));
+  const morningRows = processedData.filter(r => r.shift === 'morning');
+  const eveningRows = processedData.filter(r => r.shift === 'evening');
+  $('sTotalEmp').textContent  = emps.size;
+  $('sTotalRec').textContent  = processedData.length;
+  $('sMorning').textContent   = morningRows.length;
+  $('sEvening').textContent   = eveningRows.length;
+  $('sTotalLate').textContent = processedData.filter(r => r.lateMins > 0).length;
+  $('sTotalOT').textContent   = processedData.filter(r => r.otMins   > 0).length;
+  // Tab counts
+  $('cnt-all').textContent     = processedData.length;
+  $('cnt-morning').textContent = morningRows.length;
+  $('cnt-evening').textContent = eveningRows.length;
+}
+
+/* ═══════════════════════════════════════
+   VIEW TABS
+═══════════════════════════════════════ */
+function switchView(view) {
+  currentView = view;
+  ['all','morning','evening'].forEach(v => $('tab-'+v).classList.toggle('active', v === view));
+  currentPage = 1;
+  filterTable();
+}
+
+/* ═══════════════════════════════════════
+   FILTER & SEARCH
+═══════════════════════════════════════ */
+function filterTable() {
+  const q      = $('searchBox').value.toLowerCase();
+  const status = $('filterStatus').value;
+  const emp    = $('filterEmp').value;
+
+  filteredData = processedData.filter(r => {
+    if (currentView !== 'all' && r.shift !== currentView) return false;
+    const matchQ   = !q || r.name.toLowerCase().includes(q) || r.code.toLowerCase().includes(q);
+    const matchEmp = emp === 'all' || r.name === emp || r.code === emp;
+    let matchSt    = true;
+    if      (status === 'late')   matchSt = r.lateMins > 0;
+    else if (status === 'ot')     matchSt = r.otMins > 0;
+    else if (status === 'normal') matchSt = r.lateMins === 0 && r.otMins === 0 && !r.absent;
+    else if (status === 'absent') matchSt = r.absent;
+    return matchQ && matchEmp && matchSt;
+  });
+
+  currentPage = 1;
+  renderTable();
+}
+
+/* ═══════════════════════════════════════
+   SORT
+═══════════════════════════════════════ */
+function sortBy(col) {
+  if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  else { sortCol = col; sortDir = 'asc'; }
+  document.querySelectorAll('th').forEach(t => { t.classList.remove('asc','desc'); });
+  const th = $('h-'+col);
+  if (th) { th.classList.add(sortDir); th.querySelector('.si').textContent = sortDir === 'asc' ? '↑' : '↓'; }
+  filteredData.sort((a, b) => {
+    let va = a[col] ?? '', vb = b[col] ?? '';
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    if (va < vb) return sortDir === 'asc' ? -1 :  1;
+    if (va > vb) return sortDir === 'asc' ?  1 : -1;
+    return 0;
+  });
+  renderTable();
+}
+
+/* ═══════════════════════════════════════
+   RENDER TABLE
+═══════════════════════════════════════ */
+function renderTable() {
+  const body  = $('tblBody');
+  const total = filteredData.length;
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const slice = filteredData.slice(start, start + PAGE_SIZE);
+
+  if (!slice.length) {
+    body.innerHTML = `<tr><td colspan="10"><div class="empty"><div class="empty-ic">🔍</div><div class="empty-t">No records found</div><div class="empty-s">Try adjusting search, filters, or shift tab</div></div></td></tr>`;
+    $('pag').classList.remove('on');
+    return;
+  }
+
+  body.innerHTML = slice.map(r => {
+    let badges = '';
+    if (r.absent) {
+      badges = '<span class="badge badge-absent">ABSENT</span>';
+    } else {
+      if (r.lateMins > 0) badges += '<span class="badge badge-late">LATE</span>';
+      if (r.otMins   > 0) badges += '<span class="badge badge-ot">OT</span>';
+      if (!badges)         badges  = '<span class="badge badge-ok">NORMAL</span>';
+    }
+
+    const pipCls   = r.shift === 'morning' ? 'morning' : r.shift === 'evening' ? 'evening' : 'unknown';
+    const shiftLbl = r.shift === 'morning' ? 'Morning' : r.shift === 'evening' ? 'Evening' : '—';
+    const lateStyle = r.lateMins > 0 ? ' style="color:#fbbf24"' : '';
+    const otStyle   = r.otMins   > 0 ? ' style="color:#a5b4fc"' : '';
+
+    return `<tr>
+      <td class="td-mono td-dim">${esc(r.date)}</td>
+      <td class="td-mono td-dim" style="font-size:10px">${esc(r.code)}</td>
+      <td class="td-name">${esc(r.name)}</td>
+      <td><span class="shift-pip"><span class="pip ${pipCls}"></span>${shiftLbl}</span></td>
+      <td class="td-mono td-dim">${r.inTime}</td>
+      <td class="td-mono td-dim">${r.outTime}</td>
+      <td class="td-mono" style="font-weight:600">${r.totalDisplay}</td>
+      <td class="td-mono"${lateStyle}>${r.lateDisplay}</td>
+      <td class="td-mono"${otStyle}>${r.otDisplay}</td>
+      <td>${badges}</td>
+    </tr>`;
+  }).join('');
+
+  /* Pagination */
+  $('pagInfo').textContent = `${start+1}–${Math.min(start+PAGE_SIZE, total)} of ${total} records`;
+  const btns = $('pagBtns');
+  btns.innerHTML = '';
+  const addBtn = (lbl, pg, active, dis) => {
+    const b = document.createElement('button');
+    b.className = 'pag-btn' + (active ? ' active' : '');
+    b.textContent = lbl; b.disabled = dis;
+    b.onclick = () => { currentPage = pg; renderTable(); };
+    btns.appendChild(b);
+  };
+  addBtn('←', currentPage-1, false, currentPage===1);
+  const r2 = 2;
+  for (let p = Math.max(1, currentPage-r2); p <= Math.min(pages, currentPage+r2); p++) addBtn(p, p, p===currentPage, false);
+  addBtn('→', currentPage+1, false, currentPage===pages);
+  $('pag').classList.toggle('on', pages > 1);
+}
+
+/* ═══════════════════════════════════════
+   EXPORT
+═══════════════════════════════════════ */
+function buildRows(data) {
+  const hdr = ['Date','Emp Code','Employee Name','Shift','In Time','Out Time',
+    'Total Hours (h:m)','Total Hours (decimal)',
+    'Lateness Rounded (h:m)','Lateness Raw (min)',
+    'Overtime Rounded (h:m)','Overtime Raw (min)','Status'];
+  const rows = [hdr];
+  data.forEach(r => {
+    const st = r.absent ? 'Absent' : (r.lateMins>0 && r.otMins>0) ? 'Late + OT' : r.lateMins>0 ? 'Late' : r.otMins>0 ? 'OT' : 'Normal';
+    rows.push([r.date, r.code, r.name,
+      r.shift === 'morning' ? 'Morning' : r.shift === 'evening' ? 'Evening' : '—',
+      r.inTime, r.outTime, r.totalDisplay, r.totalHours,
+      r.lateDisplay, r.lateRaw, r.otDisplay, r.otRaw, st]);
+  });
+  return rows;
+}
+
+function exportExcel() {
+  if (!processedData.length) return;
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildRows(processedData)), 'All Records');
+  XLSX.writeFile(wb, 'payroll_all.xlsx');
+}
+
+function exportExcelSplit() {
+  if (!processedData.length) return;
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildRows(processedData)), 'All Records');
+  const morning = processedData.filter(r => r.shift === 'morning');
+  const evening = processedData.filter(r => r.shift === 'evening');
+  if (morning.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildRows(morning)), 'Morning Shift');
+  if (evening.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(buildRows(evening)), 'Evening Shift');
+  XLSX.writeFile(wb, 'payroll_split_shifts.xlsx');
+}
+
+function exportCSV() {
+  if (!processedData.length) return;
+  const csv = buildRows(processedData).map(r => r.map(c => `"${String(c??'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv' }));
+  a.download = 'payroll_all.csv'; a.click();
+}
+
+/* ═══════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════ */
+function showErr(msg) {
+  const el = $('errMsg'); el.textContent = msg; el.classList.toggle('on', !!msg);
+}
+function setP(pct, lbl) {
+  $('progFill').style.width = pct+'%'; $('progLbl').textContent = lbl; $('progPct').textContent = pct+'%';
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function resetAll() {
+  processedData = []; filteredData = []; headers = []; fileRows = [];
+  currentView = 'all'; currentPage = 1;
+  ['mapper','summary','toolbar','tblWrap','acts','prog','pag'].forEach(id => {
+    const el = $(id); el.classList.remove('on'); el.style.display = '';
+  });
+  $('dashTabs').classList.remove('on');
+  $('tblBody').innerHTML = '';
+  drop.style.display = '';
+  showErr('');
+  $('searchBox').value = ''; $('filterStatus').value = 'all';
+  $('filterEmp').innerHTML = '<option value="all">All Employees</option>';
+  fileIn.value = '';
+  ['all','morning','evening'].forEach(v => $('tab-'+v).classList.toggle('active', v==='all'));
+  $('cnt-all').textContent = $('cnt-morning').textContent = $('cnt-evening').textContent = '0';
+}
+</script>
+</body>
+</html>
