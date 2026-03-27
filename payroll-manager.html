@@ -6,84 +6,74 @@
 <title>EassyOffice — Payroll Manager</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --black:#090909;--off-black:#111;--card:#161616;--card-h:#1d1d1d;
-  --border:#333;--border-l:#444;--white:#f0f0f0;
-  --wd:rgba(240,240,240,.8);--wm:rgba(240,240,240,.4);--wf:rgba(240,240,240,.08);
+  --border:#272727;--border-l:#333;--white:#f0f0f0;
+  --wd:rgba(240,240,240,.6);--wm:rgba(240,240,240,.3);--wf:rgba(240,240,240,.06);
   --green:#22c55e;--amber:#f59e0b;--red:#ef4444;--blue:#3b82f6;
   --r-xl:18px;--r-lg:13px;--r-md:10px;--r-sm:7px;
 }
 body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
-.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:40px 24px;}
-header{margin-bottom:30px;}
-.brand{font-size:18px;font-weight:700;color:var(--white);margin-bottom:5px;display:block;}
-h1{font-size:32px;font-weight:700;letter-spacing:-1px;margin-bottom:10px;}
-.sub{font-size:14px;color:var(--wd);max-width:600px;margin-bottom:30px;}
-
-/* SETTINGS AREA - LARGER INPUTS */
-.shift-editor{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:20px;}
-.se-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);margin-bottom:20px;border-bottom:1px solid var(--wf);padding-bottom:10px;}
-.se-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:30px;}
-.se-row{display:flex;align-items:center;gap:15px;margin-bottom:15px;}
-.se-lbl{font-size:13px;color:var(--white);width:140px;font-weight:500;}
-
-/* INPUT STYLES */
-.se-inp{
-    background:var(--off-black);
-    border:2px solid var(--border-l);
-    border-radius:8px;
-    padding:10px 12px;
-    color:var(--white);
-    font-family:'DM Mono',monospace;
-    font-size:16px; /* Larger font */
-    outline:none;
-    width:110px;
-    transition: border-color 0.2s;
-}
-.se-inp:focus{border-color:var(--blue);}
-
-/* ROUNDING TABLE */
-.round-table { width: 100%; border-collapse: collapse; }
-.round-table th { font-size: 10px; text-align: left; color: var(--wm); padding-bottom: 10px; text-transform: uppercase; }
-.round-table td { padding: 5px 0; }
-.btn-add { background: var(--blue); color: white; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; border:none; margin-top:15px; font-weight:600;}
-.btn-del { color: var(--red); cursor: pointer; font-size: 20px; background: none; border: none; padding: 0 10px; }
-
-/* DATA UI */
-.drop{border:2px dashed var(--border-l);border-radius:var(--r-xl);padding:60px 20px;text-align:center;cursor:pointer;background:var(--card);margin-bottom:20px;font-size:18px;}
-.mapper{display:none;background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:20px;}
-.mapper-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:20px;}
-.map-sel{background:var(--off-black);border:1px solid var(--border-l);color:var(--white);padding:10px;width:100%; border-radius: 8px; font-size: 13px;}
-
-.summary{display:none;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px;}
-.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;}
-.sc-n{font-size:28px;font-weight:700;}
-
-.tbl-wrap{display:none;overflow-x:auto;border:1px solid var(--border);border-radius: var(--r-lg);background:var(--card);}
-table{width:100%;border-collapse:collapse;font-size:13px;}
-th{padding:15px; text-align:left; background: var(--off-black); color: var(--wm); font-size: 11px; text-transform: uppercase;}
-td{padding:12px 15px; border-bottom:1px solid var(--border); color: var(--wd);}
-tr.row-error { background-color: rgba(239, 68, 68, 0.1) !important; }
-
-.btn{padding:12px 24px;border-radius:var(--r-lg);font-weight:600;cursor:pointer;border:none; transition: 0.2s;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");opacity:.45;}
+.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:52px 24px 100px;}
+header{margin-bottom:36px;}
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
+.brand{font-size:15px;font-weight:700;}
+.logo-pill{margin-left:auto;font-size:10px;font-family:'DM Mono',monospace;color:var(--wm);background:var(--wf);border:1px solid var(--border);padding:3px 10px;border-radius:100px;text-transform:uppercase;}
+.shift-editor{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:18px;}
+.se-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--wm);margin-bottom:13px;}
+.se-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.se-col{display:flex;flex-direction:column;gap:9px;}
+.se-row{display:flex;align-items:center;gap:8px;}
+.se-lbl{font-size:10px;color:var(--wd);width:120px;flex-shrink:0;}
+.se-inp{background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-sm);padding:5px 9px;color:var(--white);font-family:'DM Mono',monospace;font-size:12px;outline:none;}
+.round-table { width: 100%; margin-top: 12px; border-spacing: 0 6px; border-collapse: separate; }
+.round-table th { font-size: 10px; font-weight: 700; text-align: center; color: var(--wd); padding: 4px 10px; text-transform: uppercase; letter-spacing: .8px; }
+.round-table td { padding: 2px 4px; }
+.r-inp { background: var(--off-black); border: 1px solid var(--border-l); border-radius: var(--r-sm); padding: 7px 10px; color: var(--white); font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; outline: none; width: 72px; text-align: center; transition: border-color .15s; }
+.r-inp:focus { border-color: var(--blue); }
+.r-sep { font-size: 11px; color: var(--wm); padding: 0 4px; text-align: center; vertical-align: middle; }
+.btn-add { background: var(--wf); border: 1px dashed var(--border-l); color: var(--wd); padding: 7px 14px; border-radius: var(--r-sm); font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: all .15s; }
+.btn-add:hover { border-color: var(--blue); color: var(--white); }
+.btn-del { color: var(--wm); cursor: pointer; font-size: 16px; background: none; border: none; padding: 0 4px; transition: color .15s; }
+.btn-del:hover { color: var(--red); }
+.drop{border:1px dashed var(--border-l);border-radius:var(--r-xl);padding:44px 28px;text-align:center;cursor:pointer;background:var(--card);margin-bottom:16px;}
+.mapper{display:none;background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:16px;}
+.mapper-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));gap:15px;}
+.map-sel{background:var(--off-black);border:1px solid var(--border);color:var(--white);padding:7px;width:100%; border-radius: 5px; font-size: 11px;}
+.summary{display:none;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:18px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 14px;}
+.sc-n{font-size:22px;font-weight:700;}
+.tbl-wrap{display:none;overflow-x:auto;margin-bottom:14px;border:1px solid var(--border);border-radius: var(--r-lg);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{padding:12px; text-align:left; background: var(--off-black); color: var(--wm); font-size: 10px; text-transform: uppercase;}
+td{padding:10px; border-bottom:1px solid var(--border); color: var(--wd);}
+tr.row-error { background-color: rgba(239, 68, 68, 0.2) !important; }
+.btn{padding:11px 20px;border-radius:var(--r-lg);font-weight:600;cursor:pointer;border:none; transition: 0.2s;}
 .btn-p{background:var(--white);color:var(--black);}
-.btn-g{background:var(--card);color:var(--wd);border:1px solid var(--border);}
+.btn-g{background:var(--card);color:var(--wd);border:1px solid var(--border); margin-left: 5px;}
+.on { display: block !important; }
+.flex-on { display: flex !important; }
+.grid-on { display: grid !important; }
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <span class="brand">EassyOffice HRM</span>
-  <h1>Payroll & Attendance Manager</h1>
-  <p class="sub">Calculate precise working hours from multi-punch records. Supports custom rounding brackets and grace periods for lateness.</p>
+  <div class="logo-row">
+    <span class="brand">EassyOffice</span>
+    <span class="logo-pill">Payroll Manager</span>
+  </div>
+  <h1>Payroll Management</h1>
+  <p class="sub">Advanced Grace Periods, OT Rounding, and Horizontal Reporting.</p>
 </header>
 
-<!-- RULES SETTINGS -->
-<div class="shift-editor" style="border-left: 5px solid var(--blue);">
-    <div class="se-title">📄 PAYROLL CALCULATION RULES</div>
+<div class="shift-editor" style="border: 1px solid var(--blue);">
+    <div class="se-title" style="color: var(--blue);">📄 Payroll Calculation Rules</div>
     <div class="se-grid">
       <div class="se-col">
         <div class="se-row">
@@ -91,22 +81,18 @@ tr.row-error { background-color: rgba(239, 68, 68, 0.1) !important; }
           <input class="se-inp" id="stdHours" type="number" step="0.1" value="8.0">
         </div>
         <div class="se-row">
-            <span class="se-lbl">Late Grace Period (Min)</span>
+            <span class="se-lbl">Late Grace Period (Mins)</span>
             <input class="se-inp" id="lateGrace" type="number" value="10">
         </div>
         <div class="se-row">
-            <span class="se-lbl">Shift Midpoint Time</span>
+            <span class="se-lbl">Detection Midpoint</span>
             <input class="se-inp" id="midPoint" type="time" value="11:30">
         </div>
-        <div style="font-size:12px; color:var(--wm); line-height:1.6">
-            * <b>Grace Period</b>: If an employee is late by 10m or less, Lateness will be 0.<br>
-            * <b>Midpoint</b>: Punches before this time are filed under Morning Shift.
-        </div>
       </div>
-      <div class="se-col" style="border-left: 1px solid var(--border); padding-left: 30px;">
-        <span class="se-lbl">CUSTOM ROUNDING TABLE (MINUTES)</span>
+      <div class="se-col" style="border-left: 1px solid var(--border); padding-left: 20px;">
+        <span class="se-lbl" style="font-size:11px;color:var(--wd);font-weight:600;">Custom Rounding Table <span style="color:var(--wm);font-weight:400;">(minute remainder → round to)</span></span>
         <table class="round-table">
-            <thead><tr><th>From (min)</th><th>To (min)</th><th>Round To</th><th></th></tr></thead>
+            <thead><tr><th>From (min)</th><th></th><th>To (min)</th><th>→ Round To</th><th></th></tr></thead>
             <tbody id="roundingBody"></tbody>
         </table>
         <button class="btn-add" onclick="addRoundingRow()">+ Add Bracket</button>
@@ -115,7 +101,7 @@ tr.row-error { background-color: rgba(239, 68, 68, 0.1) !important; }
 </div>
 
 <div class="shift-editor">
-    <div class="se-title">⚙️ SHIFT TARGET START TIMES</div>
+    <div class="se-title">⚙ Shift Timings (Targets)</div>
     <div class="se-grid">
         <div class="se-col">
             <div class="se-row">
@@ -124,45 +110,46 @@ tr.row-error { background-color: rgba(239, 68, 68, 0.1) !important; }
             </div>
             <div class="se-row">
                 <span class="se-lbl">Evening Start</span>
-                <input class="se-inp" id="eStart" type="time" value="17:00">
+                <input class="se-inp" id="eStart" type="time" value="12:00">
             </div>
         </div>
     </div>
 </div>
 
-<div class="drop" id="drop" onclick="$('fileIn').click()">
+<div class="drop" id="drop">
   <input type="file" id="fileIn" style="display:none" accept=".xlsx,.xls,.csv">
-  <div>📊 <b>Click to Upload Attendance Excel File</b></div>
+  <div onclick="$('fileIn').click()">📊 <u>Click to Upload Attendance File</u></div>
 </div>
 
 <div class="mapper" id="mapper">
-  <div class="se-title">MAP EXCEL COLUMNS</div>
+  <div class="se-title">Map Columns</div>
   <div class="mapper-grid">
-    <div class="map-item"><span>Attendance Date</span><select class="map-sel" id="col-date"></select></div>
-    <div class="map-item"><span>Employee Code</span><select class="map-sel" id="col-code"></select></div>
-    <div class="map-item"><span>Employee Name</span><select class="map-sel" id="col-name"></select></div>
-    <div class="map-item"><span>Punch Record String</span><select class="map-sel" id="col-punch"></select></div>
+    <div class="map-item"><span>Date</span><select class="map-sel" id="col-date"></select></div>
+    <div class="map-item"><span>Emp Code</span><select class="map-sel" id="col-code"></select></div>
+    <div class="map-item"><span>Emp Name</span><select class="map-sel" id="col-name"></select></div>
+    <div class="map-item"><span>In Time (Single)</span><select class="map-sel" id="col-in"></select></div>
+    <div class="map-item"><span>Out Time (Single)</span><select class="map-sel" id="col-out"></select></div>
+    <div class="map-item"><span>Punch Record (Multi)</span><select class="map-sel" id="col-punch"></select></div>
   </div>
-  <div style="margin-top:30px"><button class="btn btn-p" onclick="processData()">Run Calculation →</button></div>
+  <div style="margin-top:20px"><button class="btn btn-p" onclick="processData()">Calculate Payroll →</button></div>
 </div>
 
 <div class="summary" id="summary">
-  <div class="sc"><div class="sc-n" id="sTotalRec">0</div><div style="font-size:11px">Daily Records</div></div>
-  <div class="sc"><div class="sc-n" id="sTotalLate" style="color:var(--amber)">0</div><div style="font-size:11px">Late Arrivals</div></div>
-  <div class="sc"><div class="sc-n" id="sTotalOT" style="color:var(--green)">0</div><div style="font-size:11px">OT Records</div></div>
-  <div class="sc"><div class="sc-n" id="sTotalErr" style="color:var(--red)">0</div><div style="font-size:11px">Errors</div></div>
+  <div class="sc"><div class="sc-n" id="sTotalEmp">0</div><div style="font-size:10px">Staff</div></div>
+  <div class="sc"><div class="sc-n" id="sTotalRec">0</div><div style="font-size:10px">Records</div></div>
+  <div class="sc"><div class="sc-n" id="sTotalErr" style="color:var(--red)">0</div><div style="font-size:10px">Errors</div></div>
 </div>
 
 <div class="tbl-wrap" id="tblWrap">
   <table>
-    <thead><tr><th>Date</th><th>Code</th><th>Name</th><th>Morn. Work</th><th>Eve. Work</th><th>Late</th><th>OT</th><th>Total Worked</th></tr></thead>
+    <thead><tr><th>Date</th><th>Code</th><th>Name</th><th>Morn. Work</th><th>Eve. Work</th><th>Late</th><th>OT</th><th>Total</th><th>Rounded Hrs</th><th>Rounded Mins</th><th>Comment</th></tr></thead>
     <tbody id="tblBody"></tbody>
   </table>
 </div>
 
-<div class="acts" id="acts" style="display:none; margin-top:20px;">
-  <button class="btn btn-p" onclick="exportExcel()">↓ Download Excel Report</button>
-  <button class="btn btn-g" onclick="location.reload()">Reset All</button>
+<div class="acts" id="acts" style="display:none">
+  <button class="btn btn-p" onclick="exportExcel()">↓ Download Horizontal Shift Report (XLSX)</button>
+  <button class="btn btn-g" onclick="location.reload()">Reset</button>
 </div>
 
 </div>
@@ -182,89 +169,88 @@ function addRoundingRow(data = {from: 0, to: 0, res: 0}) {
     const tr = document.createElement('tr');
     tr.className = 'round-row';
     tr.innerHTML = `
-        <td><input type="number" class="se-inp r-from" value="${data.from}" style="width:70px"></td>
-        <td><input type="number" class="se-inp r-to" value="${data.to}" style="width:70px"></td>
-        <td><input type="number" class="se-inp r-res" value="${data.res}" style="width:70px"></td>
+        <td><input type="number" class="r-inp r-from" value="${data.from}" min="0" max="59"></td>
+        <td class="r-sep">–</td>
+        <td><input type="number" class="r-inp r-to" value="${data.to}" min="0" max="59"></td>
+        <td><input type="number" class="r-inp r-res" value="${data.res}" min="0" max="59" style="border-color:var(--blue);color:#93c5fd;"></td>
         <td><button class="btn-del" onclick="this.parentElement.parentElement.remove()">×</button></td>`;
     $('roundingBody').appendChild(tr);
 }
 defaultRules.forEach(r => addRoundingRow(r));
 
-/**
- * High Precision Time Parser
- * Returns total seconds from midnight
- */
-function timeToSeconds(v) {
+function applyCustomRounding(mins) {
+    if (mins <= 0) return 0;
+    const hours = Math.floor(mins / 60);
+    const remainder = mins % 60;
+    let roundedMins = remainder;
+    document.querySelectorAll('.round-row').forEach(row => {
+        const min = parseInt(row.querySelector('.r-from').value);
+        const max = parseInt(row.querySelector('.r-to').value);
+        const val = parseInt(row.querySelector('.r-res').value);
+        if (remainder >= min && remainder <= max) roundedMins = val;
+    });
+    return (hours * 60) + roundedMins;
+}
+
+function timeToMins(v) {
     if (!v) return null;
-    if (v instanceof Date) return v.getHours() * 3600 + v.getMinutes() * 60 + v.getSeconds();
+    if (v instanceof Date) return v.getHours() * 60 + v.getMinutes();
     const s = String(v).trim();
-    const m = s.match(/(\d{1,2}):(\d{2})(?::(\d{2}))?/);
-    if (!m) return null;
-    const h = parseInt(m[1]);
-    const min = parseInt(m[2]);
-    const sec = m[3] ? parseInt(m[3]) : 0;
-    return (h * 3600) + (min * 60) + sec;
+    const m = s.match(/(\d{1,2}):(\d{2})/);
+    return m ? parseInt(m[1]) * 60 + parseInt(m[2]) : null;
 }
 
 function minsToHHMM(m) {
     if (m === null || m <= 0 || isNaN(m)) return "00:00";
-    const hrs = Math.floor(m / 60);
-    const mins = Math.floor(m % 60);
-    return `${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}`;
+    return `${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`;
 }
 
-/**
- * Core Multi-Punch Parsing Logic
+/** 
+ * PARSER: Detects Morning/Evening Buckets + Missing Punches
+ * - Applies chronological correction for 12-h clock ambiguity
+ * - Flags "Review Again" when more than 2 pairs are found
  */
-function parseAdvancedPunch(str, midpointSec) {
-    const res = { morning: [], evening: [], error: "", firstIn: null };
+function parsePunches(str, midpoint) {
+    const res = { morning: [], evening: [], error: "", firstIn: null, pairCount: 0 };
     if (!str) return res;
-
-    const regex = /(\d{1,2}:\d{2}(?::\d{2})?)\s*\((in|out)\)/gi;
-    let match, events = [];
+    const regex = /(\d{1,2}:\d{2}(?::\d{2})?)\s*\(\s*(in|out)\s*\)/gi;
+    let match, rawEvents = [];
     while ((match = regex.exec(str)) !== null) {
-        events.push({ sec: timeToSeconds(match[1]), type: match[2].toLowerCase() });
+        rawEvents.push({ mins: timeToMins(match[1]), type: match[2].toLowerCase() });
+    }
+    if (rawEvents.length === 0) return res;
+
+    // Chronological correction: if a time goes backward, add 12 h (12-h clock AM/PM fix)
+    const events = [];
+    let lastMins = -1;
+    for (const e of rawEvents) {
+        let m = e.mins;
+        if (m <= lastMins) m += 720; // +12 hours in minutes
+        events.push({ mins: m, type: e.type });
+        lastMins = m;
     }
 
-    if (events.length === 0) return res;
-    res.firstIn = events[0].sec;
-
+    res.firstIn = events[0].mins;
     let currentIn = null;
     events.forEach(e => {
         if (e.type === 'in') {
             if (currentIn !== null) res.error = "Missing Out-Punch";
-            currentIn = e.sec;
+            currentIn = e.mins;
         } else {
-            if (currentIn === null) {
-                res.error = "Missing In-Punch";
-            } else {
-                const durSec = e.sec - currentIn;
-                const pair = { in: currentIn, out: e.sec, dur: durSec };
-                // Assign to bucket based on the 'In' time
-                if (currentIn < midpointSec) res.morning.push(pair);
-                else res.evening.push(pair);
+            if (currentIn === null) res.error = "Missing In-Punch";
+            else {
+                const pair = { in: currentIn, out: e.mins, dur: (e.mins - currentIn) };
+                if (currentIn < midpoint) res.morning.push(pair); else res.evening.push(pair);
                 currentIn = null;
             }
         }
     });
-
     if (currentIn !== null) res.error = "Missing Out-Punch";
+
+    res.pairCount = res.morning.length + res.evening.length;
+    if (res.pairCount > 2 && !res.error) res.error = "Review Again";
+
     return res;
-}
-
-function applyCustomRounding(mins) {
-    if (mins <= 0) return 0;
-    const hours = Math.floor(mins / 60);
-    const remainder = Math.floor(mins % 60);
-    let roundedMins = remainder;
-
-    document.querySelectorAll('.round-row').forEach(row => {
-        const minVal = parseInt(row.querySelector('.r-from').value);
-        const maxVal = parseInt(row.querySelector('.r-to').value);
-        const resultVal = parseInt(row.querySelector('.r-res').value);
-        if (remainder >= minVal && remainder <= maxVal) roundedMins = resultVal;
-    });
-    return (hours * 60) + roundedMins;
 }
 
 $('fileIn').addEventListener('change', e => {
@@ -282,59 +268,66 @@ $('fileIn').addEventListener('change', e => {
 });
 
 function buildMapper() {
-    ['col-date', 'col-code', 'col-name', 'col-punch'].forEach(id => {
-        $(id).innerHTML = headers.map((h, i) => `<option value="${i}">${h}</option>`).join('');
+    ['col-date', 'col-code', 'col-name', 'col-in', 'col-out', 'col-punch'].forEach(id => {
+        $(id).innerHTML = '<option value="">— Skip —</option>' + headers.map((h, i) => `<option value="${i}">${h}</option>`).join('');
     });
 }
 
 function processData() {
-    const ci = { date: $('col-date').value, name: $('col-name').value, code: $('col-code').value, punch: $('col-punch').value };
-    const midSec = timeToSeconds($('midPoint').value);
-    const mStartSec = timeToSeconds($('mStart').value);
-    const eStartSec = timeToSeconds($('eStart').value);
-    const stdSec = parseFloat($('stdHours').value) * 3600;
-    const graceSec = parseInt($('lateGrace').value) * 60;
+    const ci = { date: $('col-date').value, name: $('col-name').value, code: $('col-code').value, punch: $('col-punch').value, in: $('col-in').value, out: $('col-out').value };
+    const midMins = timeToMins($('midPoint').value);
+    const mStart = timeToMins($('mStart').value);
+    const eStart = timeToMins($('eStart').value);
+    const stdMins = parseFloat($('stdHours').value) * 60;
+    const grace = parseInt($('lateGrace').value) || 0;
 
     processedData = fileRows.map(row => {
-        const punchRaw = row[ci.punch];
-        if (!punchRaw) return null;
+        let pData;
+        // Logic: Use Punch Record string if available, else fallback to In/Out columns
+        if (ci.punch !== "" && row[ci.punch]) {
+            pData = parsePunches(String(row[ci.punch]), midMins);
+        } else {
+            const i = timeToMins(row[ci.in]), o = timeToMins(row[ci.out]);
+            pData = { morning: [], evening: [], error: "", firstIn: i };
+            if (i && o) {
+                const pair = { in: i, out: o, dur: o - i };
+                if (i < midMins) pData.morning.push(pair); else pData.evening.push(pair);
+            } else if (i && !o) pData.error = "Missing Out-Punch";
+            else if (!i && o) pData.error = "Missing In-Punch";
+        }
 
-        const pData = parseAdvancedPunch(String(punchRaw), midSec);
-        
-        // Sum durations in seconds
-        const morningSec = pData.morning.reduce((s, p) => s + p.dur, 0);
-        const eveningSec = pData.evening.reduce((s, p) => s + p.dur, 0);
-        const totalSec = morningSec + eveningSec;
+        if (pData.firstIn === null && !pData.error) return null;
 
-        // Lateness Logic
+        const mWork = pData.morning.reduce((s, p) => s + p.dur, 0);
+        const eWork = pData.evening.reduce((s, p) => s + p.dur, 0);
+        const totalWorked = mWork + eWork;
+
+        // Calculate Lateness
         let lateMins = 0;
         if (pData.firstIn !== null) {
-            const target = pData.firstIn < midSec ? mStartSec : eStartSec;
-            const diffSec = pData.firstIn - target;
-            if (diffSec > graceSec) {
-                lateMins = applyCustomRounding(diffSec / 60);
-            }
+            const target = pData.firstIn < midMins ? mStart : eStart;
+            const diff = pData.firstIn - target;
+            if (diff > grace) lateMins = applyCustomRounding(diff);
         }
 
-        // OT Logic
-        let otMins = 0;
-        if (totalSec > stdSec) {
-            otMins = applyCustomRounding((totalSec - stdSec) / 60);
-        }
+        // Calculate OT
+        let otMins = totalWorked > stdMins ? applyCustomRounding(totalWorked - stdMins) : 0;
+
+        // Rounded total working time
+        const roundedTotal = applyCustomRounding(totalWorked);
+        const roundedMinutes = roundedTotal % 60;
 
         return {
             Date: row[ci.date], Code: row[ci.code], Name: row[ci.name],
-            mIn: pData.morning.length ? minsToHHMM(pData.morning[0].in / 60) : '',
-            mOut: pData.morning.length ? minsToHHMM(pData.morning[pData.morning.length-1].out / 60) : '',
-            mWork: morningSec / 60,
-            eIn: pData.evening.length ? minsToHHMM(pData.evening[0].in / 60) : '',
-            eOut: pData.evening.length ? minsToHHMM(pData.evening[pData.evening.length-1].out / 60) : '',
-            eWork: eveningSec / 60,
-            Total: totalSec / 60, 
-            Late: lateMins, 
-            OT: otMins,
-            Comment: pData.error, 
-            isError: !!pData.error
+            mIn: pData.morning.length ? minsToHHMM(pData.morning[0].in) : '',
+            mOut: pData.morning.length ? minsToHHMM(pData.morning[pData.morning.length-1].out) : '',
+            mWork,
+            eIn: pData.evening.length ? minsToHHMM(pData.evening[0].in) : '',
+            eOut: pData.evening.length ? minsToHHMM(pData.evening[pData.evening.length-1].out) : '',
+            eWork,
+            Total: totalWorked, Late: lateMins, OT: otMins,
+            RoundedTotal: roundedTotal, RoundedMinutes: roundedMinutes,
+            Comment: pData.error, isError: !!pData.error
         };
     }).filter(x => x);
 
@@ -342,59 +335,66 @@ function processData() {
 }
 
 function renderTable() {
-    $('tblBody').innerHTML = processedData.map(r => `
+    $('tblBody').innerHTML = processedData.map(r => {
+        const commentStyle = r.Comment === 'Review Again'
+            ? 'color:var(--amber);font-weight:600;'
+            : r.isError ? 'color:var(--red);' : 'color:var(--wm);';
+        return `
         <tr class="${r.isError ? 'row-error' : ''}">
-            <td>${r.Date}</td><td>${r.Code}</td><td><b>${r.Name}</b></td>
+            <td>${r.Date}</td><td>${r.Code}</td><td>${r.Name}</td>
             <td>${minsToHHMM(r.mWork)}</td><td>${minsToHHMM(r.eWork)}</td>
             <td>${minsToHHMM(r.Late)}</td><td>${minsToHHMM(r.OT)}</td>
             <td><b>${minsToHHMM(r.Total)}</b></td>
-        </tr>`).join('');
-    
+            <td style="color:var(--green);font-weight:600;">${minsToHHMM(r.RoundedTotal)}</td>
+            <td style="color:var(--green);">${r.RoundedMinutes}</td>
+            <td style="${commentStyle}">${r.Comment || '—'}</td>
+        </tr>`;
+    }).join('');
     $('sTotalRec').textContent = processedData.length;
-    $('sTotalLate').textContent = processedData.filter(r => r.Late > 0).length;
-    $('sTotalOT').textContent = processedData.filter(r => r.OT > 0).length;
     $('sTotalErr').textContent = processedData.filter(r => r.isError).length;
-    
-    $('summary').classList.add('grid-on');
-    $('tblWrap').classList.add('on');
-    $('acts').classList.add('flex-on');
-    $('mapper').style.display = 'none';
+    $('summary').classList.add('grid-on'); $('tblWrap').classList.add('on'); $('acts').classList.add('flex-on'); $('mapper').style.display = 'none';
 }
 
 function exportExcel() {
     const wb = XLSX.utils.book_new();
     const emps = [...new Set(processedData.map(r => r.Name))];
-
     emps.forEach(empName => {
-        const empRecords = processedData.filter(r => r.Name === empName);
+        const records = processedData.filter(r => r.Name === empName);
         const dataRows = [
-            ["Period : ", "Starting Date", "To", "Ending Date"],
-            ["Employee Name : ", empName],
-            [],
-            ["Date", "Morning Shift", "", "", "Evening Shift", "", "", "Payroll Summary", "", "", "", "System Notes"],
-            ["", "Punch In", "Punch Out", "Hrs Worked", "Punch In", "Punch Out", "Hrs Worked", "Total Worked", "Late", "Overtime", "Minutes", "Comments"]
+            ["Employee Name: ", empName], [],
+            ["Date", "Morning Shift", "", "", "Evening Shift", "", "", "Payroll Summary", "", "", "", "", ""],
+            ["", "Punch In", "Punch Out", "Hrs Worked", "Punch In", "Punch Out", "Hrs Worked",
+             "Total Worked", "Rounded Working Hrs", "Rounded Minutes", "Late", "Overtime", "Comments"]
         ];
-
-        let totalMins = 0;
-        empRecords.forEach(r => {
-            totalMins += r.Total;
+        records.forEach(r => {
             dataRows.push([
-                r.Date, r.mIn, r.mOut, (r.mWork/60).toFixed(2), 
-                r.eIn, r.eOut, (r.eWork/60).toFixed(2), 
-                minsToHHMM(r.Total), minsToHHMM(r.Late), minsToHHMM(r.OT), r.Total, r.Comment
+                r.Date,
+                r.mIn, r.mOut, (r.mWork / 60).toFixed(2),
+                r.eIn, r.eOut, (r.eWork / 60).toFixed(2),
+                minsToHHMM(r.Total),
+                minsToHHMM(r.RoundedTotal),
+                r.RoundedMinutes,
+                minsToHHMM(r.Late),
+                minsToHHMM(r.OT),
+                r.Comment
             ]);
         });
-
         const ws = XLSX.utils.aoa_to_sheet(dataRows);
         ws['!merges'] = [
-            { s: {r:3, c:1}, e: {r:3, c:3} }, 
-            { s: {r:3, c:4}, e: {r:3, c:6} }, 
-            { s: {r:3, c:7}, e: {r:3, c:10} }
+            { s:{r:2,c:1}, e:{r:2,c:3} },
+            { s:{r:2,c:4}, e:{r:2,c:6} },
+            { s:{r:2,c:7}, e:{r:2,c:12} }
         ];
-        XLSX.utils.book_append_sheet(wb, ws, empName.substring(0, 31));
+        // Column widths
+        ws['!cols'] = [
+            {wch:14},{wch:11},{wch:11},{wch:12},
+            {wch:11},{wch:11},{wch:12},
+            {wch:14},{wch:20},{wch:18},
+            {wch:10},{wch:11},{wch:16}
+        ];
+        XLSX.utils.book_append_sheet(wb, ws, empName.substring(0, 30));
     });
-
-    XLSX.writeFile(wb, "Detailed_Payroll_Report.xlsx");
+    XLSX.writeFile(wb, "Payroll_Summary.xlsx");
 }
 </script>
 </body>
