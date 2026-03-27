@@ -31,7 +31,7 @@
         }
 
         .logo-img {
-            height: 50px; /* Adjust size as needed */
+            height: 50px;
             width: auto;
             border-radius: 8px;
         }
@@ -126,6 +126,7 @@
             object-fit: cover;
             filter: grayscale(100%);
             transition: filter 0.5s ease;
+            background-color: #f0f0f0; /* Fallback color */
         }
 
         .feature-card:hover .feature-image {
@@ -169,7 +170,7 @@
         }
 
         .support-info {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             font-size: 0.95rem;
             color: var(--text);
         }
@@ -178,10 +179,6 @@
             color: #007bff;
             text-decoration: none;
             font-weight: 500;
-        }
-
-        .support-info a:hover {
-            text-decoration: underline;
         }
 
         .copyright {
@@ -194,7 +191,7 @@
 
     <!-- Top Navigation with Logo -->
     <header class="top-nav">
-        <!-- Change 'logo.png' to the actual name of the image file you save -->
+        <!-- Replace 'logo.png' with your actual logo file name -->
         <img src="logo.png" alt="Eassy Office Logo" class="logo-img">
     </header>
 
@@ -238,7 +235,8 @@
             </div>
 
             <div class="feature-card">
-                <img src="https://images.unsplash.com/photo-1454165833762-02ad50e89582?auto=format&fit=crop&q=80&w=800" alt="Easy" class="feature-image">
+                <!-- UPDATED IMAGE LINK BELOW -->
+                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800" alt="Zero Installation" class="feature-image">
                 <div class="feature-content">
                     <h3>Zero Installation</h3>
                     <p>Access your office tools from any device with a browser. No accounts, no subscriptions, and absolutely no complicated setups.</p>
