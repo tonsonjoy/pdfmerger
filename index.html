@@ -4,43 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eassy Office</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #ffffff;
+            --text: #1a1a1a;
+            --muted: #666666;
+            --accent: #000000;
+            --radius: 20px;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #ffffff; /* Plain White Background */
+            background-color: var(--bg);
             font-family: 'DM Sans', sans-serif;
-            color: #1a1a1a;
+            color: var(--text);
+            overflow-x: hidden;
         }
 
-        .container {
+        /* Top Header for Logo */
+        header.top-nav {
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 50px; /* Adjust size as needed */
+            width: auto;
+            border-radius: 8px;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
             text-align: center;
-            max-width: 600px;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
         h1 {
-            font-size: 3.5rem;
+            font-size: clamp(2.5rem, 8vw, 4rem);
             margin-bottom: 10px;
             letter-spacing: -2px;
             font-weight: 700;
         }
 
-        p {
-            color: #666;
+        .hero p {
+            color: var(--muted);
             margin-bottom: 40px;
             font-size: 1.2rem;
-            font-weight: 400;
+            max-width: 500px;
         }
 
         .button-group {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -50,66 +73,190 @@
             align-items: center;
             gap: 12px;
             padding: 18px 30px;
-            background-color: #000000;
+            background-color: var(--accent);
             color: white;
             text-decoration: none;
             border-radius: 14px;
             font-weight: 700;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-            transition: all 0.2s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            min-width: 220px;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         .btn:hover {
-            background-color: #222222;
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-        }
-
-        .btn svg {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
         }
 
         .btn.secondary {
-            background-color: #ffffff;
-            color: #000000;
-            border: 2px solid #000000;
+            background-color: white;
+            color: black;
+            border: 2px solid black;
             box-shadow: none;
         }
 
-        .btn.secondary:hover {
-            background-color: #f5f5f5;
+        /* Features Section */
+        .features-container {
+            max-width: 1100px;
+            margin: 0 auto 100px;
+            padding: 0 24px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: transform 0.4s ease;
+            background: #fcfcfc;
+            border: 1px solid #eee;
+        }
+
+        .feature-card:hover {
+            transform: scale(1.02);
+        }
+
+        .feature-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: filter 0.5s ease;
+        }
+
+        .feature-card:hover .feature-image {
+            filter: grayscale(0%);
+        }
+
+        .feature-content {
+            padding: 25px;
+        }
+
+        .feature-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--muted);
+            line-height: 1.6;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .section-label {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 50px;
+            text-align: center;
+            display: block;
+        }
+
+        /* Footer & Support Email */
+        footer {
+            padding: 60px 40px;
+            text-align: center;
+            background-color: #fafafa;
+            border-top: 1px solid #eee;
+        }
+
+        .support-info {
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .support-info a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .support-info a:hover {
+            text-decoration: underline;
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            color: #999;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- Top Navigation with Logo -->
+    <header class="top-nav">
+        <!-- Change 'logo.png' to the actual name of the image file you save -->
+        <img src="logo.png" alt="Eassy Office Logo" class="logo-img">
+    </header>
+
+    <!-- Main Entry Section -->
+    <section class="hero">
         <h1>Eassy Office</h1>
-        <p>Your private workstation in the browser.</p>
+        <p>A private, fast, and secure suite for your daily office tasks. Built to run entirely in your browser.</p>
         
         <div class="button-group">
-            <!-- PDF Tools Link -->
             <a href="pdf-tools.html" class="btn">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M7,13H17V11H7V13M7,17H17V15H7V17Z" />
-                </svg>
+                <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>
                 PDF TOOLS
             </a>
 
-            <!-- Payroll Management Link -->
             <a href="payroll-manager.html" class="btn secondary">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14,10H10V14H14V10M16,4H15V2H13V4H11V2H9V4H8A2,2 0 0,0 6,6V20A2,2 0 0,0 8,22H16A2,2 0 0,0 18,20V6A2,2 0 0,0 16,4M16,20H8V8H16V20Z" />
-                </svg>
+                <svg width="20" height="20" fill="black" viewBox="0 0 24 24"><path d="M14,10H10V14H14V10M16,4H15V2H13V4H11V2H9V4H8A2,2 0 0,0 6,6V20A2,2 0 0,0 8,22H16A2,2 0 0,0 18,20V6A2,2 0 0,0 16,4"/></svg>
                 PAYROLL MANAGER
             </a>
         </div>
-    </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-container">
+        <span class="section-label">Why Choose Us</span>
+        <div class="features-grid">
+            
+            <div class="feature-card">
+                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=800" alt="Privacy" class="feature-image">
+                <div class="feature-content">
+                    <h3>100% Privacy</h3>
+                    <p>Your files never touch a server. All processing happens locally on your computer, keeping your sensitive data safe and offline.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800" alt="Speed" class="feature-image">
+                <div class="feature-content">
+                    <h3>Lightning Speed</h3>
+                    <p>No more waiting for uploads or downloads. Using modern browser technology, tasks like PDF merging and payroll are near-instant.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <img src="https://images.unsplash.com/photo-1454165833762-02ad50e89582?auto=format&fit=crop&q=80&w=800" alt="Easy" class="feature-image">
+                <div class="feature-content">
+                    <h3>Zero Installation</h3>
+                    <p>Access your office tools from any device with a browser. No accounts, no subscriptions, and absolutely no complicated setups.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer with Support Email -->
+    <footer>
+        <div class="support-info">
+            Need help? Contact Support: <a href="mailto:mediafarmingspace@gmail.com">mediafarmingspace@gmail.com</a>
+        </div>
+        <div class="copyright">
+            &copy; 2024 Eassy Office. Browser-Based Excellence.
+        </div>
+    </footer>
 
 </body>
 </html>
