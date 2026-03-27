@@ -47,7 +47,6 @@ table{width:100%;border-collapse:collapse;font-size:12px;}
 th{padding:12px; text-align:left; background: var(--off-black); color: var(--wm); font-size: 10px; text-transform: uppercase;}
 td{padding:10px; border-bottom:1px solid var(--border); color: var(--wd);}
 tr.row-error { background-color: rgba(239, 68, 68, 0.2) !important; }
-tr.row-error td { color: #ff8a8a; }
 .btn{padding:11px 20px;border-radius:var(--r-lg);font-weight:600;cursor:pointer;border:none; transition: 0.2s;}
 .btn-p{background:var(--white);color:var(--black);}
 .btn-g{background:var(--card);color:var(--wd);border:1px solid var(--border); margin-left: 5px;}
@@ -64,7 +63,7 @@ tr.row-error td { color: #ff8a8a; }
     <span class="logo-pill">Payroll Manager</span>
   </div>
   <h1>Payroll Management</h1>
-  <p class="sub">Advanced punch record parsing and horizontal multi-shift Excel reports.</p>
+  <p class="sub">Advanced Grace Periods, OT Rounding, and Horizontal Reporting.</p>
 </header>
 
 <div class="shift-editor" style="border: 1px solid var(--blue);">
@@ -81,11 +80,11 @@ tr.row-error td { color: #ff8a8a; }
         </div>
         <div class="se-row">
             <span class="se-lbl">Detection Midpoint</span>
-            <input class="se-inp" id="midPoint" type="time" value="11:00">
+            <input class="se-inp" id="midPoint" type="time" value="11:30">
         </div>
       </div>
       <div class="se-col" style="border-left: 1px solid var(--border); padding-left: 20px;">
-        <span class="se-lbl">Rounding Criteria (Mins)</span>
+        <span class="se-lbl">Custom Rounding Table (Mins)</span>
         <table class="round-table">
             <thead><tr><th>From</th><th>To</th><th>Round To</th><th></th></tr></thead>
             <tbody id="roundingBody"></tbody>
@@ -117,14 +116,16 @@ tr.row-error td { color: #ff8a8a; }
 </div>
 
 <div class="mapper" id="mapper">
-  <div class="se-title">Map Excel Columns</div>
+  <div class="se-title">Map Columns</div>
   <div class="mapper-grid">
     <div class="map-item"><span>Date</span><select class="map-sel" id="col-date"></select></div>
     <div class="map-item"><span>Emp Code</span><select class="map-sel" id="col-code"></select></div>
     <div class="map-item"><span>Emp Name</span><select class="map-sel" id="col-name"></select></div>
-    <div class="map-item"><span>Punch Record</span><select class="map-sel" id="col-punch"></select></div>
+    <div class="map-item"><span>In Time (Single)</span><select class="map-sel" id="col-in"></select></div>
+    <div class="map-item"><span>Out Time (Single)</span><select class="map-sel" id="col-out"></select></div>
+    <div class="map-item"><span>Punch Record (Multi)</span><select class="map-sel" id="col-punch"></select></div>
   </div>
-  <div style="margin-top:20px"><button class="btn btn-p" onclick="processData()">Run Calculation →</button></div>
+  <div style="margin-top:20px"><button class="btn btn-p" onclick="processData()">Calculate Payroll →</button></div>
 </div>
 
 <div class="summary" id="summary">
@@ -135,13 +136,13 @@ tr.row-error td { color: #ff8a8a; }
 
 <div class="tbl-wrap" id="tblWrap">
   <table>
-    <thead><tr><th>Date</th><th>Code</th><th>Name</th><th>Morn. Worked</th><th>Eve. Worked</th><th>Total Hrs</th><th>Comment</th></tr></thead>
+    <thead><tr><th>Date</th><th>Code</th><th>Name</th><th>Morn. Work</th><th>Eve. Work</th><th>Late</th><th>OT</th><th>Total</th></tr></thead>
     <tbody id="tblBody"></tbody>
   </table>
 </div>
 
 <div class="acts" id="acts" style="display:none">
-  <button class="btn btn-p" onclick="exportExcel()">↓ Download Professional Report (XLSX)</button>
+  <button class="btn btn-p" onclick="exportExcel()">↓ Download Horizontal Shift Report (XLSX)</button>
   <button class="btn btn-g" onclick="location.reload()">Reset</button>
 </div>
 
@@ -170,6 +171,20 @@ function addRoundingRow(data = {from: 0, to: 0, res: 0}) {
 }
 defaultRules.forEach(r => addRoundingRow(r));
 
+function applyCustomRounding(mins) {
+    if (mins <= 0) return 0;
+    const hours = Math.floor(mins / 60);
+    const remainder = mins % 60;
+    let roundedMins = remainder;
+    document.querySelectorAll('.round-row').forEach(row => {
+        const min = parseInt(row.querySelector('.r-from').value);
+        const max = parseInt(row.querySelector('.r-to').value);
+        const val = parseInt(row.querySelector('.r-res').value);
+        if (remainder >= min && remainder <= max) roundedMins = val;
+    });
+    return (hours * 60) + roundedMins;
+}
+
 function timeToMins(v) {
     if (!v) return null;
     if (v instanceof Date) return v.getHours() * 60 + v.getMinutes();
@@ -184,39 +199,32 @@ function minsToHHMM(m) {
 }
 
 /** 
- * UPDATED PARSER: Splits punch records into morning and evening buckets
+ * PARSER: Detects Morning/Evening Buckets + Missing Punches
  */
-function parseAdvancedPunch(str, midpoint) {
-    const res = { morning: [], evening: [], error: "" };
+function parsePunches(str, midpoint) {
+    const res = { morning: [], evening: [], error: "", firstIn: null };
     if (!str) return res;
-
-    // Matches patterns like "09:00(in)" or "18:00:00(out)"
     const regex = /(\d{1,2}:\d{2}(?::\d{2})?)\s*\((in|out)\)/gi;
-    let match;
-    const events = [];
+    let match, events = [];
     while ((match = regex.exec(str)) !== null) {
         events.push({ mins: timeToMins(match[1]), type: match[2].toLowerCase() });
     }
-
     if (events.length === 0) return res;
-
+    res.firstIn = events[0].mins;
     let currentIn = null;
     events.forEach(e => {
         if (e.type === 'in') {
             if (currentIn !== null) res.error = "Missing Out-Punch";
             currentIn = e.mins;
         } else {
-            if (currentIn === null) {
-                res.error = "Missing In-Punch";
-            } else {
+            if (currentIn === null) res.error = "Missing In-Punch";
+            else {
                 const pair = { in: currentIn, out: e.mins, dur: (e.mins - currentIn) };
-                if (currentIn < midpoint) res.morning.push(pair);
-                else res.evening.push(pair);
+                if (currentIn < midpoint) res.morning.push(pair); else res.evening.push(pair);
                 currentIn = null;
             }
         }
     });
-
     if (currentIn !== null) res.error = "Missing Out-Punch";
     return res;
 }
@@ -236,33 +244,60 @@ $('fileIn').addEventListener('change', e => {
 });
 
 function buildMapper() {
-    ['col-date', 'col-code', 'col-name', 'col-punch'].forEach(id => {
-        $(id).innerHTML = headers.map((h, i) => `<option value="${i}">${h}</option>`).join('');
+    ['col-date', 'col-code', 'col-name', 'col-in', 'col-out', 'col-punch'].forEach(id => {
+        $(id).innerHTML = '<option value="">— Skip —</option>' + headers.map((h, i) => `<option value="${i}">${h}</option>`).join('');
     });
 }
 
 function processData() {
-    const ci = { date: $('col-date').value, name: $('col-name').value, code: $('col-code').value, punch: $('col-punch').value };
+    const ci = { date: $('col-date').value, name: $('col-name').value, code: $('col-code').value, punch: $('col-punch').value, in: $('col-in').value, out: $('col-out').value };
     const midMins = timeToMins($('midPoint').value);
-    
-    processedData = fileRows.map(row => {
-        const punchRaw = row[ci.punch];
-        if (!punchRaw) return null;
+    const mStart = timeToMins($('mStart').value);
+    const eStart = timeToMins($('eStart').value);
+    const stdMins = parseFloat($('stdHours').value) * 60;
+    const grace = parseInt($('lateGrace').value) || 0;
 
-        const pData = parseAdvancedPunch(String(punchRaw), midMins);
-        const morningMins = pData.morning.reduce((s, p) => s + p.dur, 0);
-        const eveningMins = pData.evening.reduce((s, p) => s + p.dur, 0);
-        const total = morningMins + eveningMins;
+    processedData = fileRows.map(row => {
+        let pData;
+        // Logic: Use Punch Record string if available, else fallback to In/Out columns
+        if (ci.punch !== "" && row[ci.punch]) {
+            pData = parsePunches(String(row[ci.punch]), midMins);
+        } else {
+            const i = timeToMins(row[ci.in]), o = timeToMins(row[ci.out]);
+            pData = { morning: [], evening: [], error: "", firstIn: i };
+            if (i && o) {
+                const pair = { in: i, out: o, dur: o - i };
+                if (i < midMins) pData.morning.push(pair); else pData.evening.push(pair);
+            } else if (i && !o) pData.error = "Missing Out-Punch";
+            else if (!i && o) pData.error = "Missing In-Punch";
+        }
+
+        if (pData.firstIn === null && !pData.error) return null;
+
+        const mWork = pData.morning.reduce((s, p) => s + p.dur, 0);
+        const eWork = pData.evening.reduce((s, p) => s + p.dur, 0);
+        const totalWorked = mWork + eWork;
+
+        // Calculate Lateness
+        let lateMins = 0;
+        if (pData.firstIn !== null) {
+            const target = pData.firstIn < midMins ? mStart : eStart;
+            const diff = pData.firstIn - target;
+            if (diff > grace) lateMins = applyCustomRounding(diff);
+        }
+
+        // Calculate OT
+        let otMins = totalWorked > stdMins ? applyCustomRounding(totalWorked - stdMins) : 0;
 
         return {
             Date: row[ci.date], Code: row[ci.code], Name: row[ci.name],
             mIn: pData.morning.length ? minsToHHMM(pData.morning[0].in) : '',
             mOut: pData.morning.length ? minsToHHMM(pData.morning[pData.morning.length-1].out) : '',
-            mWork: morningMins,
+            mWork,
             eIn: pData.evening.length ? minsToHHMM(pData.evening[0].in) : '',
             eOut: pData.evening.length ? minsToHHMM(pData.evening[pData.evening.length-1].out) : '',
-            eWork: eveningMins,
-            Total: total,
+            eWork,
+            Total: totalWorked, Late: lateMins, OT: otMins,
             Comment: pData.error, isError: !!pData.error
         };
     }).filter(x => x);
@@ -275,58 +310,32 @@ function renderTable() {
         <tr class="${r.isError ? 'row-error' : ''}">
             <td>${r.Date}</td><td>${r.Code}</td><td>${r.Name}</td>
             <td>${minsToHHMM(r.mWork)}</td><td>${minsToHHMM(r.eWork)}</td>
+            <td>${minsToHHMM(r.Late)}</td><td>${minsToHHMM(r.OT)}</td>
             <td><b>${minsToHHMM(r.Total)}</b></td>
-            <td style="color:var(--red)">${r.Comment}</td>
         </tr>`).join('');
-    
     $('sTotalRec').textContent = processedData.length;
     $('sTotalErr').textContent = processedData.filter(r => r.isError).length;
-    $('summary').classList.add('grid-on');
-    $('tblWrap').classList.add('on');
-    $('acts').classList.add('flex-on');
-    $('mapper').style.display = 'none';
+    $('summary').classList.add('grid-on'); $('tblWrap').classList.add('on'); $('acts').classList.add('flex-on'); $('mapper').style.display = 'none';
 }
 
 function exportExcel() {
     const wb = XLSX.utils.book_new();
     const emps = [...new Set(processedData.map(r => r.Name))];
-
     emps.forEach(empName => {
-        const empRecords = processedData.filter(r => r.Name === empName);
+        const records = processedData.filter(r => r.Name === empName);
         const dataRows = [
-            ["Period : ", "Starting Date", "To", "Ending Date"],
-            ["Employee Name : ", empName],
-            [],
-            ["Date", "Morning Shift", "", "", "Evening Shift", "", "", "Summary", ""],
-            ["", "Punch In", "Punch Out", "Hrs Worked", "Punch In", "Punch Out", "Hrs Worked", "Total Hours", "Minutes"]
+            ["Employee Name: ", empName], [],
+            ["Date", "Morning Shift", "", "", "Evening Shift", "", "", "Payroll Summary", "", "", ""],
+            ["", "Punch In", "Punch Out", "Hrs Worked", "Punch In", "Punch Out", "Hrs Worked", "Total Worked", "Late", "Overtime", "Errors"]
         ];
-
-        let grandMins = 0;
-        empRecords.forEach(r => {
-            grandMins += r.Total;
-            dataRows.push([
-                r.Date, r.mIn, r.mOut, (r.mWork/60).toFixed(2), 
-                r.eIn, r.eOut, (r.eWork/60).toFixed(2), 
-                Math.floor(r.Total/60), r.Total % 60
-            ]);
+        records.forEach(r => {
+            dataRows.push([r.Date, r.mIn, r.mOut, (r.mWork/60).toFixed(2), r.eIn, r.eOut, (r.eWork/60).toFixed(2), minsToHHMM(r.Total), minsToHHMM(r.Late), minsToHHMM(r.OT), r.Comment]);
         });
-
-        dataRows.push([]);
-        dataRows.push(["Total", "", "", "", "", "", "", Math.floor(grandMins/60), grandMins]);
-
         const ws = XLSX.utils.aoa_to_sheet(dataRows);
-        
-        // Merging headers for Morning/Evening/Date
-        ws['!merges'] = [
-            { s: {r:3, c:1}, e: {r:3, c:3} }, // Merge Morning Shift
-            { s: {r:3, c:4}, e: {r:3, c:6} }, // Merge Evening Shift
-            { s: {r:3, c:7}, e: {r:3, c:8} }, // Merge Summary
-        ];
-
+        ws['!merges'] = [ { s:{r:2,c:1}, e:{r:2,c:3} }, { s:{r:2,c:4}, e:{r:2,c:6} }, { s:{r:2,c:7}, e:{r:2,c:10} } ];
         XLSX.utils.book_append_sheet(wb, ws, empName.substring(0, 30));
     });
-
-    XLSX.writeFile(wb, "Payroll_Comparison_Report.xlsx");
+    XLSX.writeFile(wb, "Payroll_Summary.xlsx");
 }
 </script>
 </body>
