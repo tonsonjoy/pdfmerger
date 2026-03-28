@@ -345,7 +345,7 @@ function renderTable() {
             <td>${minsToHHMM(r.mWork)}</td><td>${minsToHHMM(r.eWork)}</td>
             <td>${minsToHHMM(r.Late)}</td><td>${minsToHHMM(r.OT)}</td>
             <td><b>${minsToHHMM(r.Total)}</b></td>
-            <td style="color:var(--green);font-weight:600;">${minsToHHMM(r.RoundedTotal)}</td>
+            <td style="color:var(--green);font-weight:600;">${Math.floor(r.RoundedTotal / 60)}</td>
             <td style="color:var(--green);">${r.RoundedMinutes}</td>
             <td style="${commentStyle}">${r.Comment || '—'}</td>
         </tr>`;
@@ -372,7 +372,7 @@ function exportExcel() {
                 r.mIn, r.mOut, (r.mWork / 60).toFixed(2),
                 r.eIn, r.eOut, (r.eWork / 60).toFixed(2),
                 minsToHHMM(r.Total),
-                minsToHHMM(r.RoundedTotal),
+                Math.floor(r.RoundedTotal / 60),
                 r.RoundedMinutes,
                 minsToHHMM(r.Late),
                 minsToHHMM(r.OT),
