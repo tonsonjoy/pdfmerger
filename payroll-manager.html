@@ -148,7 +148,7 @@ tr.row-error { background-color: rgba(239, 68, 68, 0.2) !important; }
 </div>
 
 <div class="acts" id="acts" style="display:none">
-  <button class="btn btn-p" onclick="exportExcel()">↓ Download Horizontal Shift Report (XLSX)</button>
+  <button class="btn btn-p" onclick="exportExcel()">↓ Download Report with General Summary (XLSX)</button>
   <button class="btn btn-g" onclick="location.reload()">Reset</button>
 </div>
 
@@ -205,11 +205,6 @@ function minsToHHMM(m) {
     return `${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`;
 }
 
-/** 
- * PARSER: Detects Morning/Evening Buckets + Missing Punches
- * - Applies chronological correction for 12-h clock ambiguity
- * - Flags "Review Again" when more than 2 pairs are found
- */
 function parsePunches(str, midpoint) {
     const res = { morning: [], evening: [], error: "", firstIn: null, pairCount: 0 };
     if (!str) return res;
@@ -220,12 +215,11 @@ function parsePunches(str, midpoint) {
     }
     if (rawEvents.length === 0) return res;
 
-    // Chronological correction: if a time goes backward, add 12 h (12-h clock AM/PM fix)
     const events = [];
     let lastMins = -1;
     for (const e of rawEvents) {
         let m = e.mins;
-        if (m <= lastMins) m += 720; // +12 hours in minutes
+        if (m <= lastMins) m += 720; 
         events.push({ mins: m, type: e.type });
         lastMins = m;
     }
@@ -246,10 +240,8 @@ function parsePunches(str, midpoint) {
         }
     });
     if (currentIn !== null) res.error = "Missing Out-Punch";
-
     res.pairCount = res.morning.length + res.evening.length;
     if (res.pairCount > 2 && !res.error) res.error = "Review Again";
-
     return res;
 }
 
@@ -283,7 +275,6 @@ function processData() {
 
     processedData = fileRows.map(row => {
         let pData;
-        // Logic: Use Punch Record string if available, else fallback to In/Out columns
         if (ci.punch !== "" && row[ci.punch]) {
             pData = parsePunches(String(row[ci.punch]), midMins);
         } else {
@@ -302,7 +293,6 @@ function processData() {
         const eWork = pData.evening.reduce((s, p) => s + p.dur, 0);
         const totalWorked = mWork + eWork;
 
-        // Calculate Lateness
         let lateMins = 0;
         if (pData.firstIn !== null) {
             const target = pData.firstIn < midMins ? mStart : eStart;
@@ -310,12 +300,8 @@ function processData() {
             if (diff > grace) lateMins = applyCustomRounding(diff);
         }
 
-        // Calculate OT
         let otMins = totalWorked > stdMins ? applyCustomRounding(totalWorked - stdMins) : 0;
-
-        // Rounded total working time
         const roundedTotal = applyCustomRounding(totalWorked);
-        const roundedMinutes = roundedTotal % 60;
 
         return {
             Date: row[ci.date], Code: row[ci.code], Name: row[ci.name],
@@ -326,7 +312,7 @@ function processData() {
             eOut: pData.evening.length ? minsToHHMM(pData.evening[pData.evening.length-1].out) : '',
             eWork,
             Total: totalWorked, Late: lateMins, OT: otMins,
-            RoundedTotal: roundedTotal, RoundedMinutes: roundedMinutes,
+            RoundedTotal: roundedTotal, RoundedMinutes: roundedTotal % 60,
             Comment: pData.error, isError: !!pData.error
         };
     }).filter(x => x);
@@ -336,9 +322,7 @@ function processData() {
 
 function renderTable() {
     $('tblBody').innerHTML = processedData.map(r => {
-        const commentStyle = r.Comment === 'Review Again'
-            ? 'color:var(--amber);font-weight:600;'
-            : r.isError ? 'color:var(--red);' : 'color:var(--wm);';
+        const commentStyle = r.Comment === 'Review Again' ? 'color:var(--amber);font-weight:600;' : r.isError ? 'color:var(--red);' : 'color:var(--wm);';
         return `
         <tr class="${r.isError ? 'row-error' : ''}">
             <td>${r.Date}</td><td>${r.Code}</td><td>${r.Name}</td>
@@ -351,6 +335,7 @@ function renderTable() {
         </tr>`;
     }).join('');
     $('sTotalRec').textContent = processedData.length;
+    $('sTotalEmp').textContent = [...new Set(processedData.map(r => r.Name))].length;
     $('sTotalErr').textContent = processedData.filter(r => r.isError).length;
     $('summary').classList.add('grid-on'); $('tblWrap').classList.add('on'); $('acts').classList.add('flex-on'); $('mapper').style.display = 'none';
 }
@@ -358,10 +343,45 @@ function renderTable() {
 function exportExcel() {
     const wb = XLSX.utils.book_new();
     const emps = [...new Set(processedData.map(r => r.Name))];
+
+    // 1. GENERATE GENERAL SUMMARY SHEET
+    const summaryRows = [
+        ["PAYROLL GENERAL SUMMARY"],
+        ["Export Date: " + new Date().toLocaleDateString()],
+        [],
+        ["Sl No.", "Employee Code", "Employee Name", "Net Total Worked (HH:MM)", "Net Rounded Working Hrs (Decimal)"]
+    ];
+
+    emps.forEach((empName, index) => {
+        const records = processedData.filter(r => r.Name === empName);
+        const empCode = records[0].Code || "N/A";
+        
+        const netActualMins = records.reduce((s, r) => s + (r.Total || 0), 0);
+        const netRoundedMins = records.reduce((s, r) => s + (r.RoundedTotal || 0), 0);
+        
+        // Calculate decimal hours (minutes added to hours)
+        const decimalHours = (netRoundedMins / 60).toFixed(2);
+
+        summaryRows.push([
+            index + 1,
+            empCode,
+            empName,
+            minsToHHMM(netActualMins),
+            parseFloat(decimalHours)
+        ]);
+    });
+
+    const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+    wsSummary['!cols'] = [{wch:8}, {wch:15}, {wch:25}, {wch:25}, {wch:35}];
+    XLSX.utils.book_append_sheet(wb, wsSummary, "General Summary");
+
+    // 2. GENERATE INDIVIDUAL EMPLOYEE SHEETS
     emps.forEach(empName => {
         const records = processedData.filter(r => r.Name === empName);
         const dataRows = [
-            ["Employee Name: ", empName], [],
+            ["Employee Name: ", empName], 
+            ["Employee Code: ", records[0].Code || "N/A"],
+            [],
             ["Date", "Morning Shift", "", "", "Evening Shift", "", "", "Payroll Summary", "", "", "", "", ""],
             ["", "Punch In", "Punch Out", "Hrs Worked", "Punch In", "Punch Out", "Hrs Worked",
              "Total Worked", "Rounded Working Hrs", "Rounded Minutes", "Late", "Overtime", "Comments"]
@@ -381,11 +401,10 @@ function exportExcel() {
         });
         const ws = XLSX.utils.aoa_to_sheet(dataRows);
         ws['!merges'] = [
-            { s:{r:2,c:1}, e:{r:2,c:3} },
-            { s:{r:2,c:4}, e:{r:2,c:6} },
-            { s:{r:2,c:7}, e:{r:2,c:12} }
+            { s:{r:3,c:1}, e:{r:3,c:3} },
+            { s:{r:3,c:4}, e:{r:3,c:6} },
+            { s:{r:3,c:7}, e:{r:3,c:12} }
         ];
-        // Column widths
         ws['!cols'] = [
             {wch:14},{wch:11},{wch:11},{wch:12},
             {wch:11},{wch:11},{wch:12},
@@ -394,7 +413,8 @@ function exportExcel() {
         ];
         XLSX.utils.book_append_sheet(wb, ws, empName.substring(0, 30));
     });
-    XLSX.writeFile(wb, "Payroll_Summary.xlsx");
+
+    XLSX.writeFile(wb, "Payroll_Report_with_Summary.xlsx");
 }
 </script>
 </body>
