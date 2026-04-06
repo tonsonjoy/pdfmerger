@@ -1,55 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EassyOffice — Payroll Manager</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#090909;--off-black:#111;--card:#161616;--card-h:#1d1d1d;
+  --border:#272727;--border-l:#333;--white:#f0f0f0;
+  --wd:rgba(240,240,240,.6);--wm:rgba(240,240,240,.3);--wf:rgba(240,240,240,.06);
+  --green:#22c55e;--amber:#f59e0b;--red:#ef4444;--blue:#3b82f6;
+  --r-xl:18px;--r-lg:13px;--r-md:10px;--r-sm:7px;
+}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");opacity:.45;}
+.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:52px 24px 100px;}
+header{margin-bottom:36px;}
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:24px;}
+.brand{font-size:15px;font-weight:700;}
+.logo-pill{margin-left:auto;font-size:10px;font-family:'DM Mono',monospace;color:var(--wm);background:var(--wf);border:1px solid var(--border);padding:3px 10px;border-radius:100px;text-transform:uppercase;}
+.shift-editor{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:18px;}
+.se-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--wm);margin-bottom:13px;}
+.se-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.se-col{display:flex;flex-direction:column;gap:9px;}
+.se-row{display:flex;align-items:center;gap:8px;}
+.se-lbl{font-size:10px;color:var(--wd);width:120px;flex-shrink:0;}
+.se-inp{background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-sm);padding:5px 9px;color:var(--white);font-family:'DM Mono',monospace;font-size:12px;outline:none;}
+.round-table { width: 100%; margin-top: 12px; border-spacing: 0 6px; border-collapse: separate; }
+.round-table th { font-size: 10px; font-weight: 700; text-align: center; color: var(--wd); padding: 4px 10px; text-transform: uppercase; letter-spacing: .8px; }
+.round-table td { padding: 2px 4px; }
+.r-inp { background: var(--off-black); border: 1px solid var(--border-l); border-radius: var(--r-sm); padding: 7px 10px; color: var(--white); font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; outline: none; width: 72px; text-align: center; transition: border-color .15s; }
+.r-inp:focus { border-color: var(--blue); }
+.r-sep { font-size: 11px; color: var(--wm); padding: 0 4px; text-align: center; vertical-align: middle; }
+.btn-add { background: var(--wf); border: 1px dashed var(--border-l); color: var(--wd); padding: 7px 14px; border-radius: var(--r-sm); font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: all .15s; }
+.btn-add:hover { border-color: var(--blue); color: var(--white); }
+.btn-del { color: var(--wm); cursor: pointer; font-size: 16px; background: none; border: none; padding: 0 4px; transition: color .15s; }
+.btn-del:hover { color: var(--red); }
+.drop{border:1px dashed var(--border-l);border-radius:var(--r-xl);padding:44px 28px;text-align:center;cursor:pointer;background:var(--card);margin-bottom:16px;}
+.mapper{display:none;background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:16px;}
+.mapper-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));gap:15px;}
+.map-sel{background:var(--off-black);border:1px solid var(--border);color:var(--white);padding:7px;width:100%; border-radius: 5px; font-size: 11px;}
+.summary{display:none;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:18px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 14px;}
+.sc-n{font-size:22px;font-weight:700;}
+.tbl-wrap{display:none;overflow-x:auto;margin-bottom:14px;border:1px solid var(--border);border-radius: var(--r-lg);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{padding:12px; text-align:left; background: var(--off-black); color: var(--wm); font-size: 10px; text-transform: uppercase;}
+td{padding:10px; border-bottom:1px solid var(--border); color: var(--wd);}
+tr.row-error { background-color: rgba(239, 68, 68, 0.2) !important; }
+.btn{padding:11px 20px;border-radius:var(--r-lg);font-weight:600;cursor:pointer;border:none; transition: 0.2s;}
+.btn-p{background:var(--white);color:var(--black);}
+.btn-g{background:var(--card);color:var(--wd);border:1px solid var(--border); margin-left: 5px;}
+.on { display: block !important; }
+.flex-on { display: flex !important; }
+.grid-on { display: grid !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo-row">
+    <span class="brand">EassyOffice</span>
+    <span class="logo-pill">Payroll Manager</span>
+  </div>
+  <h1>Payroll Management</h1>
+  <p class="sub">Advanced Grace Periods, OT Rounding, and Horizontal Reporting.</p>
+</header>
+
+<div class="shift-editor" style="border: 1px solid var(--blue);">
+    <div class="se-title" style="color: var(--blue);">📄 Payroll Calculation Rules</div>
+    <div class="se-grid">
+      <div class="se-col">
+        <div class="se-row">
+          <span class="se-lbl">Std. Work Day (Hrs)</span>
+          <input class="se-inp" id="stdHours" type="number" step="0.1" value="8.0">
+        </div>
+        <div class="se-row">
+            <span class="se-lbl">Late Grace Period (Mins)</span>
+            <input class="se-inp" id="lateGrace" type="number" value="10">
+        </div>
+        <div class="se-row">
+            <span class="se-lbl">Detection Midpoint</span>
+            <input class="se-inp" id="midPoint" type="time" value="11:30">
+        </div>
+      </div>
+      <div class="se-col" style="border-left: 1px solid var(--border); padding-left: 20px;">
+        <span class="se-lbl" style="font-size:11px;color:var(--wd);font-weight:600;">Custom Rounding Table <span style="color:var(--wm);font-weight:400;">(minute remainder → round to)</span></span>
+        <table class="round-table">
+            <thead><tr><th>From (min)</th><th></th><th>To (min)</th><th>→ Round To</th><th></th></tr></thead>
+            <tbody id="roundingBody"></tbody>
+        </table>
+        <button class="btn-add" onclick="addRoundingRow()">+ Add Bracket</button>
+      </div>
+    </div>
+</div>
+
+<div class="shift-editor">
+    <div class="se-title">⚙ Shift Timings (Targets)</div>
+    <div class="se-grid">
+        <div class="se-col">
+            <div class="se-row">
+                <span class="se-lbl">Morning Start</span>
+                <input class="se-inp" id="mStart" type="time" value="09:00">
+            </div>
+            <div class="se-row">
+                <span class="se-lbl">Evening Start</span>
+                <input class="se-inp" id="eStart" type="time" value="12:00">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="drop" id="drop">
+  <input type="file" id="fileIn" style="display:none" accept=".xlsx,.xls,.csv">
+  <div onclick="$('fileIn').click()">📊 <u>Click to Upload Attendance File</u></div>
+</div>
+
+<div class="mapper" id="mapper">
+  <div class="se-title">Map Columns</div>
+  <div class="mapper-grid">
+    <div class="map-item"><span>Date</span><select class="map-sel" id="col-date"></select></div>
+    <div class="map-item"><span>Emp Code</span><select class="map-sel" id="col-code"></select></div>
+    <div class="map-item"><span>Emp Name</span><select class="map-sel" id="col-name"></select></div>
+    <div class="map-item"><span>In Time (Single)</span><select class="map-sel" id="col-in"></select></div>
+    <div class="map-item"><span>Out Time (Single)</span><select class="map-sel" id="col-out"></select></div>
+    <div class="map-item"><span>Punch Record (Multi)</span><select class="map-sel" id="col-punch"></select></div>
+  </div>
+  <div style="margin-top:20px"><button class="btn btn-p" onclick="processData()">Calculate Payroll →</button></div>
+</div>
+
+<div class="summary" id="summary">
+  <div class="sc"><div class="sc-n" id="sTotalEmp">0</div><div style="font-size:10px">Staff</div></div>
+  <div class="sc"><div class="sc-n" id="sTotalRec">0</div><div style="font-size:10px">Records</div></div>
+  <div class="sc"><div class="sc-n" id="sTotalErr" style="color:var(--red)">0</div><div style="font-size:10px">Errors</div></div>
+</div>
+
+<div class="tbl-wrap" id="tblWrap">
+  <table>
+    <thead><tr><th>Date</th><th>Code</th><th>Name</th><th>Morn. Work</th><th>Eve. Work</th><th>Late</th><th>OT</th><th>Total</th><th>Rounded Hrs</th><th>Rounded Mins</th><th>Comment</th></tr></thead>
+    <tbody id="tblBody"></tbody>
+  </table>
+</div>
+
+<div class="acts" id="acts" style="display:none">
+  <button class="btn btn-p" onclick="exportExcel()">↓ Download Horizontal Shift Report (XLSX)</button>
+  <button class="btn btn-g" onclick="location.reload()">Reset</button>
+</div>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+let headers = [], fileRows = [], processedData = [];
+
+const defaultRules = [
+    { from: 0, to: 9, res: 0 },
+    { from: 10, to: 24, res: 15 },
+    { from: 25, to: 39, res: 30 },
+    { from: 40, to: 55, res: 45 }
+];
+
+function addRoundingRow(data = {from: 0, to: 0, res: 0}) {
+    const tr = document.createElement('tr');
+    tr.className = 'round-row';
+    tr.innerHTML = `
+        <td><input type="number" class="r-inp r-from" value="${data.from}" min="0" max="59"></td>
+        <td class="r-sep">–</td>
+        <td><input type="number" class="r-inp r-to" value="${data.to}" min="0" max="59"></td>
+        <td><input type="number" class="r-inp r-res" value="${data.res}" min="0" max="59" style="border-color:var(--blue);color:#93c5fd;"></td>
+        <td><button class="btn-del" onclick="this.parentElement.parentElement.remove()">×</button></td>`;
+    $('roundingBody').appendChild(tr);
+}
+defaultRules.forEach(r => addRoundingRow(r));
+
+function applyCustomRounding(mins) {
+    if (mins <= 0) return 0;
+    const hours = Math.floor(mins / 60);
+    const remainder = mins % 60;
+    let roundedMins = remainder;
+    document.querySelectorAll('.round-row').forEach(row => {
+        const min = parseInt(row.querySelector('.r-from').value);
+        const max = parseInt(row.querySelector('.r-to').value);
+        const val = parseInt(row.querySelector('.r-res').value);
+        if (remainder >= min && remainder <= max) roundedMins = val;
+    });
+    return (hours * 60) + roundedMins;
+}
+
+function timeToMins(v) {
+    if (!v) return null;
+    if (v instanceof Date) return v.getHours() * 60 + v.getMinutes();
+    const s = String(v).trim();
+    const m = s.match(/(\d{1,2}):(\d{2})/);
+    return m ? parseInt(m[1]) * 60 + parseInt(m[2]) : null;
+}
+
+function minsToHHMM(m) {
+    if (m === null || m <= 0 || isNaN(m)) return "00:00";
+    return `${Math.floor(m/60).toString().padStart(2,'0')}:${(m%60).toString().padStart(2,'0')}`;
+}
+
+/** 
+ * PARSER: Detects Morning/Evening Buckets + Missing Punches
+ * - Applies chronological correction for 12-h clock ambiguity
+ * - Flags "Review Again" when more than 2 pairs are found
+ */
+function parsePunches(str, midpoint) {
+    const res = { morning: [], evening: [], error: "", firstIn: null, pairCount: 0 };
+    if (!str) return res;
+    const regex = /(\d{1,2}:\d{2}(?::\d{2})?)\s*\(\s*(in|out)\s*\)/gi;
+    let match, rawEvents = [];
+    while ((match = regex.exec(str)) !== null) {
+        rawEvents.push({ mins: timeToMins(match[1]), type: match[2].toLowerCase() });
+    }
+    if (rawEvents.length === 0) return res;
+
+    // Chronological correction: if a time goes backward, add 12 h (12-h clock AM/PM fix)
+    const events = [];
+    let lastMins = -1;
+    for (const e of rawEvents) {
+        let m = e.mins;
+        if (m <= lastMins) m += 720; // +12 hours in minutes
+        events.push({ mins: m, type: e.type });
+        lastMins = m;
+    }
+
+    res.firstIn = events[0].mins;
+    let currentIn = null;
+    events.forEach(e => {
+        if (e.type === 'in') {
+            if (currentIn !== null) res.error = "Missing Out-Punch";
+            currentIn = e.mins;
+        } else {
+            if (currentIn === null) res.error = "Missing In-Punch";
+            else {
+                const pair = { in: currentIn, out: e.mins, dur: (e.mins - currentIn) };
+                if (currentIn < midpoint) res.morning.push(pair); else res.evening.push(pair);
+                currentIn = null;
+            }
+        }
+    });
+    if (currentIn !== null) res.error = "Missing Out-Punch";
+
+    res.pairCount = res.morning.length + res.evening.length;
+    if (res.pairCount > 2 && !res.error) res.error = "Review Again";
+
+    return res;
+}
+
+$('fileIn').addEventListener('change', e => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+        const wb = XLSX.read(ev.target.result, { type: 'binary', cellDates: true });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
+        headers = json[0]; fileRows = json.slice(1);
+        buildMapper();
+        $('mapper').classList.add('on');
+        $('drop').style.display = 'none';
+    };
+    reader.readAsBinaryString(e.target.files[0]);
+});
+
+function buildMapper() {
+    ['col-date', 'col-code', 'col-name', 'col-in', 'col-out', 'col-punch'].forEach(id => {
+        $(id).innerHTML = '<option value="">— Skip —</option>' + headers.map((h, i) => `<option value="${i}">${h}</option>`).join('');
+    });
+}
+
+function processData() {
+    const ci = { date: $('col-date').value, name: $('col-name').value, code: $('col-code').value, punch: $('col-punch').value, in: $('col-in').value, out: $('col-out').value };
+    const midMins = timeToMins($('midPoint').value);
+    const mStart = timeToMins($('mStart').value);
+    const eStart = timeToMins($('eStart').value);
+    const stdMins = parseFloat($('stdHours').value) * 60;
+    const grace = parseInt($('lateGrace').value) || 0;
+
+    processedData = fileRows.map(row => {
+        let pData;
+        // Logic: Use Punch Record string if available, else fallback to In/Out columns
+        if (ci.punch !== "" && row[ci.punch]) {
+            pData = parsePunches(String(row[ci.punch]), midMins);
+        } else {
+            const i = timeToMins(row[ci.in]), o = timeToMins(row[ci.out]);
+            pData = { morning: [], evening: [], error: "", firstIn: i };
+            if (i && o) {
+                const pair = { in: i, out: o, dur: o - i };
+                if (i < midMins) pData.morning.push(pair); else pData.evening.push(pair);
+            } else if (i && !o) pData.error = "Missing Out-Punch";
+            else if (!i && o) pData.error = "Missing In-Punch";
+        }
+
+        if (pData.firstIn === null && !pData.error) return null;
+
+        const mWork = pData.morning.reduce((s, p) => s + p.dur, 0);
+        const eWork = pData.evening.reduce((s, p) => s + p.dur, 0);
+        const totalWorked = mWork + eWork;
+
+        // Calculate Lateness
+        let lateMins = 0;
+        if (pData.firstIn !== null) {
+            const target = pData.firstIn < midMins ? mStart : eStart;
+            const diff = pData.firstIn - target;
+            if (diff > grace) lateMins = applyCustomRounding(diff);
+        }
+
+        // Calculate OT
+        let otMins = totalWorked > stdMins ? applyCustomRounding(totalWorked - stdMins) : 0;
+
+        // Rounded total working time
+        const roundedTotal = applyCustomRounding(totalWorked);
+        const roundedMinutes = roundedTotal % 60;
+
+        return {
+            Date: row[ci.date], Code: row[ci.code], Name: row[ci.name],
+            mIn: pData.morning.length ? minsToHHMM(pData.morning[0].in) : '',
+            mOut: pData.morning.length ? minsToHHMM(pData.morning[pData.morning.length-1].out) : '',
+            mWork,
+            eIn: pData.evening.length ? minsToHHMM(pData.evening[0].in) : '',
+            eOut: pData.evening.length ? minsToHHMM(pData.evening[pData.evening.length-1].out) : '',
+            eWork,
+            Total: totalWorked, Late: lateMins, OT: otMins,
+            RoundedTotal: roundedTotal, RoundedMinutes: roundedMinutes,
+            Comment: pData.error, isError: !!pData.error
+        };
+    }).filter(x => x);
+
+    renderTable();
+}
+
+function renderTable() {
+    $('tblBody').innerHTML = processedData.map(r => {
+        const commentStyle = r.Comment === 'Review Again'
+            ? 'color:var(--amber);font-weight:600;'
+            : r.isError ? 'color:var(--red);' : 'color:var(--wm);';
+        return `
+        <tr class="${r.isError ? 'row-error' : ''}">
+            <td>${r.Date}</td><td>${r.Code}</td><td>${r.Name}</td>
+            <td>${minsToHHMM(r.mWork)}</td><td>${minsToHHMM(r.eWork)}</td>
+            <td>${minsToHHMM(r.Late)}</td><td>${minsToHHMM(r.OT)}</td>
+            <td><b>${minsToHHMM(r.Total)}</b></td>
+            <td style="color:var(--green);font-weight:600;">${Math.floor(r.RoundedTotal / 60)}</td>
+            <td style="color:var(--green);">${r.RoundedMinutes}</td>
+            <td style="${commentStyle}">${r.Comment || '—'}</td>
+        </tr>`;
+    }).join('');
+    $('sTotalRec').textContent = processedData.length;
+    $('sTotalErr').textContent = processedData.filter(r => r.isError).length;
+    $('summary').classList.add('grid-on'); $('tblWrap').classList.add('on'); $('acts').classList.add('flex-on'); $('mapper').style.display = 'none';
+}
+
 function exportExcel() {
     const wb = XLSX.utils.book_new();
-    
-    // 1. CREATE GENERAL SUMMARY SHEET DATA
-    const summaryRows = [
-        ["PAYROLL GENERAL SUMMARY"],
-        ["Export Date: " + new Date().toLocaleDateString()],
-        [],
-        ["Sl No.", "Employee Code", "Employee Name", "Net Total Worked (HH:MM)", "Net Rounded Working Hrs (Decimal)"]
-    ];
-
     const emps = [...new Set(processedData.map(r => r.Name))];
-    
-    // Logic to aggregate data for the Summary Sheet
-    emps.forEach((empName, index) => {
-        const empRecords = processedData.filter(r => r.Name === empName);
-        const empCode = empRecords[0] ? empRecords[0].Code : "N/A";
-        
-        // Summing up all minutes
-        const totalWorkedMins = empRecords.reduce((sum, r) => sum + (r.Total || 0), 0);
-        const totalRoundedMins = empRecords.reduce((sum, r) => sum + (r.RoundedTotal || 0), 0);
-        
-        // Converting minutes to decimal hours (e.g., 30 mins -> 0.5)
-        const roundedDecimalHrs = (totalRoundedMins / 60).toFixed(2);
-        
-        summaryRows.push([
-            index + 1,
-            empCode,
-            empName,
-            minsToHHMM(totalWorkedMins),
-            parseFloat(roundedDecimalHrs) // This fulfills "minutes calculated in hrs and added to hours"
-        ]);
-    });
-
-    const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
-    
-    // Style the Summary Sheet
-    wsSummary['!cols'] = [{wch:8}, {wch:15}, {wch:25}, {wch:25}, {wch:30}];
-    XLSX.utils.book_append_sheet(wb, wsSummary, "General Summary");
-
-    // 2. CREATE INDIVIDUAL EMPLOYEE SHEETS (Existing Logic)
     emps.forEach(empName => {
         const records = processedData.filter(r => r.Name === empName);
         const dataRows = [
-            ["Employee Name: ", empName],
-            ["Employee Code: ", records[0].Code],
-            [],
+            ["Employee Name: ", empName], [],
             ["Date", "Morning Shift", "", "", "Evening Shift", "", "", "Payroll Summary", "", "", "", "", ""],
             ["", "Punch In", "Punch Out", "Hrs Worked", "Punch In", "Punch Out", "Hrs Worked",
              "Total Worked", "Rounded Working Hrs", "Rounded Minutes", "Late", "Overtime", "Comments"]
         ];
-
         records.forEach(r => {
             dataRows.push([
                 r.Date,
@@ -63,24 +379,23 @@ function exportExcel() {
                 r.Comment
             ]);
         });
-
         const ws = XLSX.utils.aoa_to_sheet(dataRows);
         ws['!merges'] = [
-            { s:{r:3,c:1}, e:{r:3,c:3} }, // Morning Shift Merge
-            { s:{r:3,c:4}, e:{r:3,c:6} }, // Evening Shift Merge
-            { s:{r:3,c:7}, e:{r:3,c:12} } // Summary Merge
+            { s:{r:2,c:1}, e:{r:2,c:3} },
+            { s:{r:2,c:4}, e:{r:2,c:6} },
+            { s:{r:2,c:7}, e:{r:2,c:12} }
         ];
-        
+        // Column widths
         ws['!cols'] = [
             {wch:14},{wch:11},{wch:11},{wch:12},
             {wch:11},{wch:11},{wch:12},
             {wch:14},{wch:20},{wch:18},
             {wch:10},{wch:11},{wch:16}
         ];
-        
         XLSX.utils.book_append_sheet(wb, ws, empName.substring(0, 30));
     });
-
-    // Final Export
-    XLSX.writeFile(wb, "Payroll_Final_Report.xlsx");
+    XLSX.writeFile(wb, "Payroll_Summary.xlsx");
 }
+</script>
+</body>
+</html>
