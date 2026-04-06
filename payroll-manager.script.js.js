@@ -1,0 +1,86 @@
+function exportExcel() {
+    const wb = XLSX.utils.book_new();
+    
+    // 1. CREATE GENERAL SUMMARY SHEET DATA
+    const summaryRows = [
+        ["PAYROLL GENERAL SUMMARY"],
+        ["Export Date: " + new Date().toLocaleDateString()],
+        [],
+        ["Sl No.", "Employee Code", "Employee Name", "Net Total Worked (HH:MM)", "Net Rounded Working Hrs (Decimal)"]
+    ];
+
+    const emps = [...new Set(processedData.map(r => r.Name))];
+    
+    // Logic to aggregate data for the Summary Sheet
+    emps.forEach((empName, index) => {
+        const empRecords = processedData.filter(r => r.Name === empName);
+        const empCode = empRecords[0] ? empRecords[0].Code : "N/A";
+        
+        // Summing up all minutes
+        const totalWorkedMins = empRecords.reduce((sum, r) => sum + (r.Total || 0), 0);
+        const totalRoundedMins = empRecords.reduce((sum, r) => sum + (r.RoundedTotal || 0), 0);
+        
+        // Converting minutes to decimal hours (e.g., 30 mins -> 0.5)
+        const roundedDecimalHrs = (totalRoundedMins / 60).toFixed(2);
+        
+        summaryRows.push([
+            index + 1,
+            empCode,
+            empName,
+            minsToHHMM(totalWorkedMins),
+            parseFloat(roundedDecimalHrs) // This fulfills "minutes calculated in hrs and added to hours"
+        ]);
+    });
+
+    const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+    
+    // Style the Summary Sheet
+    wsSummary['!cols'] = [{wch:8}, {wch:15}, {wch:25}, {wch:25}, {wch:30}];
+    XLSX.utils.book_append_sheet(wb, wsSummary, "General Summary");
+
+    // 2. CREATE INDIVIDUAL EMPLOYEE SHEETS (Existing Logic)
+    emps.forEach(empName => {
+        const records = processedData.filter(r => r.Name === empName);
+        const dataRows = [
+            ["Employee Name: ", empName],
+            ["Employee Code: ", records[0].Code],
+            [],
+            ["Date", "Morning Shift", "", "", "Evening Shift", "", "", "Payroll Summary", "", "", "", "", ""],
+            ["", "Punch In", "Punch Out", "Hrs Worked", "Punch In", "Punch Out", "Hrs Worked",
+             "Total Worked", "Rounded Working Hrs", "Rounded Minutes", "Late", "Overtime", "Comments"]
+        ];
+
+        records.forEach(r => {
+            dataRows.push([
+                r.Date,
+                r.mIn, r.mOut, (r.mWork / 60).toFixed(2),
+                r.eIn, r.eOut, (r.eWork / 60).toFixed(2),
+                minsToHHMM(r.Total),
+                Math.floor(r.RoundedTotal / 60),
+                r.RoundedMinutes,
+                minsToHHMM(r.Late),
+                minsToHHMM(r.OT),
+                r.Comment
+            ]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(dataRows);
+        ws['!merges'] = [
+            { s:{r:3,c:1}, e:{r:3,c:3} }, // Morning Shift Merge
+            { s:{r:3,c:4}, e:{r:3,c:6} }, // Evening Shift Merge
+            { s:{r:3,c:7}, e:{r:3,c:12} } // Summary Merge
+        ];
+        
+        ws['!cols'] = [
+            {wch:14},{wch:11},{wch:11},{wch:12},
+            {wch:11},{wch:11},{wch:12},
+            {wch:14},{wch:20},{wch:18},
+            {wch:10},{wch:11},{wch:16}
+        ];
+        
+        XLSX.utils.book_append_sheet(wb, ws, empName.substring(0, 30));
+    });
+
+    // Final Export
+    XLSX.writeFile(wb, "Payroll_Final_Report.xlsx");
+}
