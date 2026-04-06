@@ -1,260 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eassy Office</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #ffffff;
-            --text: #1a1a1a;
-            --muted: #666666;
-            --accent: #000000;
-            --radius: 20px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EassyOffice — Smart Workplace Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --black:#070707;--off-black:#0f0f0f;--card:#131313;--card-h:#1a1a1a;
+  --border:#222;--border-l:#2e2e2e;--white:#efefef;
+  --wd:rgba(239,239,239,.6);--wm:rgba(239,239,239,.3);--wf:rgba(239,239,239,.04);
+  --green:#22c55e;--blue:#3b82f6;--amber:#f59e0b;
+  --r-xl:20px;--r-lg:14px;--r-md:10px;--r-sm:7px;
+}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");opacity:.5;}
+.sgrid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.011) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.011) 1px,transparent 1px);
+  background-size:72px 72px;}
 
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg);
-            font-family: 'DM Sans', sans-serif;
-            color: var(--text);
-            overflow-x: hidden;
-        }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;gap:12px;padding:14px 32px;background:rgba(7,7,7,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+.nav-brand{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;letter-spacing:-.3px;}
+.nav-dot{width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);}
+.nav-links{display:flex;align-items:center;gap:4px;margin-left:auto;}
+.nav-link{padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:500;color:var(--wm);text-decoration:none;transition:all .16s;}
+.nav-link:hover{color:var(--white);background:var(--wf);}
+.nav-cta{background:var(--white);color:var(--black);padding:7px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;text-decoration:none;transition:all .16s;}
+.nav-cta:hover{background:#ddd;}
 
-        /* Top Header for Logo */
-        header.top-nav {
-            padding: 20px 40px;
-            display: flex;
-            align-items: center;
-        }
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:140px 24px 120px;}
 
-        .logo-img {
-            height: 50px;
-            width: auto;
-            border-radius: 8px;
-        }
+/* HERO */
+.hero{text-align:center;margin-bottom:96px;animation:fadeUp .7s ease both;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:var(--wf);border:1px solid var(--border-l);border-radius:100px;padding:5px 14px;font-size:11px;color:var(--wm);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.8px;margin-bottom:28px;}
+.hero-eyebrow-dot{width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 5px var(--green);}
+h1{font-size:clamp(42px,7vw,84px);font-weight:800;letter-spacing:-3.5px;line-height:.95;margin-bottom:24px;}
+h1 em{font-style:normal;color:rgba(239,239,239,.22);}
+.hero-sub{font-size:16px;color:var(--wd);font-weight:300;max-width:480px;margin:0 auto 40px;line-height:1.8;}
+.hero-btns{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
+.btn-hero{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:var(--r-lg);font-size:13px;font-weight:700;text-decoration:none;transition:all .18s;letter-spacing:-.2px;}
+.btn-hero-p{background:var(--white);color:var(--black);}
+.btn-hero-p:hover{background:#e0e0e0;transform:translateY(-1px);}
+.btn-hero-g{background:var(--wf);color:var(--wd);border:1px solid var(--border);}
+.btn-hero-g:hover{border-color:var(--border-l);color:var(--white);}
 
-        /* Hero Section */
-        .hero {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 60vh;
-            text-align: center;
-            padding: 40px 20px;
-        }
+/* PRODUCT CARDS */
+.products{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:80px;}
+@media(max-width:640px){.products{grid-template-columns:1fr;}}
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:32px;text-decoration:none;color:inherit;transition:all .22s;position:relative;overflow:hidden;animation:fadeUp .7s ease both;}
+.pcard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.015) 0%,transparent 60%);pointer-events:none;}
+.pcard:hover{border-color:var(--border-l);background:var(--card-h);transform:translateY(-2px);}
+.pcard-ic{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;border:1px solid var(--border-l);}
+.pcard-ic.pdf{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.18);}
+.pcard-ic.pay{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.18);}
+.pcard-title{font-size:20px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px;}
+.pcard-desc{font-size:13px;color:var(--wd);line-height:1.7;margin-bottom:20px;}
+.pcard-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{font-size:10px;font-family:'DM Mono',monospace;color:var(--wm);background:var(--wf);border:1px solid var(--border);padding:3px 9px;border-radius:100px;letter-spacing:.4px;}
+.pcard-arrow{position:absolute;top:28px;right:28px;font-size:18px;color:var(--wm);transition:all .18s;}
+.pcard:hover .pcard-arrow{color:var(--white);transform:translate(2px,-2px);}
 
-        h1 {
-            font-size: clamp(2.5rem, 8vw, 4rem);
-            margin-bottom: 10px;
-            letter-spacing: -2px;
-            font-weight: 700;
-        }
+/* FEATURES */
+.features-section{margin-bottom:80px;animation:fadeUp .7s .15s ease both;opacity:0;animation-fill-mode:forwards;}
+.section-eyebrow{font-size:9px;font-family:'DM Mono',monospace;color:var(--wm);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;}
+.section-title{font-size:clamp(24px,4vw,38px);font-weight:700;letter-spacing:-1.5px;margin-bottom:40px;}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+@media(max-width:768px){.features-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.features-grid{grid-template-columns:1fr;}}
+.feat{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;}
+.feat-ic{font-size:20px;margin-bottom:12px;}
+.feat-title{font-size:13px;font-weight:700;margin-bottom:5px;}
+.feat-desc{font-size:12px;color:var(--wm);line-height:1.6;}
 
-        .hero p {
-            color: var(--muted);
-            margin-bottom: 40px;
-            font-size: 1.2rem;
-            max-width: 500px;
-        }
+/* PRIVACY BADGE */
+.privacy-bar{display:flex;align-items:center;justify-content:center;gap:28px;padding:28px;background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);margin-bottom:80px;flex-wrap:wrap;animation:fadeUp .7s .25s ease both;opacity:0;animation-fill-mode:forwards;}
+.priv-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--wm);}
+.priv-dot{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);flex-shrink:0;}
 
-        .button-group {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+/* FOOTER */
+footer{text-align:center;padding-top:40px;border-top:1px solid var(--border);}
+.foot-brand{font-size:14px;font-weight:700;color:var(--wd);margin-bottom:10px;}
+.foot-sub{font-size:12px;color:var(--wm);}
 
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 18px 30px;
-            background-color: var(--accent);
-            color: white;
-            text-decoration: none;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-
-        .btn.secondary {
-            background-color: white;
-            color: black;
-            border: 2px solid black;
-            box-shadow: none;
-        }
-
-        /* Features Section */
-        .features-container {
-            max-width: 1100px;
-            margin: 0 auto 100px;
-            padding: 0 24px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .feature-card {
-            border-radius: var(--radius);
-            overflow: hidden;
-            transition: transform 0.4s ease;
-            background: #fcfcfc;
-            border: 1px solid #eee;
-        }
-
-        .feature-card:hover {
-            transform: scale(1.02);
-        }
-
-        .feature-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            filter: grayscale(100%);
-            transition: filter 0.5s ease;
-            background-color: #f0f0f0; /* Fallback color */
-        }
-
-        .feature-card:hover .feature-image {
-            filter: grayscale(0%);
-        }
-
-        .feature-content {
-            padding: 25px;
-        }
-
-        .feature-card h3 {
-            margin: 0 0 10px 0;
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .feature-card p {
-            color: var(--muted);
-            line-height: 1.6;
-            margin: 0;
-            font-size: 0.95rem;
-        }
-
-        .section-label {
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--muted);
-            margin-bottom: 50px;
-            text-align: center;
-            display: block;
-        }
-
-        /* Footer & Support Email */
-        footer {
-            padding: 60px 40px;
-            text-align: center;
-            background-color: #fafafa;
-            border-top: 1px solid #eee;
-        }
-
-        .support-info {
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            color: var(--text);
-        }
-
-        .support-info a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .copyright {
-            font-size: 0.8rem;
-            color: #999;
-        }
-    </style>
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:100px;}
+</style>
 </head>
 <body>
+<div class="sgrid"></div>
 
-    <!-- Top Navigation with Logo -->
-    <header class="top-nav">
-        <!-- Replace 'logo.png' with your actual logo file name -->
-        <img src="logo.png" alt="Eassy Office Logo" class="logo-img">
-    </header>
+<nav>
+  <div class="nav-brand"><span class="nav-dot"></span>EassyOffice</div>
+  <div class="nav-links">
+    <a class="nav-link" href="pdf-tools.html">PDF Tools</a>
+    <a class="nav-link" href="payroll-manager.html">Payroll</a>
+    <a class="nav-cta" href="payroll-manager.html">Open App →</a>
+  </div>
+</nav>
 
-    <!-- Main Entry Section -->
-    <section class="hero">
-        <h1>Eassy Office</h1>
-        <p>A private, fast, and secure suite for your daily office tasks. Built to run entirely in your browser.</p>
-        
-        <div class="button-group">
-            <a href="pdf-tools.html" class="btn">
-                <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>
-                PDF TOOLS
-            </a>
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>100% Browser-Based · Zero Uploads</div>
+    <h1>Smart tools for <em>modern</em> workplaces.</h1>
+    <p class="hero-sub">PDF management and payroll processing — powerful, private, and completely free. Everything runs in your browser.</p>
+    <div class="hero-btns">
+      <a class="btn-hero btn-hero-p" href="payroll-manager.html">Open Payroll Manager →</a>
+      <a class="btn-hero btn-hero-g" href="pdf-tools.html">PDF Tools</a>
+    </div>
+  </div>
 
-            <a href="payroll-manager.html" class="btn secondary">
-                <svg width="20" height="20" fill="black" viewBox="0 0 24 24"><path d="M14,10H10V14H14V10M16,4H15V2H13V4H11V2H9V4H8A2,2 0 0,0 6,6V20A2,2 0 0,0 8,22H16A2,2 0 0,0 18,20V6A2,2 0 0,0 16,4"/></svg>
-                PAYROLL MANAGER
-            </a>
-        </div>
-    </section>
+  <div class="products">
+    <a class="pcard" href="pdf-tools.html">
+      <span class="pcard-arrow">↗</span>
+      <div class="pcard-ic pdf">📄</div>
+      <div class="pcard-title">PDF Tools</div>
+      <div class="pcard-desc">Merge, split, and compress PDF files instantly. No uploads, no accounts — everything runs locally in your browser.</div>
+      <div class="pcard-tags">
+        <span class="tag">Merge</span><span class="tag">Split</span><span class="tag">Compress</span><span class="tag">No upload</span>
+      </div>
+    </a>
+    <a class="pcard" href="payroll-manager.html">
+      <span class="pcard-arrow">↗</span>
+      <div class="pcard-ic pay">💼</div>
+      <div class="pcard-title">Payroll Manager</div>
+      <div class="pcard-desc">Calculate working hours, process payroll, and manage employee salary data with cloud sync for small businesses.</div>
+      <div class="pcard-tags">
+        <span class="tag">Working Hours</span><span class="tag">Payroll</span><span class="tag">Cloud Sync</span><span class="tag">XLSX Export</span>
+      </div>
+    </a>
+  </div>
 
-    <!-- Features Section -->
-    <section class="features-container">
-        <span class="section-label">Why Choose Us</span>
-        <div class="features-grid">
-            
-            <div class="feature-card">
-                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=800" alt="Privacy" class="feature-image">
-                <div class="feature-content">
-                    <h3>100% Privacy</h3>
-                    <p>Your files never touch a server. All processing happens locally on your computer, keeping your sensitive data safe and offline.</p>
-                </div>
-            </div>
+  <div class="features-section">
+    <div class="section-eyebrow">Why EassyOffice</div>
+    <div class="section-title">Built for small teams.</div>
+    <div class="features-grid">
+      <div class="feat"><div class="feat-ic">🔒</div><div class="feat-title">Privacy First</div><div class="feat-desc">PDF tools never touch a server. Your files stay on your device, always.</div></div>
+      <div class="feat"><div class="feat-ic">⚡</div><div class="feat-title">Instant Processing</div><div class="feat-desc">No waiting, no queues. Results are generated in seconds using your browser's compute power.</div></div>
+      <div class="feat"><div class="feat-ic">☁️</div><div class="feat-title">Cloud Payroll Sync</div><div class="feat-desc">Employer accounts with secure cloud storage for employee salary data and payroll history.</div></div>
+      <div class="feat"><div class="feat-ic">📊</div><div class="feat-title">Excel Import/Export</div><div class="feat-desc">Upload attendance Excel files, process them, and download detailed XLSX payroll reports.</div></div>
+      <div class="feat"><div class="feat-ic">🕐</div><div class="feat-title">Smart Hour Calc</div><div class="feat-desc">Automatic shift detection, grace periods, OT rounding, and custom calculation rules.</div></div>
+      <div class="feat"><div class="feat-ic">💰</div><div class="feat-title">Salary Processing</div><div class="feat-desc">Upload employee salary profiles and auto-calculate total pay from working hours data.</div></div>
+    </div>
+  </div>
 
-            <div class="feature-card">
-                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800" alt="Speed" class="feature-image">
-                <div class="feature-content">
-                    <h3>Lightning Speed</h3>
-                    <p>No more waiting for uploads or downloads. Using modern browser technology, tasks like PDF merging and payroll are near-instant.</p>
-                </div>
-            </div>
+  <div class="privacy-bar">
+    <div class="priv-item"><span class="priv-dot"></span>No ads, ever</div>
+    <div class="priv-item"><span class="priv-dot"></span>PDF files never leave your device</div>
+    <div class="priv-item"><span class="priv-dot"></span>Payroll data encrypted in transit</div>
+    <div class="priv-item"><span class="priv-dot"></span>No tracking or analytics</div>
+    <div class="priv-item"><span class="priv-dot"></span>Free forever</div>
+  </div>
 
-            <div class="feature-card">
-                <!-- UPDATED IMAGE LINK BELOW -->
-                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=800" alt="Zero Installation" class="feature-image">
-                <div class="feature-content">
-                    <h3>Zero Installation</h3>
-                    <p>Access your office tools from any device with a browser. No accounts, no subscriptions, and absolutely no complicated setups.</p>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- Footer with Support Email -->
-    <footer>
-        <div class="support-info">
-            Need help? Contact Support: <a href="mailto:mediafarmingspace@gmail.com">mediafarmingspace@gmail.com</a>
-        </div>
-        <div class="copyright">
-            &copy; 2024 Eassy Office. Browser-Based Excellence.
-        </div>
-    </footer>
-
+  <footer>
+    <div class="foot-brand">EassyOffice</div>
+    <div class="foot-sub">Smart workplace tools for modern small businesses.</div>
+  </footer>
+</div>
 </body>
 </html>
