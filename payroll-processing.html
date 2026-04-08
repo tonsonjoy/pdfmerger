@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EassyOffice — Payroll Processing</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.2/dist/iife/sdk.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --black:#090909;--off-black:#111;--card:#161616;--card-h:#1d1d1d;
+  --border:#272727;--border-l:#333;--white:#f0f0f0;
+  --wd:rgba(240,240,240,.6);--wm:rgba(240,240,240,.3);--wf:rgba(240,240,240,.06);
+  --green:#22c55e;--amber:#f59e0b;--red:#ef4444;--blue:#3b82f6;--teal:#0ea5e9;
+  --r-xl:20px;--r-lg:14px;--r-md:10px;--r-sm:7px;
+}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  opacity:.45;}
+.sgrid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:64px 64px;}
+.wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:0 24px 120px;}
+
+/* ── NAV ── */
+nav{display:flex;align-items:center;padding:22px 0 0;margin-bottom:52px;animation:fadeUp .5s ease both;}
+.logo-img{height:46px;width:auto;object-fit:contain;}
+.nav-links{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.nav-link{font-size:11px;font-weight:500;color:var(--wm);padding:6px 13px;border-radius:var(--r-sm);border:1px solid transparent;text-decoration:none;transition:all .16s;font-family:'DM Mono',monospace;letter-spacing:.3px;}
+.nav-link:hover{color:var(--wd);border-color:var(--border);}
+.nav-link.active{color:var(--white);background:var(--wf);border-color:var(--border-l);}
+.nav-user{font-size:11px;color:var(--wm);font-family:'DM Mono',monospace;padding:6px 12px;background:var(--wf);border:1px solid var(--border);border-radius:100px;}
+.btn-signout{font-size:11px;font-weight:600;color:var(--wd);padding:6px 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Mono',monospace;transition:.15s;}
+.btn-signout:hover{border-color:var(--red);color:#f87171;}
+
+/* ── HEADER ── */
+.page-header{margin-bottom:40px;animation:fadeUp .6s .06s ease both;}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);padding:5px 12px;border-radius:100px;font-size:10px;font-family:'DM Mono',monospace;color:rgba(74,222,128,.8);letter-spacing:.8px;text-transform:uppercase;margin-bottom:18px;}
+.eyebrow .dot{width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);}
+h1{font-size:clamp(32px,5.5vw,54px);font-weight:700;letter-spacing:-2px;line-height:1.05;margin-bottom:14px;}
+h1 em{font-style:normal;color:rgba(240,240,240,.22);}
+.sub{font-size:14px;color:var(--wd);font-weight:300;max-width:500px;line-height:1.85;}
+
+/* ── SECTION LABEL ── */
+.slabel{font-size:9px;color:var(--wm);text-transform:uppercase;letter-spacing:1.8px;font-weight:700;margin-bottom:14px;font-family:'DM Mono',monospace;}
+
+/* ── CARDS / SECTIONS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:24px 26px;margin-bottom:14px;animation:fadeUp .4s ease both;}
+.card-accent-green{border-color:rgba(34,197,94,.22);}
+.card-accent-amber{border-color:rgba(245,158,11,.22);}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr);}}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;}
+.stat-n{font-size:22px;font-weight:700;font-family:'DM Mono',monospace;line-height:1;margin-bottom:4px;}
+.stat-l{font-size:9px;color:var(--wm);text-transform:uppercase;letter-spacing:1.2px;font-weight:700;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:var(--r-lg);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s;letter-spacing:-.1px;text-decoration:none;}
+.btn-p{background:var(--white);color:var(--black);}
+.btn-p:hover{background:#e0e0e0;transform:translateY(-1px);}
+.btn-g{background:var(--wf);color:var(--wd);border:1px solid var(--border);}
+.btn-g:hover{border-color:var(--border-l);color:var(--white);}
+.btn-green{background:rgba(34,197,94,.1);color:#4ade80;border:1px solid rgba(34,197,94,.25);}
+.btn-green:hover{background:rgba(34,197,94,.2);}
+.btn-amber{background:rgba(245,158,11,.1);color:#fbbf24;border:1px solid rgba(245,158,11,.25);}
+.btn-amber:hover{background:rgba(245,158,11,.2);}
+.btn-red{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);}
+.btn-red:hover{background:rgba(239,68,68,.2);}
+.btn-sm{padding:7px 14px;font-size:11px;border-radius:var(--r-sm);}
+
+/* ── INPUTS ── */
+.inp{background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;color:var(--white);font-family:'DM Mono',monospace;font-size:12px;outline:none;width:100%;transition:.15s;}
+.inp:focus{border-color:rgba(240,240,240,.28);}
+.inp::placeholder{color:var(--wm);}
+label{font-size:10px;color:var(--wd);display:block;margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;}
+.field{margin-bottom:14px;}
+
+/* ── GRID HELPERS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+@media(max-width:540px){.g2,.g3{grid-template-columns:1fr;}}
+
+/* ── DROP ZONE ── */
+.drop{border:1px dashed var(--border-l);border-radius:var(--r-xl);padding:44px 28px;text-align:center;cursor:pointer;background:var(--card);transition:.2s;position:relative;}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.drop:hover,.drop.over{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.03);}
+.drop-ic{font-size:30px;margin-bottom:12px;animation:float 3.5s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.drop-title{font-size:15px;font-weight:600;margin-bottom:5px;}
+.drop-sub{font-size:11px;color:var(--wm);}
+
+/* ── MAPPER ── */
+.mapper{display:none;padding:20px;background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-lg);margin-top:12px;}
+.mapper.on{display:block;}
+.map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px;}
+.map-sel{background:var(--card);border:1px solid var(--border);color:var(--white);padding:7px 10px;width:100%;border-radius:var(--r-sm);font-family:'DM Mono',monospace;font-size:11px;outline:none;}
+.map-sel:focus{border-color:rgba(240,240,240,.3);}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r-xl);}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{padding:12px 14px;text-align:left;background:var(--off-black);color:var(--wm);font-size:9px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;font-family:'DM Mono',monospace;}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--wd);white-space:nowrap;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(255,255,255,.015);}
+tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border-l);background:rgba(255,255,255,.02);}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:'DM Mono',monospace;padding:3px 8px;border-radius:100px;border:1px solid;}
+.badge-green{color:#4ade80;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.07);}
+.badge-amber{color:#fbbf24;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.07);}
+
+/* ── MANUAL TABLE ── */
+.manual-inp{background:var(--off-black);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--white);font-family:'DM Mono',monospace;font-size:11px;outline:none;width:100%;}
+.manual-inp:focus{border-color:rgba(240,240,240,.3);}
+.btn-del{background:none;border:none;color:var(--wm);cursor:pointer;font-size:15px;transition:.15s;padding:2px 5px;}
+.btn-del:hover{color:#f87171;}
+.btn-add{background:var(--wf);border:1px dashed var(--border-l);color:var(--wd);padding:7px 14px;border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Mono',monospace;}
+.btn-add:hover{border-color:var(--green);color:#4ade80;}
+
+/* ── INPUT MODE TABS ── */
+.mode-tabs{display:flex;gap:8px;margin-bottom:16px;}
+.mode-tab{flex:1;padding:10px 14px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--wm);font-family:'DM Sans',sans-serif;border-radius:var(--r-lg);transition:.15s;}
+.mode-tab.on{border-color:rgba(34,197,94,.35);color:#4ade80;background:rgba(34,197,94,.05);}
+.mode-tab:hover:not(.on){border-color:var(--border-l);color:var(--wd);}
+
+/* ── EMP CARDS ── */
+.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px;margin-top:14px;}
+.emp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:15px 17px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:.18s;}
+.emp-card:hover{border-color:var(--border-l);background:var(--card-h);}
+.emp-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,rgba(34,197,94,.3),rgba(14,165,233,.3));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;border:1px solid rgba(34,197,94,.2);}
+.emp-info{flex:1;min-width:0;}
+.emp-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.emp-meta{font-size:10px;color:var(--wm);font-family:'DM Mono',monospace;margin-top:2px;}
+.emp-salary{font-size:12px;font-weight:700;color:#4ade80;white-space:nowrap;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px;}
+.modal-overlay.open{display:flex;}
+.modal{background:#141414;border:1px solid var(--border-l);border-radius:22px;padding:32px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;position:relative;}
+.modal-close{position:absolute;top:18px;right:18px;cursor:pointer;font-size:20px;color:var(--wm);background:none;border:none;line-height:1;transition:.15s;}
+.modal-close:hover{color:var(--white);}
+.modal-title{font-size:20px;font-weight:700;letter-spacing:-.4px;margin-bottom:6px;}
+.modal-sub{font-size:12px;color:var(--wm);margin-bottom:24px;line-height:1.6;}
+.auth-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:22px;}
+.auth-tab{flex:1;padding:9px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--wm);font-family:'DM Sans',sans-serif;transition:.15s;}
+.auth-tab.on{background:var(--wf);color:var(--white);}
+.err{color:#f87171;font-size:11px;margin-bottom:10px;display:none;font-family:'DM Mono',monospace;}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:20px 0;}
+
+/* ── GUEST GATE ── */
+.guest-gate{text-align:center;padding:80px 20px;animation:fadeUp .5s ease both;}
+.gate-icon{font-size:52px;margin-bottom:18px;}
+.gate-title{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px;}
+.gate-sub{font-size:13px;color:var(--wm);margin-bottom:28px;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.7;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:24px;right:24px;z-index:200;background:#1a1a1a;border:1px solid var(--border);border-radius:12px;padding:12px 18px;font-size:12px;font-family:'DM Mono',monospace;opacity:0;transform:translateY(12px);transition:.28s;max-width:300px;pointer-events:none;}
+#toast.show{opacity:1;transform:translateY(0);}
+
+/* ── LOADING ── */
+.spin{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-cover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;align-items:center;justify-content:center;flex-direction:column;gap:14px;backdrop-filter:blur(3px);}
+.loading-cover.show{display:flex;}
+.loading-cover .spin{width:32px;height:32px;border-width:3px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr);}}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:100px;}
+</style>
+</head>
+<body>
+<div class="sgrid"></div>
+
+<!-- LOADING COVER -->
+<div class="loading-cover" id="loadingCover">
+  <div class="spin"></div>
+  <div style="font-size:12px;color:var(--wm);font-family:'DM Mono',monospace;" id="loadingMsg">Loading…</div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAuth()">×</button>
+    <div class="modal-title">Employer Sign In</div>
+    <div class="modal-sub">Sign in to manage employee salary records and run payroll calculations.</div>
+    <div class="auth-tabs">
+      <button class="auth-tab on" onclick="switchTab(event,'login')">Sign In</button>
+      <button class="auth-tab" onclick="switchTab(event,'signup')">Create Account</button>
+    </div>
+    <!-- Login -->
+    <div id="loginPanel">
+      <div class="field"><label>Email</label><input class="inp" id="liEmail" type="email" placeholder="employer@company.com"></div>
+      <div class="field"><label>Password</label><input class="inp" id="liPass" type="password" placeholder="••••••••"></div>
+      <div class="err" id="liErr"></div>
+      <button class="btn btn-p" style="width:100%;margin-top:4px;" onclick="doLogin()">Sign In →</button>
+    </div>
+    <!-- Signup -->
+    <div id="signupPanel" style="display:none;">
+      <div class="field"><label>Company / Your Name</label><input class="inp" id="suName" type="text" placeholder="Acme Bahrain WLL"></div>
+      <div class="field"><label>Email</label><input class="inp" id="suEmail" type="email" placeholder="employer@company.com"></div>
+      <div class="field"><label>Password</label><input class="inp" id="suPass" type="password" placeholder="Min 8 characters"></div>
+      <div class="err" id="suErr"></div>
+      <button class="btn btn-p" style="width:100%;margin-top:4px;" onclick="doSignup()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- EMPLOYEE MODAL -->
+<div class="modal-overlay" id="empModal">
+  <div class="modal" style="max-width:560px;">
+    <button class="modal-close" onclick="closeEmpModal()">×</button>
+    <div class="modal-title" id="empModalTitle">Employee</div>
+    <div class="modal-sub" id="empModalSub"></div>
+    <div id="empModalBody"></div>
+    <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;">
+      <button class="btn btn-p" onclick="saveEmployee()">Save</button>
+      <button class="btn btn-red btn-sm" id="deleteBtn" onclick="deleteEmployee()">Delete</button>
+      <button class="btn btn-g btn-sm" onclick="closeEmpModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- NAV -->
+  <nav>
+    <img src="logo.png" alt="EassyOffice" class="logo-img">
+    <div class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">← Home</a>
+      <a href="pdf-tools.html" class="nav-link">PDF Tools</a>
+      <a href="payroll-manager.html" class="nav-link">Hours Calc</a>
+      <a href="payroll-processing.html" class="nav-link active">Payroll</a>
+      <button class="btn-signout" id="signoutBtn" style="display:none;" onclick="doSignout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="eyebrow"><span class="dot"></span>Payroll Processing · Cloud-Enabled</div>
+    <h1>Payroll <em>Processing</em></h1>
+    <p class="sub">Calculate total salary for each employee based on working hours. Employer records are stored securely via Appwrite — accessible from any device.</p>
+  </div>
+
+  <!-- GUEST GATE -->
+  <div class="guest-gate" id="guestGate">
+    <div class="gate-icon">🔐</div>
+    <div class="gate-title">Employer Login Required</div>
+    <p class="gate-sub">Sign in or create an employer account to access payroll processing and save employee salary data across sessions.</p>
+    <button class="btn btn-p" onclick="openAuth()">Sign In / Create Account</button>
+  </div>
+
+  <!-- PAYROLL APP (shown after login) -->
+  <div id="payrollApp" style="display:none;">
+
+    <!-- LOGGED IN BANNER -->
+    <div class="card card-accent-green" style="display:flex;align-items:center;gap:14px;margin-bottom:14px;padding:16px 22px;">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">👤</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;" id="userNameDisplay">Employer</div>
+        <div style="font-size:10px;color:var(--wm);font-family:'DM Mono',monospace;" id="userEmailDisplay"></div>
+      </div>
+      <span style="font-size:10px;font-family:'DM Mono',monospace;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);color:#4ade80;padding:4px 11px;border-radius:100px;">● Signed in</span>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats" id="statsRow">
+      <div class="stat"><div class="stat-n" id="stEmps">0</div><div class="stat-l">Employees</div></div>
+      <div class="stat"><div class="stat-n" style="color:#4ade80;" id="stTotal">BD 0</div><div class="stat-l">Total Payroll</div></div>
+      <div class="stat"><div class="stat-n" style="color:#fbbf24;" id="stOT">BD 0</div><div class="stat-l">OT Payable</div></div>
+      <div class="stat"><div class="stat-n" style="color:#f87171;" id="stPending">0</div><div class="stat-l">No Record</div></div>
+    </div>
+
+    <!-- ── INPUT SECTION ── -->
+    <div style="margin-bottom:14px;">
+      <div class="slabel">Step 1 — Upload Working Hours</div>
+      <div class="card">
+        <div class="mode-tabs">
+          <button class="mode-tab on" id="tabUpload" onclick="setMode('upload')">📂 Upload Excel / CSV</button>
+          <button class="mode-tab" id="tabManual" onclick="setMode('manual')">✏️ Enter Manually</button>
+        </div>
+
+        <!-- UPLOAD PANEL -->
+        <div id="uploadPanel">
+          <div class="drop" id="dropZone" onclick="document.getElementById('hoursFile').click()" ondragover="dov(event)" ondragleave="dol(event)" ondrop="dod(event)">
+            <input type="file" id="hoursFile" accept=".xlsx,.xls,.csv" onchange="onFileChange(event)">
+            <div class="drop-ic">📊</div>
+            <div class="drop-title">Drop hours sheet here or click to browse</div>
+            <div class="drop-sub">XLSX / XLS / CSV — columns: Employee Name, Working Hours</div>
+          </div>
+          <div class="mapper" id="uploadMapper">
+            <div class="slabel" style="margin-bottom:12px;">Map Columns</div>
+            <div class="map-grid">
+              <div><label>Employee Name</label><select class="map-sel" id="mcName"></select></div>
+              <div><label>Employee Code</label><select class="map-sel" id="mcCode"></select></div>
+              <div><label>Total Hours (decimal)</label><select class="map-sel" id="mcHours"></select></div>
+            </div>
+            <button class="btn btn-p btn-sm" onclick="runPayrollFromUpload()">Calculate Payroll →</button>
+          </div>
+        </div>
+
+        <!-- MANUAL PANEL -->
+        <div id="manualPanel" style="display:none;">
+          <div class="tbl-wrap" style="margin-bottom:12px;">
+            <table>
+              <thead><tr><th>Employee Name</th><th>Code</th><th>Hours Worked</th><th></th></tr></thead>
+              <tbody id="manualRows">
+                <tr>
+                  <td><input class="manual-inp" placeholder="Ahmad Al-Khalifa"></td>
+                  <td><input class="manual-inp" placeholder="EMP001"></td>
+                  <td><input class="manual-inp" type="number" step="0.5" placeholder="168"></td>
+                  <td><button class="btn-del" onclick="this.closest('tr').remove()">×</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <button class="btn-add" onclick="addManualRow()">+ Add Row</button>
+            <button class="btn btn-p btn-sm" onclick="runPayrollManual()">Calculate Payroll →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RESULTS SECTION ── -->
+    <div id="resultsSection" style="display:none;margin-bottom:14px;">
+      <div class="slabel">Step 2 — Payroll Results</div>
+      <div class="card" style="padding:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div style="font-size:14px;font-weight:700;">Salary Breakdown</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-g btn-sm" onclick="exportReport()">↓ Download XLSX</button>
+            <button class="btn btn-green btn-sm" onclick="saveToRecords()">💾 Save to Records</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table id="resultsTable">
+            <thead>
+              <tr>
+                <th>#</th><th>Employee</th><th>Code</th><th>Hrs</th>
+                <th>Basic</th><th>HRA</th><th>TA</th><th>Allowance</th>
+                <th>OT Pay</th><th>Deduction</th><th>Net Salary</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+            <tfoot><tr id="resultsTotals"></tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EMPLOYEE DIRECTORY ── -->
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <div class="slabel" style="margin-bottom:0;">Step 3 — Employee Salary Records</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input class="inp" id="empSearch" style="width:180px;font-size:11px;" placeholder="Search…" oninput="filterEmps()">
+          <button class="btn btn-green btn-sm" onclick="openAddEmp()">+ Add Employee</button>
+          <button class="btn btn-g btn-sm" onclick="loadEmps()">↻ Refresh</button>
+        </div>
+      </div>
+      <div id="empLoading" style="padding:30px;text-align:center;color:var(--wm);font-size:12px;">Loading records…</div>
+      <div class="emp-grid" id="empGrid"></div>
+      <div id="noEmps" style="display:none;text-align:center;padding:40px;color:var(--wm);">
+        <div style="font-size:32px;margin-bottom:10px;">👥</div>
+        <div style="font-size:13px;">No employees added yet. Click <b>+ Add Employee</b> to get started.</div>
+      </div>
+    </div>
+
+  </div><!-- /payrollApp -->
+
+</div><!-- /wrap -->
+
+<div id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  APPWRITE
+// ─────────────────────────────────────────────
+const AW_ENDPOINT = 'https://syd.cloud.appwrite.io/v1';
+const AW_PROJECT  = '69d39cd9003dd25b5e57';
+const AW_DB       = 'payroll-db';
+const AW_COL      = 'employees';
+
+const { Client, Account, Databases, ID, Query } = Appwrite;
+const client    = new Client().setEndpoint(AW_ENDPOINT).setProject(AW_PROJECT);
+const account   = new Account(client);
+const databases = new Databases(client);
+
+let currentUser = null;
+let allEmps     = [];
+let payrollRows = [];
+let editingId   = null;
+let uploadHdrs  = [], uploadData = [];
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+(async () => {
+  try {
+    currentUser = await account.get();
+    showApp();
+    loadEmps();
+  } catch { showGuest(); }
+})();
+
+function showApp() {
+  document.getElementById('guestGate').style.display = 'none';
+  document.getElementById('payrollApp').style.display = 'block';
+  document.getElementById('signoutBtn').style.display = 'inline-flex';
+  document.getElementById('userNameDisplay').textContent = currentUser.name || 'Employer';
+  document.getElementById('userEmailDisplay').textContent = currentUser.email;
+}
+function showGuest() {
+  document.getElementById('guestGate').style.display = 'block';
+  document.getElementById('payrollApp').style.display = 'none';
+}
+
+// ─────────────────────────────────────────────
+//  AUTH
+// ─────────────────────────────────────────────
+function openAuth()  { document.getElementById('authModal').classList.add('open'); }
+function closeAuth() { document.getElementById('authModal').classList.remove('open'); }
+function switchTab(e, tab) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('on'));
+  e.target.classList.add('on');
+  document.getElementById('loginPanel').style.display  = tab==='login'  ? 'block':'none';
+  document.getElementById('signupPanel').style.display = tab==='signup' ? 'block':'none';
+}
+async function doLogin() {
+  const email = $('liEmail').value.trim(), pass = $('liPass').value;
+  const err = $('liErr');
+  err.style.display = 'none';
+  if (!email||!pass) { showErr(err,'Enter email and password.'); return; }
+  try {
+    showLoad('Signing in…');
+    await account.createEmailPasswordSession(email, pass);
+    currentUser = await account.get();
+    closeAuth();
+    showApp();
+    loadEmps();
+    toast('✓ Signed in');
+  } catch(e) { showErr(err, e.message||'Login failed.'); }
+  finally { hideLoad(); }
+}
+async function doSignup() {
+  const name = $('suName').value.trim(), email = $('suEmail').value.trim(), pass = $('suPass').value;
+  const err = $('suErr');
+  err.style.display = 'none';
+  if (!name||!email||!pass) { showErr(err,'All fields required.'); return; }
+  if (pass.length < 8) { showErr(err,'Password must be at least 8 characters.'); return; }
+  try {
+    showLoad('Creating account…');
+    await account.create(ID.unique(), email, pass, name);
+    await account.createEmailPasswordSession(email, pass);
+    currentUser = await account.get();
+    closeAuth();
+    showApp();
+    toast('✓ Account created. Welcome!');
+  } catch(e) { showErr(err, e.message||'Signup failed.'); }
+  finally { hideLoad(); }
+}
+async function doSignout() {
+  try {
+    showLoad('Signing out…');
+    await account.deleteSession('current');
+    currentUser = null;
+    allEmps = [];
+    showGuest();
+    document.getElementById('signoutBtn').style.display = 'none';
+    toast('Signed out');
+  } catch(e) { toast('Error: '+(e.message||''), 'err'); }
+  finally { hideLoad(); }
+}
+
+// ─────────────────────────────────────────────
+//  EMPLOYEES
+// ─────────────────────────────────────────────
+async function loadEmps() {
+  if (!currentUser) return;
+  $('empLoading').style.display = 'block';
+  $('empGrid').innerHTML = '';
+  try {
+    const res = await databases.listDocuments(AW_DB, AW_COL, [
+      Query.equal('userId', currentUser.$id), Query.limit(200)
+    ]);
+    allEmps = res.documents;
+    renderEmps(allEmps);
+    updateStats();
+  } catch(e) {
+    $('empLoading').textContent = 'Error loading: ' + (e.message||'');
+    console.error(e);
+  }
+}
+function renderEmps(list) {
+  $('empLoading').style.display = 'none';
+  const grid = $('empGrid'), noMsg = $('noEmps');
+  if (!list.length) { noMsg.style.display = 'block'; grid.innerHTML = ''; return; }
+  noMsg.style.display = 'none';
+  grid.innerHTML = list.map(e => {
+    const init = (e.name||'E').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="emp-card" onclick="openEditEmp('${e.$id}')">
+      <div class="emp-avatar">${init}</div>
+      <div class="emp-info">
+        <div class="emp-name">${e.name}</div>
+        <div class="emp-meta">${e.empCode||'—'} · ${e.workLocation||'—'}</div>
+      </div>
+      <div class="emp-salary">BD ${(e.totalSalary||0).toFixed(2)}</div>
+    </div>`;
+  }).join('');
+}
+function filterEmps() {
+  const q = $('empSearch').value.toLowerCase();
+  renderEmps(allEmps.filter(e => (e.name||'').toLowerCase().includes(q)||(e.empCode||'').toLowerCase().includes(q)));
+}
+function updateStats() {
+  const total = allEmps.reduce((s,e)=>s+(e.totalSalary||0),0);
+  const ot    = allEmps.reduce((s,e)=>s+(e.normalOTRate||0)+(e.holidayOTRate||0),0);
+  const pend  = allEmps.filter(e=>!e.lastCalculated).length;
+  $('stEmps').textContent    = allEmps.length;
+  $('stTotal').textContent   = 'BD '+total.toFixed(2);
+  $('stOT').textContent      = 'BD '+ot.toFixed(2);
+  $('stPending').textContent = pend;
+}
+
+// EMP FORM
+function empForm(e={}) {
+  const f = (id,label,val='',type='number',ph='0.000') =>
+    `<div class="field"><label>${label}</label><input class="inp" id="ef-${id}" type="${type}" value="${val||''}" placeholder="${ph}"></div>`;
+  return `
+    <div class="g2">
+      ${f('name','Employee Name',e.name,'text','Ahmad Al-Khalifa')}
+      ${f('code','Employee Code / ID',e.empCode,'text','EMP001')}
+    </div>
+    <div class="g2">
+      ${f('hire','Hire Date',e.hireDate,'date','')}
+      ${f('loc','Work Location',e.workLocation,'text','Bahrain')}
+    </div>
+    <div class="divider"></div>
+    <div class="slabel" style="margin-bottom:12px;">Salary Components (BD / Month)</div>
+    <div class="g3">
+      ${f('basic','Basic Salary',e.basic)}
+      ${f('hra','HRA',e.hra)}
+      ${f('ta','Transport Allow.',e.ta)}
+    </div>
+    <div class="g3">
+      ${f('allow','Other Allowance',e.otherAllow)}
+      ${f('bonus','Bonuses',e.bonuses)}
+      ${f('total','Total Gross Salary',e.totalSalary)}
+    </div>
+    <div class="divider"></div>
+    <div class="slabel" style="margin-bottom:12px;">OT & Hours</div>
+    <div class="g3">
+      ${f('stdhrs','Std Hours / Month',e.hoursToBeWorked||168)}
+      ${f('nOT','Normal OT Rate (BD/hr)',e.normalOTRate)}
+      ${f('hOT','Holiday OT Rate (BD/hr)',e.holidayOTRate)}
+    </div>`;
+}
+function gef(id) { return document.getElementById('ef-'+id)?.value; }
+function gefN(id) { return parseFloat(gef(id))||0; }
+function getFormData() {
+  return {
+    name:gef('name'), empCode:gef('code'), hireDate:gef('hire'), workLocation:gef('loc'),
+    basic:gefN('basic'), hra:gefN('hra'), ta:gefN('ta'), otherAllow:gefN('allow'),
+    bonuses:gefN('bonus'), totalSalary:gefN('total'),
+    hoursToBeWorked:gefN('stdhrs')||168, normalOTRate:gefN('nOT'), holidayOTRate:gefN('hOT'),
+    userId: currentUser.$id
+  };
+}
+function openAddEmp() {
+  editingId = null;
+  $('empModalTitle').textContent = 'Add Employee';
+  $('empModalSub').textContent   = 'Enter salary details. Saved to your Appwrite account.';
+  $('empModalBody').innerHTML    = empForm({});
+  $('deleteBtn').style.display   = 'none';
+  $('empModal').classList.add('open');
+}
+function openEditEmp(id) {
+  editingId = id;
+  const e = allEmps.find(x=>x.$id===id); if (!e) return;
+  $('empModalTitle').textContent = e.name;
+  $('empModalSub').textContent   = (e.empCode||'—') + ' · ' + (e.workLocation||'—');
+  $('empModalBody').innerHTML    = empForm(e);
+  $('deleteBtn').style.display   = 'inline-flex';
+  $('empModal').classList.add('open');
+}
+function closeEmpModal() { $('empModal').classList.remove('open'); }
+async function saveEmployee() {
+  const data = getFormData();
+  if (!data.name) { toast('Employee name required','err'); return; }
+  try {
+    showLoad('Saving…');
+    if (editingId) await databases.updateDocument(AW_DB, AW_COL, editingId, data);
+    else           await databases.createDocument(AW_DB, AW_COL, ID.unique(), data);
+    closeEmpModal(); loadEmps(); toast('✓ Saved');
+  } catch(e) { toast('Error: '+(e.message||''),'err'); }
+  finally { hideLoad(); }
+}
+async function deleteEmployee() {
+  if (!editingId || !confirm('Delete this employee? This cannot be undone.')) return;
+  try {
+    showLoad('Deleting…');
+    await databases.deleteDocument(AW_DB, AW_COL, editingId);
+    closeEmpModal(); loadEmps(); toast('Deleted');
+  } catch(e) { toast('Error: '+(e.message||''),'err'); }
+  finally { hideLoad(); }
+}
+
+// ─────────────────────────────────────────────
+//  INPUT MODES
+// ─────────────────────────────────────────────
+function setMode(m) {
+  $('uploadPanel').style.display = m==='upload' ? 'block':'none';
+  $('manualPanel').style.display = m==='manual' ? 'block':'none';
+  $('tabUpload').className = 'mode-tab' + (m==='upload'?' on':'');
+  $('tabManual').className = 'mode-tab' + (m==='manual'?' on':'');
+}
+
+// UPLOAD
+function dov(e) { e.preventDefault(); $('dropZone').classList.add('over'); }
+function dol(e) { $('dropZone').classList.remove('over'); }
+function dod(e) { e.preventDefault(); $('dropZone').classList.remove('over'); const f=e.dataTransfer.files[0]; if(f) loadFile(f); }
+function onFileChange(e) { if(e.target.files[0]) loadFile(e.target.files[0]); }
+function loadFile(file) {
+  const r = new FileReader();
+  r.onload = ev => {
+    const wb = XLSX.read(ev.target.result, {type:'binary', cellDates:true});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(ws, {header:1});
+    uploadHdrs = json[0]||[]; uploadData = json.slice(1);
+    buildMapper();
+    $('uploadMapper').classList.add('on');
+    toast('📂 '+ uploadData.length +' rows loaded');
+  };
+  r.readAsBinaryString(file);
+}
+function buildMapper() {
+  ['mcName','mcCode','mcHours'].forEach(id => {
+    const sel = $(id);
+    sel.innerHTML = '<option value="">— Skip —</option>' +
+      uploadHdrs.map((h,i)=>`<option value="${i}">${h}</option>`).join('');
+    const lbl = id==='mcName'?['name'] : id==='mcCode'?['code','id'] : ['hour','total','work'];
+    uploadHdrs.forEach((h,i)=>{
+      if (lbl.some(l => h.toLowerCase().includes(l))) sel.value = i;
+    });
+  });
+}
+function runPayrollFromUpload() {
+  const ni=$('mcName').value, hi=$('mcHours').value, ci=$('mcCode').value;
+  if (ni==='') { toast('Select Name column','err'); return; }
+  const map = {};
+  uploadData.filter(r=>r[ni]).forEach(r => {
+    map[String(r[ni]).trim()] = { code: ci!==''?String(r[ci]||''):'', hours: parseFloat(r[hi])||0 };
+  });
+  calcPayroll(map);
+}
+
+// MANUAL
+function addManualRow() {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input class="manual-inp" placeholder="Employee Name"></td>
+    <td><input class="manual-inp" placeholder="EMP002"></td>
+    <td><input class="manual-inp" type="number" step="0.5" placeholder="168"></td>
+    <td><button class="btn-del" onclick="this.closest('tr').remove()">×</button></td>`;
+  $('manualRows').appendChild(tr);
+}
+function runPayrollManual() {
+  const map = {};
+  document.querySelectorAll('#manualRows tr').forEach(row => {
+    const ins = row.querySelectorAll('.manual-inp');
+    const name = ins[0]?.value.trim();
+    if (name) map[name] = { code: ins[1]?.value.trim()||'', hours: parseFloat(ins[2]?.value)||0 };
+  });
+  if (!Object.keys(map).length) { toast('Add at least one row','err'); return; }
+  calcPayroll(map);
+}
+
+// ─────────────────────────────────────────────
+//  PAYROLL CALCULATION
+// ─────────────────────────────────────────────
+function calcPayroll(hoursMap) {
+  payrollRows = Object.entries(hoursMap).map(([name, {code, hours}]) => {
+    const emp = allEmps.find(e=>e.name.toLowerCase()===name.toLowerCase())
+             || allEmps.find(e=>e.empCode && e.empCode===code)
+             || null;
+    const stdHrs   = emp?.hoursToBeWorked || 168;
+    const basic    = emp?.basic || 0;
+    const hra      = emp?.hra || 0;
+    const ta       = emp?.ta || 0;
+    const allow    = emp?.otherAllow || 0;
+    const bonuses  = emp?.bonuses || 0;
+    const gross    = emp?.totalSalary || (basic+hra+ta+allow+bonuses);
+    const hrRate   = stdHrs > 0 ? (basic/stdHrs) : 0;
+    const otRate   = emp?.normalOTRate || (hrRate * 1.5);
+    const otHrs    = Math.max(0, hours-stdHrs);
+    const shortHrs = Math.max(0, stdHrs-hours);
+    const otPay    = +(otHrs * otRate).toFixed(3);
+    const ded      = +(shortHrs * hrRate).toFixed(3);
+    const net      = +(gross + otPay - ded).toFixed(3);
+    return { name, empCode: code||emp?.empCode||'—', hours, stdHrs, basic, hra, ta, allow, bonuses, gross, otPay, ded, net, matched:!!emp, empId: emp?.$id||null };
+  });
+  renderResults();
+}
+function renderResults() {
+  let totGross=0,totNet=0,totOT=0,totDed=0;
+  $('resultsBody').innerHTML = payrollRows.map((r,i)=>{
+    totGross+=r.gross; totNet+=r.net; totOT+=r.otPay; totDed+=r.ded;
+    const tag = r.matched
+      ? `<span class="badge badge-green">✓ Matched</span>`
+      : `<span class="badge badge-amber">⚠ No Record</span>`;
+    return `<tr>
+      <td style="color:var(--wm)">${i+1}</td>
+      <td><b>${r.name}</b></td>
+      <td style="color:var(--wm);font-family:'DM Mono',monospace">${r.empCode}</td>
+      <td style="font-family:'DM Mono',monospace">${r.hours.toFixed(1)} / ${r.stdHrs}</td>
+      <td>BD ${r.basic.toFixed(3)}</td>
+      <td>BD ${r.hra.toFixed(3)}</td>
+      <td>BD ${r.ta.toFixed(3)}</td>
+      <td>BD ${r.allow.toFixed(3)}</td>
+      <td style="color:#fbbf24">BD ${r.otPay.toFixed(3)}</td>
+      <td style="color:#f87171">-BD ${r.ded.toFixed(3)}</td>
+      <td style="color:#4ade80;font-weight:700">BD ${r.net.toFixed(3)}</td>
+      <td>${tag}</td>
+    </tr>`;
+  }).join('');
+  $('resultsTotals').innerHTML = `
+    <td colspan="4" style="font-weight:700;">TOTAL — ${payrollRows.length} employees</td>
+    <td>BD ${totGross.toFixed(3)}</td>
+    <td colspan="3"></td>
+    <td style="color:#fbbf24">BD ${totOT.toFixed(3)}</td>
+    <td style="color:#f87171">-BD ${totDed.toFixed(3)}</td>
+    <td style="color:#4ade80;font-weight:700">BD ${totNet.toFixed(3)}</td>
+    <td></td>`;
+  $('resultsSection').style.display = 'block';
+  $('resultsSection').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+async function saveToRecords() {
+  if (!currentUser||!payrollRows.length) return;
+  try {
+    showLoad('Saving results…');
+    for (const r of payrollRows) {
+      if (r.empId) {
+        await databases.updateDocument(AW_DB, AW_COL, r.empId, {
+          lastCalculated:  new Date().toISOString(),
+          lastHoursWorked: r.hours,
+          lastNetSalary:   r.net
+        });
+      }
+    }
+    await loadEmps();
+    toast('✓ Results saved to employee records');
+  } catch(e) { toast('Error: '+(e.message||''),'err'); }
+  finally { hideLoad(); }
+}
+function exportReport() {
+  const wb = XLSX.utils.book_new();
+  const rows = [
+    ['PAYROLL PROCESSING REPORT'],
+    ['Generated: '+new Date().toLocaleString()],
+    ['Employer:  '+(currentUser?.name||'—')],
+    [],
+    ['#','Employee','Code','Hrs Worked','Std Hrs','Basic','HRA','TA','Allow','OT Pay','Deduction','Net Salary']
+  ];
+  payrollRows.forEach((r,i)=>{
+    rows.push([i+1, r.name, r.empCode, r.hours, r.stdHrs, r.basic, r.hra, r.ta, r.allow, r.otPay, r.ded, r.net]);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:4},{wch:22},{wch:12},{wch:11},{wch:11},{wch:10},{wch:10},{wch:10},{wch:12},{wch:10},{wch:12},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Payroll');
+  XLSX.writeFile(wb, 'Payroll_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
+
+// ─────────────────────────────────────────────
+//  UTILS
+// ─────────────────────────────────────────────
+const $ = id => document.getElementById(id);
+function showErr(el,msg){ el.textContent=msg; el.style.display='block'; }
+function showLoad(msg='Loading…'){ $('loadingMsg').textContent=msg; $('loadingCover').classList.add('show'); }
+function hideLoad(){ $('loadingCover').classList.remove('show'); }
+function toast(msg, type='ok'){
+  const t=$('toast');
+  t.textContent=msg;
+  t.style.borderColor = type==='err'?'rgba(239,68,68,.4)':'var(--border)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+</script>
+</body>
+</html>

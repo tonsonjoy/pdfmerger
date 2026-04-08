@@ -3,163 +3,208 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EassyOffice — Smart Workplace Tools</title>
+<title>EassyOffice — Browser-Based Office Suite</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 :root{
-  --black:#070707;--off-black:#0f0f0f;--card:#131313;--card-h:#1a1a1a;
-  --border:#222;--border-l:#2e2e2e;--white:#efefef;
-  --wd:rgba(239,239,239,.6);--wm:rgba(239,239,239,.3);--wf:rgba(239,239,239,.04);
-  --green:#22c55e;--blue:#3b82f6;--amber:#f59e0b;
+  --black:#090909;--off-black:#111;--card:#161616;--card-h:#1d1d1d;
+  --border:#272727;--border-l:#333;--white:#f0f0f0;
+  --wd:rgba(240,240,240,.6);--wm:rgba(240,240,240,.3);--wf:rgba(240,240,240,.06);
+  --green:#22c55e;--teal:#0ea5e9;--amber:#f59e0b;--blue:#3b82f6;
   --r-xl:20px;--r-lg:14px;--r-md:10px;--r-sm:7px;
 }
 body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");opacity:.5;}
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  opacity:.45;}
 .sgrid{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(255,255,255,.011) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.011) 1px,transparent 1px);
-  background-size:72px 72px;}
+  background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:64px 64px;}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;gap:12px;padding:14px 32px;background:rgba(7,7,7,.85);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
-.nav-brand{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;letter-spacing:-.3px;}
-.nav-dot{width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);}
-.nav-links{display:flex;align-items:center;gap:4px;margin-left:auto;}
-.nav-link{padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:500;color:var(--wm);text-decoration:none;transition:all .16s;}
-.nav-link:hover{color:var(--white);background:var(--wf);}
-.nav-cta{background:var(--white);color:var(--black);padding:7px 16px;border-radius:var(--r-sm);font-size:12px;font-weight:700;text-decoration:none;transition:all .16s;}
-.nav-cta:hover{background:#ddd;}
+.wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:0 24px 120px;}
 
-.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:140px 24px 120px;}
+/* ── NAV ── */
+nav{display:flex;align-items:center;padding:22px 0 0;margin-bottom:80px;animation:fadeUp .5s ease both;}
+.logo-img{height:46px;width:auto;object-fit:contain;}
+.nav-links{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.nav-link{font-size:11px;font-weight:500;color:var(--wm);padding:6px 13px;border-radius:var(--r-sm);border:1px solid transparent;text-decoration:none;transition:all .16s;font-family:'DM Mono',monospace;letter-spacing:.3px;}
+.nav-link:hover{color:var(--wd);border-color:var(--border);}
+.nav-link.active{color:var(--white);background:var(--wf);border-color:var(--border-l);}
 
-/* HERO */
-.hero{text-align:center;margin-bottom:96px;animation:fadeUp .7s ease both;}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;background:var(--wf);border:1px solid var(--border-l);border-radius:100px;padding:5px 14px;font-size:11px;color:var(--wm);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.8px;margin-bottom:28px;}
-.hero-eyebrow-dot{width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 5px var(--green);}
-h1{font-size:clamp(42px,7vw,84px);font-weight:800;letter-spacing:-3.5px;line-height:.95;margin-bottom:24px;}
-h1 em{font-style:normal;color:rgba(239,239,239,.22);}
-.hero-sub{font-size:16px;color:var(--wd);font-weight:300;max-width:480px;margin:0 auto 40px;line-height:1.8;}
-.hero-btns{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;}
-.btn-hero{display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:var(--r-lg);font-size:13px;font-weight:700;text-decoration:none;transition:all .18s;letter-spacing:-.2px;}
-.btn-hero-p{background:var(--white);color:var(--black);}
-.btn-hero-p:hover{background:#e0e0e0;transform:translateY(-1px);}
-.btn-hero-g{background:var(--wf);color:var(--wd);border:1px solid var(--border);}
-.btn-hero-g:hover{border-color:var(--border-l);color:var(--white);}
+/* ── HERO ── */
+.hero{margin-bottom:72px;animation:fadeUp .6s .06s ease both;}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--wf);border:1px solid var(--border);padding:5px 12px;border-radius:100px;font-size:10px;font-family:'DM Mono',monospace;color:var(--wm);letter-spacing:.8px;text-transform:uppercase;margin-bottom:22px;}
+.eyebrow .dot{width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);}
+h1{font-size:clamp(38px,7vw,72px);font-weight:700;letter-spacing:-3px;line-height:1.01;margin-bottom:22px;}
+h1 em{font-style:normal;color:rgba(240,240,240,.22);}
+.hero-sub{font-size:15px;color:var(--wd);font-weight:300;max-width:480px;line-height:1.85;}
 
-/* PRODUCT CARDS */
-.products{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:80px;}
-@media(max-width:640px){.products{grid-template-columns:1fr;}}
-.pcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:32px;text-decoration:none;color:inherit;transition:all .22s;position:relative;overflow:hidden;animation:fadeUp .7s ease both;}
-.pcard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.015) 0%,transparent 60%);pointer-events:none;}
-.pcard:hover{border-color:var(--border-l);background:var(--card-h);transform:translateY(-2px);}
-.pcard-ic{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px;border:1px solid var(--border-l);}
-.pcard-ic.pdf{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.18);}
-.pcard-ic.pay{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.18);}
-.pcard-title{font-size:20px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px;}
-.pcard-desc{font-size:13px;color:var(--wd);line-height:1.7;margin-bottom:20px;}
-.pcard-tags{display:flex;flex-wrap:wrap;gap:6px;}
-.tag{font-size:10px;font-family:'DM Mono',monospace;color:var(--wm);background:var(--wf);border:1px solid var(--border);padding:3px 9px;border-radius:100px;letter-spacing:.4px;}
-.pcard-arrow{position:absolute;top:28px;right:28px;font-size:18px;color:var(--wm);transition:all .18s;}
-.pcard:hover .pcard-arrow{color:var(--white);transform:translate(2px,-2px);}
+/* ── SECTION LABEL ── */
+.slabel{font-size:9px;color:var(--wm);text-transform:uppercase;letter-spacing:1.8px;font-weight:700;margin-bottom:20px;font-family:'DM Mono',monospace;}
 
-/* FEATURES */
-.features-section{margin-bottom:80px;animation:fadeUp .7s .15s ease both;opacity:0;animation-fill-mode:forwards;}
-.section-eyebrow{font-size:9px;font-family:'DM Mono',monospace;color:var(--wm);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;}
-.section-title{font-size:clamp(24px,4vw,38px);font-weight:700;letter-spacing:-1.5px;margin-bottom:40px;}
-.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-@media(max-width:768px){.features-grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:480px){.features-grid{grid-template-columns:1fr;}}
-.feat{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:22px;}
-.feat-ic{font-size:20px;margin-bottom:12px;}
-.feat-title{font-size:13px;font-weight:700;margin-bottom:5px;}
-.feat-desc{font-size:12px;color:var(--wm);line-height:1.6;}
+/* ── TOOL CARDS ── */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:72px;}
+@media(max-width:700px){.tools-grid{grid-template-columns:1fr;}}
+@media(max-width:960px) and (min-width:701px){.tools-grid{grid-template-columns:1fr 1fr;}}
 
-/* PRIVACY BADGE */
-.privacy-bar{display:flex;align-items:center;justify-content:center;gap:28px;padding:28px;background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);margin-bottom:80px;flex-wrap:wrap;animation:fadeUp .7s .25s ease both;opacity:0;animation-fill-mode:forwards;}
-.priv-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--wm);}
-.priv-dot{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);flex-shrink:0;}
+.tool-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:26px 24px;display:flex;flex-direction:column;gap:0;position:relative;overflow:hidden;transition:all .22s;text-decoration:none;color:inherit;animation:fadeUp .5s ease both;}
+.tool-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -20%,rgba(255,255,255,.03),transparent 65%);pointer-events:none;transition:.3s;}
+.tool-card:hover{border-color:var(--border-l);background:var(--card-h);transform:translateY(-3px);box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.tool-card:hover::before{background:radial-gradient(ellipse at 50% -20%,rgba(255,255,255,.06),transparent 65%);}
 
-/* FOOTER */
-footer{text-align:center;padding-top:40px;border-top:1px solid var(--border);}
-.foot-brand{font-size:14px;font-weight:700;color:var(--wd);margin-bottom:10px;}
-.foot-sub{font-size:12px;color:var(--wm);}
+.tc-icon-wrap{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:18px;background:var(--off-black);flex-shrink:0;}
+.tc-tag{font-size:9px;font-family:'DM Mono',monospace;letter-spacing:1.2px;text-transform:uppercase;padding:3px 9px;border-radius:100px;border:1px solid;margin-bottom:12px;display:inline-block;}
+.tc-name{font-size:18px;font-weight:700;letter-spacing:-.4px;margin-bottom:8px;}
+.tc-desc{font-size:12px;color:var(--wm);line-height:1.7;margin-bottom:20px;flex:1;}
+.tc-list{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:22px;}
+.tc-list li{font-size:11px;color:var(--wd);font-family:'DM Mono',monospace;letter-spacing:.2px;}
+.tc-list li::before{content:'→ ';color:var(--border-l);}
+.tc-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--r-lg);font-size:12px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.3px;border:1px solid;transition:all .18s;width:fit-content;text-decoration:none;}
+
+/* PDF card */
+.tc-pdf .tc-icon-wrap{background:rgba(14,165,233,.07);border-color:rgba(14,165,233,.2);}
+.tc-pdf .tc-tag{color:var(--teal);border-color:rgba(14,165,233,.3);background:rgba(14,165,233,.06);}
+.tc-pdf .tc-btn{color:var(--teal);border-color:rgba(14,165,233,.3);background:rgba(14,165,233,.05);}
+.tc-pdf .tc-btn:hover{background:rgba(14,165,233,.15);border-color:var(--teal);}
+.tc-pdf:hover{border-color:rgba(14,165,233,.25);}
+
+/* Hours card */
+.tc-hours .tc-icon-wrap{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.2);}
+.tc-hours .tc-tag{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06);}
+.tc-hours .tc-btn{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05);}
+.tc-hours .tc-btn:hover{background:rgba(245,158,11,.15);border-color:var(--amber);}
+.tc-hours:hover{border-color:rgba(245,158,11,.25);}
+
+/* Payroll card */
+.tc-payroll .tc-icon-wrap{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.2);}
+.tc-payroll .tc-tag{color:var(--green);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.06);}
+.tc-payroll .tc-btn{color:var(--green);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05);}
+.tc-payroll .tc-btn:hover{background:rgba(34,197,94,.15);border-color:var(--green);}
+.tc-payroll:hover{border-color:rgba(34,197,94,.25);}
+
+/* ── FEATURE STRIP ── */
+.feat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:72px;animation:fadeUp .5s .15s ease both;}
+@media(max-width:560px){.feat-strip{grid-template-columns:1fr;}}
+.fs-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:20px 18px;}
+.fs-icon{font-size:20px;margin-bottom:11px;display:block;}
+.fs-title{font-size:12px;font-weight:700;margin-bottom:5px;}
+.fs-desc{font-size:11px;color:var(--wm);line-height:1.7;}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:40px 0 0;border-top:1px solid var(--border);animation:fadeUp .5s .2s ease both;}
+.foot-priv{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:8px 18px;font-size:11px;color:var(--wm);font-family:'DM Mono',monospace;margin-bottom:16px;}
+.pdot{width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);}
+.foot-copy{font-size:11px;color:rgba(240,240,240,.2);}
+.foot-email{font-size:12px;color:var(--wm);margin-bottom:12px;}
+.foot-email a{color:var(--wd);text-decoration:none;transition:.15s;}
+.foot-email a:hover{color:var(--white);}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:100px;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:100px;}
 </style>
 </head>
 <body>
 <div class="sgrid"></div>
-
-<nav>
-  <div class="nav-brand"><span class="nav-dot"></span>EassyOffice</div>
-  <div class="nav-links">
-    <a class="nav-link" href="pdf-tools.html">PDF Tools</a>
-    <a class="nav-link" href="payroll-manager.html">Payroll</a>
-    <a class="nav-cta" href="payroll-manager.html">Open App →</a>
-  </div>
-</nav>
-
 <div class="wrap">
+
+  <!-- NAV -->
+  <nav>
+    <img src="logo.png" alt="EassyOffice" class="logo-img">
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Tools</a>
+      <a href="features.html" class="nav-link">Why Us</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
   <div class="hero">
-    <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>100% Browser-Based · Zero Uploads</div>
-    <h1>Smart tools for <em>modern</em> workplaces.</h1>
-    <p class="hero-sub">PDF management and payroll processing — powerful, private, and completely free. Everything runs in your browser.</p>
-    <div class="hero-btns">
-      <a class="btn-hero btn-hero-p" href="payroll-manager.html">Open Payroll Manager →</a>
-      <a class="btn-hero btn-hero-g" href="pdf-tools.html">PDF Tools</a>
+    <div class="eyebrow"><span class="dot"></span>Browser-Based · Zero Upload · Free Forever</div>
+    <h1>Your office suite,<br><em>in your browser.</em></h1>
+    <p class="hero-sub">Three powerful tools — PDF processing, attendance tracking, and payroll — running entirely on your device. No accounts. No servers. No data leaving your machine.</p>
+  </div>
+
+  <!-- TOOLS -->
+  <div class="slabel" style="margin-bottom:18px;">Available Tools</div>
+  <div class="tools-grid">
+
+    <!-- PDF TOOLS -->
+    <a href="pdf-tools.html" class="tool-card tc-pdf" style="animation-delay:.07s">
+      <div class="tc-icon-wrap">📄</div>
+      <span class="tc-tag">PDF Tools</span>
+      <div class="tc-name">PDF Tools</div>
+      <p class="tc-desc">Merge, split, and compress PDF files instantly. No uploads — everything runs locally in your browser at full speed.</p>
+      <ul class="tc-list">
+        <li>Merge multiple PDFs</li>
+        <li>Split by page range</li>
+        <li>Compress with custom settings</li>
+        <li>Drag-and-drop reorder</li>
+      </ul>
+      <span class="tc-btn">Open Tool →</span>
+    </a>
+
+    <!-- WORKING HOURS -->
+    <a href="payroll-manager.html" class="tool-card tc-hours" style="animation-delay:.12s">
+      <div class="tc-icon-wrap">⏱</div>
+      <span class="tc-tag">Attendance</span>
+      <div class="tc-name">Hours Calculator</div>
+      <p class="tc-desc">Upload attendance sheets and calculate precise working hours, late arrivals, overtime, and shift breakdowns with custom rounding rules.</p>
+      <ul class="tc-list">
+        <li>Upload XLSX / CSV attendance</li>
+        <li>Morning & evening shift detection</li>
+        <li>Custom OT & rounding rules</li>
+        <li>Export detailed XLSX report</li>
+      </ul>
+      <span class="tc-btn">Open Tool →</span>
+    </a>
+
+    <!-- PAYROLL PROCESSING -->
+    <a href="payroll-processing.html" class="tool-card tc-payroll" style="animation-delay:.17s">
+      <div class="tc-icon-wrap">💰</div>
+      <span class="tc-tag">Payroll · Cloud</span>
+      <div class="tc-name">Payroll Processing</div>
+      <p class="tc-desc">Calculate total salary for each employee based on hours worked. Employer login via Appwrite — employee data is saved securely in the cloud.</p>
+      <ul class="tc-list">
+        <li>Upload hours sheet or enter manually</li>
+        <li>Auto-calculates net salary & OT</li>
+        <li>Employer login & employee records</li>
+        <li>Download payroll report XLSX</li>
+      </ul>
+      <span class="tc-btn">Open Tool →</span>
+    </a>
+
+  </div>
+
+  <!-- FEATURES -->
+  <div class="slabel">Why EassyOffice</div>
+  <div class="feat-strip">
+    <div class="fs-item">
+      <span class="fs-icon">🔒</span>
+      <div class="fs-title">100% Private</div>
+      <div class="fs-desc">PDF and Hours tools process files entirely on your device. Nothing is ever uploaded to a server.</div>
+    </div>
+    <div class="fs-item">
+      <span class="fs-icon">⚡</span>
+      <div class="fs-title">Instant Processing</div>
+      <div class="fs-desc">No server queues or upload waits. Tools run at full local CPU speed — results in seconds.</div>
+    </div>
+    <div class="fs-item">
+      <span class="fs-icon">🆓</span>
+      <div class="fs-title">Free Forever</div>
+      <div class="fs-desc">No subscriptions, no trial expiry, no credit card. All tools are completely free with no hidden limits.</div>
     </div>
   </div>
 
-  <div class="products">
-    <a class="pcard" href="pdf-tools.html">
-      <span class="pcard-arrow">↗</span>
-      <div class="pcard-ic pdf">📄</div>
-      <div class="pcard-title">PDF Tools</div>
-      <div class="pcard-desc">Merge, split, and compress PDF files instantly. No uploads, no accounts — everything runs locally in your browser.</div>
-      <div class="pcard-tags">
-        <span class="tag">Merge</span><span class="tag">Split</span><span class="tag">Compress</span><span class="tag">No upload</span>
-      </div>
-    </a>
-    <a class="pcard" href="payroll-manager.html">
-      <span class="pcard-arrow">↗</span>
-      <div class="pcard-ic pay">💼</div>
-      <div class="pcard-title">Payroll Manager</div>
-      <div class="pcard-desc">Calculate working hours, process payroll, and manage employee salary data with cloud sync for small businesses.</div>
-      <div class="pcard-tags">
-        <span class="tag">Working Hours</span><span class="tag">Payroll</span><span class="tag">Cloud Sync</span><span class="tag">XLSX Export</span>
-      </div>
-    </a>
-  </div>
-
-  <div class="features-section">
-    <div class="section-eyebrow">Why EassyOffice</div>
-    <div class="section-title">Built for small teams.</div>
-    <div class="features-grid">
-      <div class="feat"><div class="feat-ic">🔒</div><div class="feat-title">Privacy First</div><div class="feat-desc">PDF tools never touch a server. Your files stay on your device, always.</div></div>
-      <div class="feat"><div class="feat-ic">⚡</div><div class="feat-title">Instant Processing</div><div class="feat-desc">No waiting, no queues. Results are generated in seconds using your browser's compute power.</div></div>
-      <div class="feat"><div class="feat-ic">☁️</div><div class="feat-title">Cloud Payroll Sync</div><div class="feat-desc">Employer accounts with secure cloud storage for employee salary data and payroll history.</div></div>
-      <div class="feat"><div class="feat-ic">📊</div><div class="feat-title">Excel Import/Export</div><div class="feat-desc">Upload attendance Excel files, process them, and download detailed XLSX payroll reports.</div></div>
-      <div class="feat"><div class="feat-ic">🕐</div><div class="feat-title">Smart Hour Calc</div><div class="feat-desc">Automatic shift detection, grace periods, OT rounding, and custom calculation rules.</div></div>
-      <div class="feat"><div class="feat-ic">💰</div><div class="feat-title">Salary Processing</div><div class="feat-desc">Upload employee salary profiles and auto-calculate total pay from working hours data.</div></div>
-    </div>
-  </div>
-
-  <div class="privacy-bar">
-    <div class="priv-item"><span class="priv-dot"></span>No ads, ever</div>
-    <div class="priv-item"><span class="priv-dot"></span>PDF files never leave your device</div>
-    <div class="priv-item"><span class="priv-dot"></span>Payroll data encrypted in transit</div>
-    <div class="priv-item"><span class="priv-dot"></span>No tracking or analytics</div>
-    <div class="priv-item"><span class="priv-dot"></span>Free forever</div>
-  </div>
-
+  <!-- FOOTER -->
   <footer>
-    <div class="foot-brand">EassyOffice</div>
-    <div class="foot-sub">Smart workplace tools for modern small businesses.</div>
+    <div class="foot-priv"><span class="pdot"></span>Files never leave your device</div>
+    <div class="foot-email">Support: <a href="mailto:mediafarmingspace@gmail.com">mediafarmingspace@gmail.com</a></div>
+    <div class="foot-copy">© 2025 EassyOffice · Browser-Based Excellence</div>
   </footer>
+
 </div>
 </body>
 </html>
