@@ -20,49 +20,34 @@ html{scroll-behavior:smooth}
 }
 body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
 body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
-  opacity:.45;}
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");opacity:.45;}
 .sgrid{position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
   background-size:64px 64px;}
-.wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:0 24px 120px;}
-
-/* ── NAV ── */
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 24px 120px;}
 nav{display:flex;align-items:center;padding:22px 0 0;margin-bottom:52px;animation:fadeUp .5s ease both;}
 .logo-img{height:46px;width:auto;object-fit:contain;}
-.nav-links{margin-left:auto;display:flex;align-items:center;gap:6px;}
+.nav-links{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .nav-link{font-size:11px;font-weight:500;color:var(--wm);padding:6px 13px;border-radius:var(--r-sm);border:1px solid transparent;text-decoration:none;transition:all .16s;font-family:'DM Mono',monospace;letter-spacing:.3px;}
 .nav-link:hover{color:var(--wd);border-color:var(--border);}
 .nav-link.active{color:var(--white);background:var(--wf);border-color:var(--border-l);}
-.nav-user{font-size:11px;color:var(--wm);font-family:'DM Mono',monospace;padding:6px 12px;background:var(--wf);border:1px solid var(--border);border-radius:100px;}
 .btn-signout{font-size:11px;font-weight:600;color:var(--wd);padding:6px 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Mono',monospace;transition:.15s;}
 .btn-signout:hover{border-color:var(--red);color:#f87171;}
-
-/* ── HEADER ── */
-.page-header{margin-bottom:40px;animation:fadeUp .6s .06s ease both;}
+.page-header{margin-bottom:36px;animation:fadeUp .6s .06s ease both;}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);padding:5px 12px;border-radius:100px;font-size:10px;font-family:'DM Mono',monospace;color:rgba(74,222,128,.8);letter-spacing:.8px;text-transform:uppercase;margin-bottom:18px;}
 .eyebrow .dot{width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);}
-h1{font-size:clamp(32px,5.5vw,54px);font-weight:700;letter-spacing:-2px;line-height:1.05;margin-bottom:14px;}
+h1{font-size:clamp(30px,5vw,52px);font-weight:700;letter-spacing:-2px;line-height:1.05;margin-bottom:12px;}
 h1 em{font-style:normal;color:rgba(240,240,240,.22);}
-.sub{font-size:14px;color:var(--wd);font-weight:300;max-width:500px;line-height:1.85;}
-
-/* ── SECTION LABEL ── */
-.slabel{font-size:9px;color:var(--wm);text-transform:uppercase;letter-spacing:1.8px;font-weight:700;margin-bottom:14px;font-family:'DM Mono',monospace;}
-
-/* ── CARDS / SECTIONS ── */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:24px 26px;margin-bottom:14px;animation:fadeUp .4s ease both;}
-.card-accent-green{border-color:rgba(34,197,94,.22);}
-.card-accent-amber{border-color:rgba(245,158,11,.22);}
-
-/* ── STATS ── */
+.sub{font-size:14px;color:var(--wd);font-weight:300;max-width:520px;line-height:1.85;}
+.slabel{font-size:9px;color:var(--wm);text-transform:uppercase;letter-spacing:1.8px;font-weight:700;margin-bottom:12px;font-family:'DM Mono',monospace;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:22px 24px;margin-bottom:14px;animation:fadeUp .4s ease both;}
+.card-green{border-color:rgba(34,197,94,.22);}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
 @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr);}}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;}
-.stat-n{font-size:22px;font-weight:700;font-family:'DM Mono',monospace;line-height:1;margin-bottom:4px;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 15px;}
+.stat-n{font-size:20px;font-weight:700;font-family:'DM Mono',monospace;line-height:1;margin-bottom:3px;}
 .stat-l{font-size:9px;color:var(--wm);text-transform:uppercase;letter-spacing:1.2px;font-weight:700;}
-
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:var(--r-lg);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s;letter-spacing:-.1px;text-decoration:none;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 18px;border-radius:var(--r-lg);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .18s;letter-spacing:-.1px;text-decoration:none;}
 .btn-p{background:var(--white);color:var(--black);}
 .btn-p:hover{background:#e0e0e0;transform:translateY(-1px);}
 .btn-g{background:var(--wf);color:var(--wd);border:1px solid var(--border);}
@@ -73,108 +58,85 @@ h1 em{font-style:normal;color:rgba(240,240,240,.22);}
 .btn-amber:hover{background:rgba(245,158,11,.2);}
 .btn-red{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2);}
 .btn-red:hover{background:rgba(239,68,68,.2);}
-.btn-sm{padding:7px 14px;font-size:11px;border-radius:var(--r-sm);}
-
-/* ── INPUTS ── */
-.inp{background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 13px;color:var(--white);font-family:'DM Mono',monospace;font-size:12px;outline:none;width:100%;transition:.15s;}
+.btn-sm{padding:6px 13px;font-size:11px;border-radius:var(--r-sm);}
+.inp{background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 12px;color:var(--white);font-family:'DM Mono',monospace;font-size:12px;outline:none;width:100%;transition:.15s;}
 .inp:focus{border-color:rgba(240,240,240,.28);}
 .inp::placeholder{color:var(--wm);}
 label{font-size:10px;color:var(--wd);display:block;margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;}
-.field{margin-bottom:14px;}
-
-/* ── GRID HELPERS ── */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.field{margin-bottom:12px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
 @media(max-width:540px){.g2,.g3{grid-template-columns:1fr;}}
-
-/* ── DROP ZONE ── */
-.drop{border:1px dashed var(--border-l);border-radius:var(--r-xl);padding:44px 28px;text-align:center;cursor:pointer;background:var(--card);transition:.2s;position:relative;}
+.drop{border:1px dashed var(--border-l);border-radius:var(--r-xl);padding:36px 24px;text-align:center;cursor:pointer;background:var(--card);transition:.2s;position:relative;}
 .drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.drop:hover,.drop.over{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.03);}
-.drop-ic{font-size:30px;margin-bottom:12px;animation:float 3.5s ease-in-out infinite;}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-.drop-title{font-size:15px;font-weight:600;margin-bottom:5px;}
+.drop:hover,.drop.over{border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.03);}
+.drop-ic{font-size:26px;margin-bottom:9px;animation:float 3.5s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.drop-title{font-size:14px;font-weight:600;margin-bottom:4px;}
 .drop-sub{font-size:11px;color:var(--wm);}
-
-/* ── MAPPER ── */
-.mapper{display:none;padding:20px;background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-lg);margin-top:12px;}
+.mapper{display:none;padding:16px;background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-lg);margin-top:12px;}
 .mapper.on{display:block;}
-.map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px;}
-.map-sel{background:var(--card);border:1px solid var(--border);color:var(--white);padding:7px 10px;width:100%;border-radius:var(--r-sm);font-family:'DM Mono',monospace;font-size:11px;outline:none;}
+.map-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:9px;margin-bottom:12px;}
+.map-sel{background:var(--card);border:1px solid var(--border);color:var(--white);padding:6px 9px;width:100%;border-radius:var(--r-sm);font-family:'DM Mono',monospace;font-size:11px;outline:none;}
 .map-sel:focus{border-color:rgba(240,240,240,.3);}
-
-/* ── TABLE ── */
 .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r-xl);}
 table{width:100%;border-collapse:collapse;font-size:12px;}
-th{padding:12px 14px;text-align:left;background:var(--off-black);color:var(--wm);font-size:9px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;font-family:'DM Mono',monospace;}
-td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--wd);white-space:nowrap;}
+th{padding:10px 12px;text-align:left;background:var(--off-black);color:var(--wm);font-size:9px;text-transform:uppercase;letter-spacing:.9px;white-space:nowrap;font-family:'DM Mono',monospace;}
+td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--wd);white-space:nowrap;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(255,255,255,.015);}
-tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border-l);background:rgba(255,255,255,.02);}
+tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border-l);background:rgba(255,255,255,.025);}
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-family:'DM Mono',monospace;padding:3px 8px;border-radius:100px;border:1px solid;}
 .badge-green{color:#4ade80;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.07);}
 .badge-amber{color:#fbbf24;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.07);}
-
-/* ── MANUAL TABLE ── */
-.manual-inp{background:var(--off-black);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--white);font-family:'DM Mono',monospace;font-size:11px;outline:none;width:100%;}
+.manual-inp{background:var(--off-black);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--white);font-family:'DM Mono',monospace;font-size:11px;outline:none;width:100%;}
 .manual-inp:focus{border-color:rgba(240,240,240,.3);}
-.btn-del{background:none;border:none;color:var(--wm);cursor:pointer;font-size:15px;transition:.15s;padding:2px 5px;}
+.btn-del{background:none;border:none;color:var(--wm);cursor:pointer;font-size:15px;transition:.15s;padding:2px 4px;}
 .btn-del:hover{color:#f87171;}
-.btn-add{background:var(--wf);border:1px dashed var(--border-l);color:var(--wd);padding:7px 14px;border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Mono',monospace;}
+.btn-add{background:var(--wf);border:1px dashed var(--border-l);color:var(--wd);padding:6px 12px;border-radius:var(--r-sm);font-size:11px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Mono',monospace;}
 .btn-add:hover{border-color:var(--green);color:#4ade80;}
-
-/* ── INPUT MODE TABS ── */
-.mode-tabs{display:flex;gap:8px;margin-bottom:16px;}
-.mode-tab{flex:1;padding:10px 14px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--wm);font-family:'DM Sans',sans-serif;border-radius:var(--r-lg);transition:.15s;}
+.mode-tabs{display:flex;gap:8px;margin-bottom:14px;}
+.mode-tab{flex:1;padding:9px 12px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--wm);font-family:'DM Sans',sans-serif;border-radius:var(--r-lg);transition:.15s;}
 .mode-tab.on{border-color:rgba(34,197,94,.35);color:#4ade80;background:rgba(34,197,94,.05);}
 .mode-tab:hover:not(.on){border-color:var(--border-l);color:var(--wd);}
-
-/* ── EMP CARDS ── */
-.emp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px;margin-top:14px;}
-.emp-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:15px 17px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:.18s;}
-.emp-card:hover{border-color:var(--border-l);background:var(--card-h);}
-.emp-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,rgba(34,197,94,.3),rgba(14,165,233,.3));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;border:1px solid rgba(34,197,94,.2);}
-.emp-info{flex:1;min-width:0;}
-.emp-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.emp-meta{font-size:10px;color:var(--wm);font-family:'DM Mono',monospace;margin-top:2px;}
-.emp-salary{font-size:12px;font-weight:700;color:#4ade80;white-space:nowrap;}
-
-/* ── MODAL ── */
+.ot-bar{display:flex;align-items:center;gap:14px;background:rgba(245,158,11,.04);border:1px solid rgba(245,158,11,.2);border-radius:var(--r-lg);padding:11px 16px;margin-bottom:12px;flex-wrap:wrap;}
+.ot-bar-label{font-size:10px;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
+.ot-inp{background:var(--off-black);border:1px solid rgba(245,158,11,.3);border-radius:var(--r-sm);padding:5px 8px;color:#fbbf24;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;outline:none;width:68px;text-align:center;}
+.ot-inp:focus{border-color:var(--amber);}
+.ot-note{font-size:10px;color:var(--wm);flex:1;min-width:180px;line-height:1.5;}
+/* Employee list table */
+.emp-tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r-xl);margin-top:12px;}
+.emp-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.emp-tbl th{padding:10px 13px;text-align:left;background:var(--off-black);color:var(--wm);font-size:9px;text-transform:uppercase;letter-spacing:.9px;white-space:nowrap;font-family:'DM Mono',monospace;}
+.emp-tbl td{padding:11px 13px;border-bottom:1px solid var(--border);color:var(--wd);white-space:nowrap;cursor:pointer;}
+.emp-tbl tr:last-child td{border-bottom:none;}
+.emp-tbl tr:hover td{background:var(--card-h);}
+.emp-av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,rgba(34,197,94,.3),rgba(14,165,233,.3));display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:10px;border:1px solid rgba(34,197,94,.2);vertical-align:middle;margin-right:8px;flex-shrink:0;}
+/* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px;}
 .modal-overlay.open{display:flex;}
-.modal{background:#141414;border:1px solid var(--border-l);border-radius:22px;padding:32px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;position:relative;}
-.modal-close{position:absolute;top:18px;right:18px;cursor:pointer;font-size:20px;color:var(--wm);background:none;border:none;line-height:1;transition:.15s;}
+.modal{background:#141414;border:1px solid var(--border-l);border-radius:22px;padding:28px;width:100%;max-width:460px;max-height:92vh;overflow-y:auto;position:relative;}
+.modal-wide{max-width:680px;}
+.modal-close{position:absolute;top:14px;right:14px;cursor:pointer;font-size:20px;color:var(--wm);background:none;border:none;line-height:1;transition:.15s;}
 .modal-close:hover{color:var(--white);}
-.modal-title{font-size:20px;font-weight:700;letter-spacing:-.4px;margin-bottom:6px;}
-.modal-sub{font-size:12px;color:var(--wm);margin-bottom:24px;line-height:1.6;}
-.auth-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:22px;}
-.auth-tab{flex:1;padding:9px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--wm);font-family:'DM Sans',sans-serif;transition:.15s;}
+.modal-title{font-size:18px;font-weight:700;letter-spacing:-.4px;margin-bottom:5px;}
+.modal-sub{font-size:12px;color:var(--wm);margin-bottom:18px;line-height:1.6;}
+.auth-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:18px;}
+.auth-tab{flex:1;padding:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--wm);font-family:'DM Sans',sans-serif;transition:.15s;}
 .auth-tab.on{background:var(--wf);color:var(--white);}
 .err{color:#f87171;font-size:11px;margin-bottom:10px;display:none;font-family:'DM Mono',monospace;}
-
-/* ── DIVIDER ── */
-.divider{height:1px;background:var(--border);margin:20px 0;}
-
-/* ── GUEST GATE ── */
+.divider{height:1px;background:var(--border);margin:16px 0;}
 .guest-gate{text-align:center;padding:80px 20px;animation:fadeUp .5s ease both;}
-.gate-icon{font-size:52px;margin-bottom:18px;}
+.gate-icon{font-size:52px;margin-bottom:16px;}
 .gate-title{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:8px;}
-.gate-sub{font-size:13px;color:var(--wm);margin-bottom:28px;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.7;}
-
-/* ── TOAST ── */
+.gate-sub{font-size:13px;color:var(--wm);margin-bottom:26px;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.7;}
 #toast{position:fixed;bottom:24px;right:24px;z-index:200;background:#1a1a1a;border:1px solid var(--border);border-radius:12px;padding:12px 18px;font-size:12px;font-family:'DM Mono',monospace;opacity:0;transform:translateY(12px);transition:.28s;max-width:300px;pointer-events:none;}
 #toast.show{opacity:1;transform:translateY(0);}
-
-/* ── LOADING ── */
 .spin{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-cover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:150;align-items:center;justify-content:center;flex-direction:column;gap:14px;backdrop-filter:blur(3px);}
 .loading-cover.show{display:flex;}
 .loading-cover .spin{width:32px;height:32px;border-width:3px;}
-
-/* ── RESPONSIVE ── */
-@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr);}}
-
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:100px;}
@@ -183,7 +145,6 @@ tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border
 <body>
 <div class="sgrid"></div>
 
-<!-- LOADING COVER -->
 <div class="loading-cover" id="loadingCover">
   <div class="spin"></div>
   <div style="font-size:12px;color:var(--wm);font-family:'DM Mono',monospace;" id="loadingMsg">Loading…</div>
@@ -194,21 +155,19 @@ tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border
   <div class="modal">
     <button class="modal-close" onclick="closeAuth()">×</button>
     <div class="modal-title">Employer Sign In</div>
-    <div class="modal-sub">Sign in to manage employee salary records and run payroll calculations.</div>
+    <div class="modal-sub">Sign in to manage employee records and run payroll.</div>
     <div class="auth-tabs">
       <button class="auth-tab on" onclick="switchTab(event,'login')">Sign In</button>
       <button class="auth-tab" onclick="switchTab(event,'signup')">Create Account</button>
     </div>
-    <!-- Login -->
     <div id="loginPanel">
       <div class="field"><label>Email</label><input class="inp" id="liEmail" type="email" placeholder="employer@company.com"></div>
       <div class="field"><label>Password</label><input class="inp" id="liPass" type="password" placeholder="••••••••"></div>
       <div class="err" id="liErr"></div>
       <button class="btn btn-p" style="width:100%;margin-top:4px;" onclick="doLogin()">Sign In →</button>
     </div>
-    <!-- Signup -->
     <div id="signupPanel" style="display:none;">
-      <div class="field"><label>Company / Your Name</label><input class="inp" id="suName" type="text" placeholder="Acme Bahrain WLL"></div>
+      <div class="field"><label>Company / Name</label><input class="inp" id="suName" type="text" placeholder="Acme Bahrain WLL"></div>
       <div class="field"><label>Email</label><input class="inp" id="suEmail" type="email" placeholder="employer@company.com"></div>
       <div class="field"><label>Password</label><input class="inp" id="suPass" type="password" placeholder="Min 8 characters"></div>
       <div class="err" id="suErr"></div>
@@ -217,14 +176,14 @@ tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border
   </div>
 </div>
 
-<!-- EMPLOYEE MODAL -->
+<!-- EMPLOYEE EDIT MODAL -->
 <div class="modal-overlay" id="empModal">
-  <div class="modal" style="max-width:560px;">
+  <div class="modal" style="max-width:500px;">
     <button class="modal-close" onclick="closeEmpModal()">×</button>
     <div class="modal-title" id="empModalTitle">Employee</div>
     <div class="modal-sub" id="empModalSub"></div>
     <div id="empModalBody"></div>
-    <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;">
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
       <button class="btn btn-p" onclick="saveEmployee()">Save</button>
       <button class="btn btn-red btn-sm" id="deleteBtn" onclick="deleteEmployee()">Delete</button>
       <button class="btn btn-g btn-sm" onclick="closeEmpModal()">Cancel</button>
@@ -232,12 +191,75 @@ tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border
   </div>
 </div>
 
-<div class="wrap">
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeImportModal()">×</button>
+    <div class="modal-title">Import Employees from Excel</div>
+    <div class="modal-sub">Upload XLSX/CSV with employee salary data. Map columns, preview, then save all to Appwrite.</div>
 
-  <!-- NAV -->
+    <div id="importStep1">
+      <div class="drop" id="importDrop" onclick="triggerImportFile()" ondragover="idov(event)" ondragleave="idol(event)" ondrop="idod(event)" style="padding:28px;">
+        <input type="file" id="importFile" accept=".xlsx,.xls,.csv" onchange="onImportFile(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+        <div class="drop-ic" style="font-size:24px;">📋</div>
+        <div class="drop-title" style="font-size:13px;">Drop employee file here or click to browse</div>
+        <div class="drop-sub">XLSX / XLS / CSV — one row per employee</div>
+      </div>
+      <div style="margin-top:10px;background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-lg);padding:11px 14px;">
+        <div class="slabel" style="margin-bottom:7px;">Expected columns (hours not needed — goes on hours sheet)</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;">
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--wd);background:var(--wf);border:1px solid var(--border);padding:2px 8px;border-radius:100px;">Name</span>
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--wd);background:var(--wf);border:1px solid var(--border);padding:2px 8px;border-radius:100px;">Employee ID</span>
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--wd);background:var(--wf);border:1px solid var(--border);padding:2px 8px;border-radius:100px;">Hire Date</span>
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--wd);background:var(--wf);border:1px solid var(--border);padding:2px 8px;border-radius:100px;">Work Location</span>
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--wd);background:var(--wf);border:1px solid var(--border);padding:2px 8px;border-radius:100px;">Basic</span>
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--wd);background:var(--wf);border:1px solid var(--border);padding:2px 8px;border-radius:100px;">HRA</span>
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--wd);background:var(--wf);border:1px solid var(--border);padding:2px 8px;border-radius:100px;">TA</span>
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--wd);background:var(--wf);border:1px solid var(--border);padding:2px 8px;border-radius:100px;">Other Allowance</span>
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--wd);background:var(--wf);border:1px solid var(--border);padding:2px 8px;border-radius:100px;">Total Salary</span>
+        </div>
+      </div>
+      <div style="margin-top:8px;text-align:right;">
+        <button class="btn btn-g btn-sm" onclick="downloadImportTemplate()">↓ Download Template</button>
+      </div>
+    </div>
+
+    <div id="importStep2" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div style="font-size:12px;font-weight:600;" id="importFileLabel"></div>
+        <button class="btn btn-g btn-sm" onclick="resetImport()">← Change File</button>
+      </div>
+      <div class="slabel" style="margin-bottom:8px;">Map Columns</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px;" id="importMapGrid"></div>
+      <div style="background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-lg);padding:10px;margin-bottom:12px;overflow-x:auto;">
+        <div class="slabel" style="margin-bottom:6px;">Preview (first 3 rows)</div>
+        <table style="font-size:11px;width:100%;border-collapse:collapse;">
+          <thead id="importPreviewHead"></thead>
+          <tbody id="importPreviewBody"></tbody>
+        </table>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-p" onclick="runImport()">💾 Import All Employees →</button>
+        <div style="font-size:11px;color:var(--wm);" id="importRowCount"></div>
+      </div>
+    </div>
+
+    <div id="importStep3" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:40px;margin-bottom:12px;">✅</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:6px;" id="importResultTitle"></div>
+      <div style="font-size:12px;color:var(--wm);margin-bottom:18px;" id="importResultSub"></div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button class="btn btn-p" onclick="closeImportModal()">Done</button>
+        <button class="btn btn-g btn-sm" onclick="resetImport()">Import Another</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
   <nav>
     <img src="logo.png" alt="EassyOffice" class="logo-img">
-    <div class="nav-links" id="navLinks">
+    <div class="nav-links">
       <a href="index.html" class="nav-link">← Home</a>
       <a href="pdf-tools.html" class="nav-link">PDF Tools</a>
       <a href="payroll-manager.html" class="nav-link">Hours Calc</a>
@@ -246,80 +268,100 @@ tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border
     </div>
   </nav>
 
-  <!-- PAGE HEADER -->
   <div class="page-header">
     <div class="eyebrow"><span class="dot"></span>Payroll Processing · Cloud-Enabled</div>
     <h1>Payroll <em>Processing</em></h1>
-    <p class="sub">Calculate total salary for each employee based on working hours. Employer records are stored securely via Appwrite — accessible from any device.</p>
+    <p class="sub">Upload working hours with Normal OT and Holiday OT. Salary is auto-calculated using employee records stored in the cloud.</p>
   </div>
 
-  <!-- GUEST GATE -->
   <div class="guest-gate" id="guestGate">
     <div class="gate-icon">🔐</div>
     <div class="gate-title">Employer Login Required</div>
-    <p class="gate-sub">Sign in or create an employer account to access payroll processing and save employee salary data across sessions.</p>
+    <p class="gate-sub">Sign in or create an account to access payroll processing and save employee salary data.</p>
     <button class="btn btn-p" onclick="openAuth()">Sign In / Create Account</button>
   </div>
 
-  <!-- PAYROLL APP (shown after login) -->
   <div id="payrollApp" style="display:none;">
 
-    <!-- LOGGED IN BANNER -->
-    <div class="card card-accent-green" style="display:flex;align-items:center;gap:14px;margin-bottom:14px;padding:16px 22px;">
-      <div style="width:36px;height:36px;border-radius:50%;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;">👤</div>
+    <!-- Banner -->
+    <div class="card card-green" style="display:flex;align-items:center;gap:13px;margin-bottom:14px;padding:13px 20px;">
+      <div style="width:32px;height:32px;border-radius:50%;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">👤</div>
       <div style="flex:1;">
         <div style="font-size:13px;font-weight:600;" id="userNameDisplay">Employer</div>
         <div style="font-size:10px;color:var(--wm);font-family:'DM Mono',monospace;" id="userEmailDisplay"></div>
       </div>
-      <span style="font-size:10px;font-family:'DM Mono',monospace;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);color:#4ade80;padding:4px 11px;border-radius:100px;">● Signed in</span>
+      <span style="font-size:10px;font-family:'DM Mono',monospace;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);color:#4ade80;padding:3px 10px;border-radius:100px;">● Signed in</span>
     </div>
 
-    <!-- STATS -->
-    <div class="stats" id="statsRow">
+    <!-- Stats -->
+    <div class="stats">
       <div class="stat"><div class="stat-n" id="stEmps">0</div><div class="stat-l">Employees</div></div>
       <div class="stat"><div class="stat-n" style="color:#4ade80;" id="stTotal">BD 0</div><div class="stat-l">Total Payroll</div></div>
-      <div class="stat"><div class="stat-n" style="color:#fbbf24;" id="stOT">BD 0</div><div class="stat-l">OT Payable</div></div>
-      <div class="stat"><div class="stat-n" style="color:#f87171;" id="stPending">0</div><div class="stat-l">No Record</div></div>
+      <div class="stat"><div class="stat-n" style="color:#fbbf24;" id="stOT">BD 0</div><div class="stat-l">Last Net Pay Total</div></div>
+      <div class="stat"><div class="stat-n" style="color:#f87171;" id="stPending">0</div><div class="stat-l">Pending Calc</div></div>
     </div>
 
-    <!-- ── INPUT SECTION ── -->
+    <!-- STEP 1 -->
     <div style="margin-bottom:14px;">
-      <div class="slabel">Step 1 — Upload Working Hours</div>
+      <div class="slabel">Step 1 — Upload Working Hours Sheet</div>
+
+      <div class="ot-bar">
+        <span class="ot-bar-label">⚙ OT Rate Settings</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:11px;color:var(--wd);">Normal OT:</span>
+          <input class="ot-inp" id="normalOTpct" type="number" value="125" min="100" max="500" step="5">
+          <span style="font-size:11px;color:var(--wm);">%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:11px;color:var(--wd);">Holiday OT:</span>
+          <input class="ot-inp" id="holidayOTpct" type="number" value="150" min="100" max="500" step="5">
+          <span style="font-size:11px;color:var(--wm);">%</span>
+        </div>
+        <div class="ot-note">Formula: (Basic ÷ 240) × OT Hours × (Rate% ÷ 100)<br>e.g. BD 800 basic, 5h normal OT @ 125% → (800÷240)×5×1.25 = BD 20.833</div>
+      </div>
+
       <div class="card">
         <div class="mode-tabs">
           <button class="mode-tab on" id="tabUpload" onclick="setMode('upload')">📂 Upload Excel / CSV</button>
           <button class="mode-tab" id="tabManual" onclick="setMode('manual')">✏️ Enter Manually</button>
         </div>
 
-        <!-- UPLOAD PANEL -->
         <div id="uploadPanel">
-          <div class="drop" id="dropZone" onclick="document.getElementById('hoursFile').click()" ondragover="dov(event)" ondragleave="dol(event)" ondrop="dod(event)">
+          <div class="drop" id="dropZone" onclick="$('hoursFile').click()" ondragover="dov(event)" ondragleave="dol(event)" ondrop="dod(event)">
             <input type="file" id="hoursFile" accept=".xlsx,.xls,.csv" onchange="onFileChange(event)">
             <div class="drop-ic">📊</div>
-            <div class="drop-title">Drop hours sheet here or click to browse</div>
-            <div class="drop-sub">XLSX / XLS / CSV — columns: Employee Name, Working Hours</div>
+            <div class="drop-title">Drop working hours file here or click to browse</div>
+            <div class="drop-sub">Columns: Name · Hrs Worked · Hrs to be Worked · Normal OT Hrs · Holiday OT Hrs</div>
           </div>
           <div class="mapper" id="uploadMapper">
-            <div class="slabel" style="margin-bottom:12px;">Map Columns</div>
+            <div class="slabel" style="margin-bottom:9px;">Map Columns</div>
             <div class="map-grid">
-              <div><label>Employee Name</label><select class="map-sel" id="mcName"></select></div>
+              <div><label>Employee Name <span style="color:#f87171">*</span></label><select class="map-sel" id="mcName"></select></div>
               <div><label>Employee Code</label><select class="map-sel" id="mcCode"></select></div>
-              <div><label>Total Hours (decimal)</label><select class="map-sel" id="mcHours"></select></div>
+              <div><label>Hours Worked</label><select class="map-sel" id="mcHours"></select></div>
+              <div><label>Hours to be Worked</label><select class="map-sel" id="mcStdHrs"></select></div>
+              <div><label>Normal OT Hours</label><select class="map-sel" id="mcNormOT"></select></div>
+              <div><label>Holiday OT Hours</label><select class="map-sel" id="mcHolOT"></select></div>
             </div>
             <button class="btn btn-p btn-sm" onclick="runPayrollFromUpload()">Calculate Payroll →</button>
           </div>
         </div>
 
-        <!-- MANUAL PANEL -->
         <div id="manualPanel" style="display:none;">
           <div class="tbl-wrap" style="margin-bottom:12px;">
             <table>
-              <thead><tr><th>Employee Name</th><th>Code</th><th>Hours Worked</th><th></th></tr></thead>
+              <thead><tr>
+                <th>Employee Name</th><th>Code</th><th>Hrs Worked</th>
+                <th>Hrs to be Worked</th><th>Normal OT Hrs</th><th>Holiday OT Hrs</th><th></th>
+              </tr></thead>
               <tbody id="manualRows">
                 <tr>
                   <td><input class="manual-inp" placeholder="Ahmad Al-Khalifa"></td>
                   <td><input class="manual-inp" placeholder="EMP001"></td>
                   <td><input class="manual-inp" type="number" step="0.5" placeholder="168"></td>
+                  <td><input class="manual-inp" type="number" step="0.5" placeholder="200"></td>
+                  <td><input class="manual-inp" type="number" step="0.5" placeholder="0"></td>
+                  <td><input class="manual-inp" type="number" step="0.5" placeholder="0"></td>
                   <td><button class="btn-del" onclick="this.closest('tr').remove()">×</button></td>
                 </tr>
               </tbody>
@@ -333,11 +375,11 @@ tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border
       </div>
     </div>
 
-    <!-- ── RESULTS SECTION ── -->
+    <!-- STEP 2 RESULTS -->
     <div id="resultsSection" style="display:none;margin-bottom:14px;">
       <div class="slabel">Step 2 — Payroll Results</div>
-      <div class="card" style="padding:20px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div class="card" style="padding:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
           <div style="font-size:14px;font-weight:700;">Salary Breakdown</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-g btn-sm" onclick="exportReport()">↓ Download XLSX</button>
@@ -345,14 +387,15 @@ tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border
           </div>
         </div>
         <div class="tbl-wrap">
-          <table id="resultsTable">
-            <thead>
-              <tr>
-                <th>#</th><th>Employee</th><th>Code</th><th>Hrs</th>
-                <th>Basic</th><th>HRA</th><th>TA</th><th>Allowance</th>
-                <th>OT Pay</th><th>Deduction</th><th>Net Salary</th><th>Status</th>
-              </tr>
-            </thead>
+          <table>
+            <thead><tr>
+              <th>#</th><th>Employee</th><th>Code</th>
+              <th>Hrs Worked</th><th>Hrs Target</th>
+              <th>Normal OT Hrs</th><th>Holiday OT Hrs</th>
+              <th>Basic</th><th>HRA</th><th>TA</th><th>Allowance</th>
+              <th>Normal OT Pay</th><th>Holiday OT Pay</th>
+              <th>Deduction</th><th>Net Salary</th><th>Status</th>
+            </tr></thead>
             <tbody id="resultsBody"></tbody>
             <tfoot><tr id="resultsTotals"></tr></tfoot>
           </table>
@@ -360,538 +403,507 @@ tfoot tr td{font-weight:700;color:var(--white);border-top:2px solid var(--border
       </div>
     </div>
 
-    <!-- ── EMPLOYEE DIRECTORY ── -->
+    <!-- STEP 3 EMPLOYEE LIST -->
     <div>
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
         <div class="slabel" style="margin-bottom:0;">Step 3 — Employee Salary Records</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <input class="inp" id="empSearch" style="width:180px;font-size:11px;" placeholder="Search…" oninput="filterEmps()">
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          <input class="inp" id="empSearch" style="width:160px;font-size:11px;" placeholder="Search…" oninput="filterEmps()">
           <button class="btn btn-green btn-sm" onclick="openAddEmp()">+ Add Employee</button>
-          <button class="btn btn-amber btn-sm" onclick="openImportEmps()">↑ Import from Excel</button>
+          <button class="btn btn-amber btn-sm" onclick="openImportEmps()">↑ Import Excel</button>
           <button class="btn btn-g btn-sm" onclick="loadEmps()">↻ Refresh</button>
         </div>
       </div>
       <div id="empLoading" style="padding:30px;text-align:center;color:var(--wm);font-size:12px;">Loading records…</div>
-      <div class="emp-grid" id="empGrid"></div>
-      <div id="noEmps" style="display:none;text-align:center;padding:40px;color:var(--wm);">
-        <div style="font-size:32px;margin-bottom:10px;">👥</div>
-        <div style="font-size:13px;">No employees added yet. Click <b>+ Add Employee</b> to get started.</div>
-      </div>
-    </div>
-
-  </div><!-- /payrollApp -->
-
-</div><!-- /wrap -->
-
-<!-- IMPORT EMPLOYEES MODAL -->
-<div class="modal-overlay" id="importModal">
-  <div class="modal" style="max-width:640px;">
-    <button class="modal-close" onclick="closeImportModal()">×</button>
-    <div class="modal-title">Import Employees from Excel</div>
-    <div class="modal-sub">Upload an XLSX or CSV file. Map the columns, preview the rows, then save all to Appwrite in one click.</div>
-
-    <!-- Step 1: Drop -->
-    <div id="importStep1">
-      <div class="drop" id="importDrop" onclick="document.getElementById('importFile').click()" ondragover="idov(event)" ondragleave="idol(event)" ondrop="idod(event)" style="padding:32px;">
-        <input type="file" id="importFile" accept=".xlsx,.xls,.csv" onchange="onImportFile(event)">
-        <div class="drop-ic" style="font-size:26px;">📋</div>
-        <div class="drop-title" style="font-size:14px;">Drop employee file here or click to browse</div>
-        <div class="drop-sub">XLSX / XLS / CSV — one row per employee</div>
-      </div>
-      <div style="margin-top:12px;background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-lg);padding:13px 16px;">
-        <div class="slabel" style="margin-bottom:8px;">Expected columns (names can vary — you map them)</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;">
-          ${['Name','Employee ID / Code','Hire Date','Work Location','Basic','HRA','TA','Other Allowance','Bonuses','Total Salary','Std Hours / Month','Normal OT Rate','Holiday OT Rate'].map(c=>`<span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--wd);background:var(--wf);border:1px solid var(--border);padding:3px 9px;border-radius:100px;">${c}</span>`).join('')}
-        </div>
-      </div>
-      <div style="margin-top:10px;text-align:right;">
-        <button class="btn btn-g btn-sm" onclick="downloadImportTemplate()">↓ Download Template</button>
-      </div>
-    </div>
-
-    <!-- Step 2: Map + Preview -->
-    <div id="importStep2" style="display:none;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="font-size:12px;font-weight:600;" id="importFileLabel"></div>
-        <button class="btn btn-g btn-sm" onclick="resetImport()">← Change File</button>
-      </div>
-      <div class="slabel" style="margin-bottom:10px;">Map Columns</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;" id="importMapGrid"></div>
-      <div style="background:var(--off-black);border:1px solid var(--border);border-radius:var(--r-lg);padding:12px;margin-bottom:14px;overflow-x:auto;">
-        <div class="slabel" style="margin-bottom:8px;">Preview (first 3 rows)</div>
-        <table id="importPreviewTable" style="font-size:11px;width:100%;border-collapse:collapse;">
-          <thead id="importPreviewHead"></thead>
-          <tbody id="importPreviewBody"></tbody>
+      <div class="emp-tbl-wrap" id="empTblWrap" style="display:none;">
+        <table class="emp-tbl">
+          <thead><tr>
+            <th>#</th><th>Employee</th><th>Code</th><th>Branch / Location</th>
+            <th>Join Date</th><th>Basic</th><th>HRA</th><th>TA</th>
+            <th>Allowance</th><th>Bonuses</th><th>Total Salary</th><th>Last Net Pay</th>
+          </tr></thead>
+          <tbody id="empTblBody"></tbody>
         </table>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-        <button class="btn btn-p" onclick="runImport()">💾 Import All Employees →</button>
-        <div style="font-size:11px;color:var(--wm);" id="importRowCount"></div>
+      <div id="noEmps" style="display:none;text-align:center;padding:40px;color:var(--wm);">
+        <div style="font-size:32px;margin-bottom:10px;">👥</div>
+        <div style="font-size:13px;">No employees yet. Click <b>+ Add Employee</b> or <b>↑ Import Excel</b>.</div>
       </div>
     </div>
 
-    <!-- Step 3: Result -->
-    <div id="importStep3" style="display:none;text-align:center;padding:20px 0;">
-      <div style="font-size:40px;margin-bottom:12px;">✅</div>
-      <div style="font-size:16px;font-weight:700;margin-bottom:6px;" id="importResultTitle"></div>
-      <div style="font-size:12px;color:var(--wm);margin-bottom:20px;" id="importResultSub"></div>
-      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-        <button class="btn btn-p" onclick="closeImportModal()">Done</button>
-        <button class="btn btn-g btn-sm" onclick="resetImport()">Import Another File</button>
-      </div>
-    </div>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ─────────────────────────────────────────────
-//  APPWRITE
-// ─────────────────────────────────────────────
-const AW_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
-const AW_PROJECT  = '69d7b8ac00088da3ce8f';
-const AW_DB       = '69d7b9c0002d9fa479c4';
-const AW_COL      = 'employees';
+// ── APPWRITE ──
+const AW_ENDPOINT='https://fra.cloud.appwrite.io/v1';
+const AW_PROJECT ='69d7b8ac00088da3ce8f';
+const AW_DB      ='69d7b9c0002d9fa479c4';
+const AW_COL     ='employees';
+const {Client,Account,Databases,ID,Query}=Appwrite;
+const client   =new Client().setEndpoint(AW_ENDPOINT).setProject(AW_PROJECT);
+const account  =new Account(client);
+const databases=new Databases(client);
 
-const { Client, Account, Databases, ID, Query } = Appwrite;
-const client    = new Client().setEndpoint(AW_ENDPOINT).setProject(AW_PROJECT);
-const account   = new Account(client);
-const databases = new Databases(client);
+let currentUser=null,allEmps=[],payrollRows=[],editingId=null;
+let uploadHdrs=[],uploadData=[];
+let importHdrs=[],importRows=[];
 
-let currentUser = null;
-let allEmps     = [];
-let payrollRows = [];
-let editingId   = null;
-let uploadHdrs  = [], uploadData = [];
-
-// ─────────────────────────────────────────────
-//  INIT
-// ─────────────────────────────────────────────
-(async () => {
-  try {
-    currentUser = await account.get();
-    showApp();
-    loadEmps();
-  } catch { showGuest(); }
+// ── INIT ──
+(async()=>{
+  try{currentUser=await account.get();showApp();loadEmps();}
+  catch{showGuest();}
 })();
 
-function showApp() {
-  document.getElementById('guestGate').style.display = 'none';
-  document.getElementById('payrollApp').style.display = 'block';
-  document.getElementById('signoutBtn').style.display = 'inline-flex';
-  document.getElementById('userNameDisplay').textContent = currentUser.name || 'Employer';
-  document.getElementById('userEmailDisplay').textContent = currentUser.email;
+function showApp(){
+  $('guestGate').style.display='none';
+  $('payrollApp').style.display='block';
+  $('signoutBtn').style.display='inline-flex';
+  $('userNameDisplay').textContent=currentUser.name||'Employer';
+  $('userEmailDisplay').textContent=currentUser.email;
 }
-function showGuest() {
-  document.getElementById('guestGate').style.display = 'block';
-  document.getElementById('payrollApp').style.display = 'none';
+function showGuest(){
+  $('guestGate').style.display='block';
+  $('payrollApp').style.display='none';
 }
 
-// ─────────────────────────────────────────────
-//  AUTH
-// ─────────────────────────────────────────────
-function openAuth()  { document.getElementById('authModal').classList.add('open'); }
-function closeAuth() { document.getElementById('authModal').classList.remove('open'); }
-function switchTab(e, tab) {
-  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('on'));
+// ── AUTH ──
+function openAuth(){$('authModal').classList.add('open');}
+function closeAuth(){$('authModal').classList.remove('open');}
+function switchTab(e,tab){
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('on'));
   e.target.classList.add('on');
-  document.getElementById('loginPanel').style.display  = tab==='login'  ? 'block':'none';
-  document.getElementById('signupPanel').style.display = tab==='signup' ? 'block':'none';
+  $('loginPanel').style.display =tab==='login' ?'block':'none';
+  $('signupPanel').style.display=tab==='signup'?'block':'none';
 }
-async function doLogin() {
-  const email = $('liEmail').value.trim(), pass = $('liPass').value;
-  const err = $('liErr');
-  err.style.display = 'none';
-  if (!email||!pass) { showErr(err,'Enter email and password.'); return; }
-  try {
+async function doLogin(){
+  const email=$('liEmail').value.trim(),pass=$('liPass').value,err=$('liErr');
+  err.style.display='none';
+  if(!email||!pass){showErr(err,'Enter email and password.');return;}
+  try{
     showLoad('Signing in…');
-    await account.createEmailPasswordSession(email, pass);
-    currentUser = await account.get();
-    closeAuth();
-    showApp();
-    loadEmps();
-    toast('✓ Signed in');
-  } catch(e) { showErr(err, e.message||'Login failed.'); }
-  finally { hideLoad(); }
+    await account.createEmailPasswordSession(email,pass);
+    currentUser=await account.get();
+    closeAuth();showApp();loadEmps();toast('✓ Signed in');
+  }catch(e){showErr(err,e.message||'Login failed.');}
+  finally{hideLoad();}
 }
-async function doSignup() {
-  const name = $('suName').value.trim(), email = $('suEmail').value.trim(), pass = $('suPass').value;
-  const err = $('suErr');
-  err.style.display = 'none';
-  if (!name||!email||!pass) { showErr(err,'All fields required.'); return; }
-  if (pass.length < 8) { showErr(err,'Password must be at least 8 characters.'); return; }
-  try {
+async function doSignup(){
+  const name=$('suName').value.trim(),email=$('suEmail').value.trim(),pass=$('suPass').value,err=$('suErr');
+  err.style.display='none';
+  if(!name||!email||!pass){showErr(err,'All fields required.');return;}
+  if(pass.length<8){showErr(err,'Password must be at least 8 characters.');return;}
+  try{
     showLoad('Creating account…');
-    await account.create(ID.unique(), email, pass, name);
-    await account.createEmailPasswordSession(email, pass);
-    currentUser = await account.get();
-    closeAuth();
-    showApp();
-    toast('✓ Account created. Welcome!');
-  } catch(e) { showErr(err, e.message||'Signup failed.'); }
-  finally { hideLoad(); }
+    await account.create(ID.unique(),email,pass,name);
+    await account.createEmailPasswordSession(email,pass);
+    currentUser=await account.get();
+    closeAuth();showApp();toast('✓ Account created. Welcome!');
+  }catch(e){showErr(err,e.message||'Signup failed.');}
+  finally{hideLoad();}
 }
-async function doSignout() {
-  try {
+async function doSignout(){
+  try{
     showLoad('Signing out…');
     await account.deleteSession('current');
-    currentUser = null;
-    allEmps = [];
-    showGuest();
-    document.getElementById('signoutBtn').style.display = 'none';
-    toast('Signed out');
-  } catch(e) { toast('Error: '+(e.message||''), 'err'); }
-  finally { hideLoad(); }
+    currentUser=null;allEmps=[];
+    showGuest();$('signoutBtn').style.display='none';toast('Signed out');
+  }catch(e){toast('Error: '+(e.message||''),'err');}
+  finally{hideLoad();}
 }
 
-// ─────────────────────────────────────────────
-//  EMPLOYEES
-// ─────────────────────────────────────────────
-async function loadEmps() {
-  if (!currentUser) return;
-  $('empLoading').style.display = 'block';
-  $('empGrid').innerHTML = '';
-  try {
-    const res = await databases.listDocuments(AW_DB, AW_COL, [
-      Query.equal('userId', currentUser.$id), Query.limit(200)
-    ]);
-    allEmps = res.documents;
-    renderEmps(allEmps);
-    updateStats();
-  } catch(e) {
-    $('empLoading').textContent = 'Error loading: ' + (e.message||'');
-    console.error(e);
-  }
+// ── EMPLOYEES ──
+async function loadEmps(){
+  if(!currentUser)return;
+  $('empLoading').style.display='block';
+  $('empTblWrap').style.display='none';
+  try{
+    const res=await databases.listDocuments(AW_DB,AW_COL,[Query.equal('userId',currentUser.$id),Query.limit(200)]);
+    allEmps=res.documents;
+    renderEmps(allEmps);updateStats();
+  }catch(e){$('empLoading').textContent='Error loading: '+(e.message||'');console.error(e);}
 }
-function renderEmps(list) {
-  $('empLoading').style.display = 'none';
-  const grid = $('empGrid'), noMsg = $('noEmps');
-  if (!list.length) { noMsg.style.display = 'block'; grid.innerHTML = ''; return; }
-  noMsg.style.display = 'none';
-  grid.innerHTML = list.map(e => {
-    const init = (e.name||'E').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    return `<div class="emp-card" onclick="openEditEmp('${e.$id}')">
-      <div class="emp-avatar">${init}</div>
-      <div class="emp-info">
-        <div class="emp-name">${e.name}</div>
-        <div class="emp-meta">${e.empCode||'—'} · ${e.workLocation||'—'}</div>
-      </div>
-      <div class="emp-salary">BD ${(e.totalSalary||0).toFixed(2)}</div>
-    </div>`;
+
+function renderEmps(list){
+  $('empLoading').style.display='none';
+  const wrap=$('empTblWrap'),noMsg=$('noEmps'),tbody=$('empTblBody');
+  if(!list.length){noMsg.style.display='block';wrap.style.display='none';tbody.innerHTML='';return;}
+  noMsg.style.display='none';wrap.style.display='block';
+  tbody.innerHTML=list.map((e,i)=>{
+    const init=(e.name||'E').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const lastNet=e.lastNetSalary?`<span style="color:#4ade80;font-weight:600">BD ${(+e.lastNetSalary).toFixed(3)}</span>`:'<span style="color:var(--wm)">—</span>';
+    return`<tr onclick="openEditEmp('${e.$id}')">
+      <td style="color:var(--wm);font-family:'DM Mono',monospace">${i+1}</td>
+      <td><span class="emp-av">${init}</span><b>${e.name}</b></td>
+      <td style="font-family:'DM Mono',monospace;color:var(--wm)">${e.empCode||'—'}</td>
+      <td>${e.workLocation||'—'}</td>
+      <td style="font-family:'DM Mono',monospace">${e.hireDate||'—'}</td>
+      <td>BD ${(e.basic||0).toFixed(3)}</td>
+      <td>BD ${(e.hra||0).toFixed(3)}</td>
+      <td>BD ${(e.ta||0).toFixed(3)}</td>
+      <td>BD ${(e.otherAllow||0).toFixed(3)}</td>
+      <td>BD ${(e.bonuses||0).toFixed(3)}</td>
+      <td style="font-weight:600">BD ${(e.totalSalary||0).toFixed(3)}</td>
+      <td>${lastNet}</td>
+    </tr>`;
   }).join('');
 }
-function filterEmps() {
-  const q = $('empSearch').value.toLowerCase();
-  renderEmps(allEmps.filter(e => (e.name||'').toLowerCase().includes(q)||(e.empCode||'').toLowerCase().includes(q)));
+
+function filterEmps(){
+  const q=$('empSearch').value.toLowerCase();
+  renderEmps(allEmps.filter(e=>(e.name||'').toLowerCase().includes(q)||(e.empCode||'').toLowerCase().includes(q)));
 }
-function updateStats() {
-  const total = allEmps.reduce((s,e)=>s+(e.totalSalary||0),0);
-  const ot    = allEmps.reduce((s,e)=>s+(e.normalOTRate||0)+(e.holidayOTRate||0),0);
-  const pend  = allEmps.filter(e=>!e.lastCalculated).length;
-  $('stEmps').textContent    = allEmps.length;
-  $('stTotal').textContent   = 'BD '+total.toFixed(2);
-  $('stOT').textContent      = 'BD '+ot.toFixed(2);
-  $('stPending').textContent = pend;
+function updateStats(){
+  const total=allEmps.reduce((s,e)=>s+(e.totalSalary||0),0);
+  const lastNet=allEmps.reduce((s,e)=>s+(e.lastNetSalary||0),0);
+  const pend=allEmps.filter(e=>!e.lastCalculated).length;
+  $('stEmps').textContent=allEmps.length;
+  $('stTotal').textContent='BD '+total.toFixed(2);
+  $('stOT').textContent='BD '+lastNet.toFixed(2);
+  $('stPending').textContent=pend;
 }
 
-// EMP FORM
-function empForm(e={}) {
-  const f = (id,label,val='',type='number',ph='0.000') =>
+// Emp form — hoursToBeWorked REMOVED (now in hours sheet)
+function empForm(e={}){
+  const f=(id,label,val='',type='number',ph='0.000')=>
     `<div class="field"><label>${label}</label><input class="inp" id="ef-${id}" type="${type}" value="${val||''}" placeholder="${ph}"></div>`;
-  return `
+  return`
     <div class="g2">
       ${f('name','Employee Name',e.name,'text','Ahmad Al-Khalifa')}
       ${f('code','Employee Code / ID',e.empCode,'text','EMP001')}
     </div>
     <div class="g2">
       ${f('hire','Hire Date',e.hireDate,'date','')}
-      ${f('loc','Work Location',e.workLocation,'text','Bahrain')}
+      ${f('loc','Work Location / Branch',e.workLocation,'text','Manama')}
     </div>
     <div class="divider"></div>
-    <div class="slabel" style="margin-bottom:12px;">Salary Components (BD / Month)</div>
+    <div class="slabel" style="margin-bottom:10px;">Salary Components (BD / Month)</div>
     <div class="g3">
       ${f('basic','Basic Salary',e.basic)}
       ${f('hra','HRA',e.hra)}
       ${f('ta','Transport Allow.',e.ta)}
     </div>
-    <div class="g3">
+    <div class="g2">
       ${f('allow','Other Allowance',e.otherAllow)}
       ${f('bonus','Bonuses',e.bonuses)}
-      ${f('total','Total Gross Salary',e.totalSalary)}
     </div>
-    <div class="divider"></div>
-    <div class="slabel" style="margin-bottom:12px;">OT & Hours</div>
-    <div class="g3">
-      ${f('stdhrs','Std Hours / Month',e.hoursToBeWorked||168)}
-      ${f('nOT','Normal OT Rate (BD/hr)',e.normalOTRate)}
-      ${f('hOT','Holiday OT Rate (BD/hr)',e.holidayOTRate)}
-    </div>`;
+    ${f('total','Total Gross Salary',e.totalSalary)}`;
 }
-function gef(id) { return document.getElementById('ef-'+id)?.value; }
-function gefN(id) { return parseFloat(gef(id))||0; }
-function getFormData() {
-  return {
-    name:gef('name'), empCode:gef('code'), hireDate:gef('hire'), workLocation:gef('loc'),
-    basic:gefN('basic'), hra:gefN('hra'), ta:gefN('ta'), otherAllow:gefN('allow'),
-    bonuses:gefN('bonus'), totalSalary:gefN('total'),
-    hoursToBeWorked:gefN('stdhrs')||168, normalOTRate:gefN('nOT'), holidayOTRate:gefN('hOT'),
-    userId: currentUser.$id
+function gef(id){return document.getElementById('ef-'+id)?.value;}
+function gefN(id){return parseFloat(gef(id))||0;}
+function getFormData(){
+  return{
+    name:gef('name'),empCode:gef('code'),hireDate:gef('hire'),workLocation:gef('loc'),
+    basic:gefN('basic'),hra:gefN('hra'),ta:gefN('ta'),otherAllow:gefN('allow'),
+    bonuses:gefN('bonus'),totalSalary:gefN('total'),
+    userId:currentUser.$id
   };
 }
-function openAddEmp() {
-  editingId = null;
-  $('empModalTitle').textContent = 'Add Employee';
-  $('empModalSub').textContent   = 'Enter salary details. Saved to your Appwrite account.';
-  $('empModalBody').innerHTML    = empForm({});
-  $('deleteBtn').style.display   = 'none';
+function openAddEmp(){
+  editingId=null;
+  $('empModalTitle').textContent='Add Employee';
+  $('empModalSub').textContent='Enter salary details. Saved to your Appwrite account.';
+  $('empModalBody').innerHTML=empForm({});
+  $('deleteBtn').style.display='none';
   $('empModal').classList.add('open');
 }
-function openEditEmp(id) {
-  editingId = id;
-  const e = allEmps.find(x=>x.$id===id); if (!e) return;
-  $('empModalTitle').textContent = e.name;
-  $('empModalSub').textContent   = (e.empCode||'—') + ' · ' + (e.workLocation||'—');
-  $('empModalBody').innerHTML    = empForm(e);
-  $('deleteBtn').style.display   = 'inline-flex';
+function openEditEmp(id){
+  editingId=id;
+  const e=allEmps.find(x=>x.$id===id);if(!e)return;
+  $('empModalTitle').textContent=e.name;
+  $('empModalSub').textContent=(e.empCode||'—')+' · '+(e.workLocation||'—')+' · Joined: '+(e.hireDate||'—');
+  $('empModalBody').innerHTML=empForm(e);
+  $('deleteBtn').style.display='inline-flex';
   $('empModal').classList.add('open');
 }
-function closeEmpModal() { $('empModal').classList.remove('open'); }
-async function saveEmployee() {
-  const data = getFormData();
-  if (!data.name) { toast('Employee name required','err'); return; }
-  try {
+function closeEmpModal(){$('empModal').classList.remove('open');}
+async function saveEmployee(){
+  const data=getFormData();
+  if(!data.name){toast('Employee name required','err');return;}
+  try{
     showLoad('Saving…');
-    if (editingId) await databases.updateDocument(AW_DB, AW_COL, editingId, data);
-    else           await databases.createDocument(AW_DB, AW_COL, ID.unique(), data);
-    closeEmpModal(); loadEmps(); toast('✓ Saved');
-  } catch(e) { toast('Error: '+(e.message||''),'err'); }
-  finally { hideLoad(); }
+    if(editingId) await databases.updateDocument(AW_DB,AW_COL,editingId,data);
+    else          await databases.createDocument(AW_DB,AW_COL,ID.unique(),data);
+    closeEmpModal();loadEmps();toast('✓ Saved');
+  }catch(e){toast('Error: '+(e.message||''),'err');}
+  finally{hideLoad();}
 }
-async function deleteEmployee() {
-  if (!editingId || !confirm('Delete this employee? This cannot be undone.')) return;
-  try {
+async function deleteEmployee(){
+  if(!editingId||!confirm('Delete this employee? Cannot be undone.'))return;
+  try{
     showLoad('Deleting…');
-    await databases.deleteDocument(AW_DB, AW_COL, editingId);
-    closeEmpModal(); loadEmps(); toast('Deleted');
-  } catch(e) { toast('Error: '+(e.message||''),'err'); }
-  finally { hideLoad(); }
+    await databases.deleteDocument(AW_DB,AW_COL,editingId);
+    closeEmpModal();loadEmps();toast('Deleted');
+  }catch(e){toast('Error: '+(e.message||''),'err');}
+  finally{hideLoad();}
 }
 
-// ─────────────────────────────────────────────
-//  INPUT MODES
-// ─────────────────────────────────────────────
-function setMode(m) {
-  $('uploadPanel').style.display = m==='upload' ? 'block':'none';
-  $('manualPanel').style.display = m==='manual' ? 'block':'none';
-  $('tabUpload').className = 'mode-tab' + (m==='upload'?' on':'');
-  $('tabManual').className = 'mode-tab' + (m==='manual'?' on':'');
+// ── HOURS UPLOAD ──
+function setMode(m){
+  $('uploadPanel').style.display=m==='upload'?'block':'none';
+  $('manualPanel').style.display=m==='manual'?'block':'none';
+  $('tabUpload').className='mode-tab'+(m==='upload'?' on':'');
+  $('tabManual').className='mode-tab'+(m==='manual'?' on':'');
 }
+function dov(e){e.preventDefault();$('dropZone').classList.add('over');}
+function dol(e){$('dropZone').classList.remove('over');}
+function dod(e){e.preventDefault();$('dropZone').classList.remove('over');const f=e.dataTransfer.files[0];if(f)loadHoursFile(f);}
+function onFileChange(e){if(e.target.files[0])loadHoursFile(e.target.files[0]);}
 
-// UPLOAD
-function dov(e) { e.preventDefault(); $('dropZone').classList.add('over'); }
-function dol(e) { $('dropZone').classList.remove('over'); }
-function dod(e) { e.preventDefault(); $('dropZone').classList.remove('over'); const f=e.dataTransfer.files[0]; if(f) loadFile(f); }
-function onFileChange(e) { if(e.target.files[0]) loadFile(e.target.files[0]); }
-function loadFile(file) {
-  const r = new FileReader();
-  r.onload = ev => {
-    const wb = XLSX.read(ev.target.result, {type:'binary', cellDates:true});
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    const json = XLSX.utils.sheet_to_json(ws, {header:1});
-    uploadHdrs = json[0]||[]; uploadData = json.slice(1);
-    buildMapper();
+function loadHoursFile(file){
+  const r=new FileReader();
+  r.onload=ev=>{
+    const wb=XLSX.read(ev.target.result,{type:'binary',cellDates:false});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const json=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,dateNF:'yyyy-mm-dd'});
+    uploadHdrs=json[0]||[];
+    uploadData=json.slice(1).filter(r=>r.some(c=>c));
+    buildHoursMapper();
     $('uploadMapper').classList.add('on');
-    toast('📂 '+ uploadData.length +' rows loaded');
+    toast('📂 '+uploadData.length+' rows loaded');
   };
   r.readAsBinaryString(file);
 }
-function buildMapper() {
-  ['mcName','mcCode','mcHours'].forEach(id => {
-    const sel = $(id);
-    sel.innerHTML = '<option value="">— Skip —</option>' +
+
+function buildHoursMapper(){
+  [
+    {id:'mcName',   keys:['name']},
+    {id:'mcCode',   keys:['code','id']},
+    {id:'mcHours',  keys:['hour','work','total work']},
+    {id:'mcStdHrs', keys:['to be','std','standard','target','required']},
+    {id:'mcNormOT', keys:['normal ot','norm ot','regular ot','ot hour']},
+    {id:'mcHolOT',  keys:['holiday ot','hol ot','public','holiday']},
+  ].forEach(({id,keys})=>{
+    const sel=$(id);
+    sel.innerHTML='<option value="">— Skip —</option>'+
       uploadHdrs.map((h,i)=>`<option value="${i}">${h}</option>`).join('');
-    const lbl = id==='mcName'?['name'] : id==='mcCode'?['code','id'] : ['hour','total','work'];
     uploadHdrs.forEach((h,i)=>{
-      if (lbl.some(l => h.toLowerCase().includes(l))) sel.value = i;
+      if(keys.some(k=>h.toLowerCase().includes(k)))sel.value=i;
     });
   });
 }
-function runPayrollFromUpload() {
-  const ni=$('mcName').value, hi=$('mcHours').value, ci=$('mcCode').value;
-  if (ni==='') { toast('Select Name column','err'); return; }
-  const map = {};
-  uploadData.filter(r=>r[ni]).forEach(r => {
-    map[String(r[ni]).trim()] = { code: ci!==''?String(r[ci]||''):'', hours: parseFloat(r[hi])||0 };
+
+function runPayrollFromUpload(){
+  const ni=$('mcName').value;
+  if(ni===''){toast('Select Employee Name column','err');return;}
+  const ci=$('mcCode').value,hi=$('mcHours').value,si=$('mcStdHrs').value,
+        noi=$('mcNormOT').value,hoi=$('mcHolOT').value;
+  const rows=[];
+  uploadData.filter(r=>r[ni]).forEach(r=>{
+    rows.push({
+      name:  String(r[ni]||'').trim(),
+      code:  ci!==''?String(r[ci]||''):'',
+      hours: parseFloat(r[hi])||0,
+      stdHrs:si!==''?parseFloat(r[si])||0:0,
+      normOT:noi!==''?parseFloat(r[noi])||0:0,
+      holOT: hoi!==''?parseFloat(r[hoi])||0:0,
+    });
   });
-  calcPayroll(map);
+  calcPayroll(rows);
 }
 
-// MANUAL
-function addManualRow() {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><input class="manual-inp" placeholder="Employee Name"></td>
+function addManualRow(){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+    <td><input class="manual-inp" placeholder="Name"></td>
     <td><input class="manual-inp" placeholder="EMP002"></td>
     <td><input class="manual-inp" type="number" step="0.5" placeholder="168"></td>
+    <td><input class="manual-inp" type="number" step="0.5" placeholder="200"></td>
+    <td><input class="manual-inp" type="number" step="0.5" placeholder="0"></td>
+    <td><input class="manual-inp" type="number" step="0.5" placeholder="0"></td>
     <td><button class="btn-del" onclick="this.closest('tr').remove()">×</button></td>`;
   $('manualRows').appendChild(tr);
 }
-function runPayrollManual() {
-  const map = {};
-  document.querySelectorAll('#manualRows tr').forEach(row => {
-    const ins = row.querySelectorAll('.manual-inp');
-    const name = ins[0]?.value.trim();
-    if (name) map[name] = { code: ins[1]?.value.trim()||'', hours: parseFloat(ins[2]?.value)||0 };
+
+function runPayrollManual(){
+  const rows=[];
+  document.querySelectorAll('#manualRows tr').forEach(row=>{
+    const ins=row.querySelectorAll('.manual-inp');
+    const name=ins[0]?.value.trim();
+    if(name)rows.push({
+      name,code:ins[1]?.value.trim()||'',
+      hours:parseFloat(ins[2]?.value)||0,
+      stdHrs:parseFloat(ins[3]?.value)||0,
+      normOT:parseFloat(ins[4]?.value)||0,
+      holOT: parseFloat(ins[5]?.value)||0,
+    });
   });
-  if (!Object.keys(map).length) { toast('Add at least one row','err'); return; }
-  calcPayroll(map);
+  if(!rows.length){toast('Add at least one row','err');return;}
+  calcPayroll(rows);
 }
 
-// ─────────────────────────────────────────────
-//  PAYROLL CALCULATION
-// ─────────────────────────────────────────────
-function calcPayroll(hoursMap) {
-  payrollRows = Object.entries(hoursMap).map(([name, {code, hours}]) => {
-    const emp = allEmps.find(e=>e.name.toLowerCase()===name.toLowerCase())
-             || allEmps.find(e=>e.empCode && e.empCode===code)
-             || null;
-    const stdHrs   = emp?.hoursToBeWorked || 168;
-    const basic    = emp?.basic || 0;
-    const hra      = emp?.hra || 0;
-    const ta       = emp?.ta || 0;
-    const allow    = emp?.otherAllow || 0;
-    const bonuses  = emp?.bonuses || 0;
-    const gross    = emp?.totalSalary || (basic+hra+ta+allow+bonuses);
-    const hrRate   = stdHrs > 0 ? (basic/stdHrs) : 0;
-    const otRate   = emp?.normalOTRate || (hrRate * 1.5);
-    const otHrs    = Math.max(0, hours-stdHrs);
-    const shortHrs = Math.max(0, stdHrs-hours);
-    const otPay    = +(otHrs * otRate).toFixed(3);
-    const ded      = +(shortHrs * hrRate).toFixed(3);
-    const net      = +(gross + otPay - ded).toFixed(3);
-    return { name, empCode: code||emp?.empCode||'—', hours, stdHrs, basic, hra, ta, allow, bonuses, gross, otPay, ded, net, matched:!!emp, empId: emp?.$id||null };
+// ── CORE CALCULATION ──
+// Formula: (Basic / 240) × OT_Hours × (Rate% / 100)
+function calcPayroll(rows){
+  const normPct=(parseFloat($('normalOTpct').value)||125)/100;
+  const holPct =(parseFloat($('holidayOTpct').value)||150)/100;
+
+  payrollRows=rows.map(row=>{
+    const emp=allEmps.find(e=>e.name.toLowerCase()===row.name.toLowerCase())
+            ||allEmps.find(e=>e.empCode&&e.empCode===row.code)
+            ||null;
+
+    const basic  =emp?.basic||0;
+    const hra    =emp?.hra||0;
+    const ta     =emp?.ta||0;
+    const allow  =emp?.otherAllow||0;
+    const bonuses=emp?.bonuses||0;
+    const gross  =emp?.totalSalary||(basic+hra+ta+allow+bonuses);
+
+    const hrRate    =basic/240;  // BD per hour
+    const normOTPay =+(hrRate*row.normOT*normPct).toFixed(3);
+    const holOTPay  =+(hrRate*row.holOT *holPct ).toFixed(3);
+
+    // Shortage deduction only if hours target is provided
+    const shortHrs=row.stdHrs>0?Math.max(0,row.stdHrs-row.hours):0;
+    const deduction=+(shortHrs*hrRate).toFixed(3);
+
+    const net=+(gross+normOTPay+holOTPay-deduction).toFixed(3);
+
+    return{
+      name:row.name,empCode:row.code||emp?.empCode||'—',
+      hours:row.hours,stdHrs:row.stdHrs,normOT:row.normOT,holOT:row.holOT,
+      basic,hra,ta,allow,bonuses,gross,
+      normOTPay,holOTPay,deduction,net,
+      matched:!!emp,empId:emp?.$id||null
+    };
   });
   renderResults();
 }
-function renderResults() {
-  let totGross=0,totNet=0,totOT=0,totDed=0;
-  $('resultsBody').innerHTML = payrollRows.map((r,i)=>{
-    totGross+=r.gross; totNet+=r.net; totOT+=r.otPay; totDed+=r.ded;
-    const tag = r.matched
-      ? `<span class="badge badge-green">✓ Matched</span>`
-      : `<span class="badge badge-amber">⚠ No Record</span>`;
-    return `<tr>
+
+function renderResults(){
+  let totGross=0,totNet=0,totNOT=0,totHOT=0,totDed=0;
+  $('resultsBody').innerHTML=payrollRows.map((r,i)=>{
+    totGross+=r.gross;totNet+=r.net;totNOT+=r.normOTPay;totHOT+=r.holOTPay;totDed+=r.deduction;
+    const tag=r.matched?`<span class="badge badge-green">✓ Matched</span>`:`<span class="badge badge-amber">⚠ No Record</span>`;
+    return`<tr>
       <td style="color:var(--wm)">${i+1}</td>
       <td><b>${r.name}</b></td>
       <td style="color:var(--wm);font-family:'DM Mono',monospace">${r.empCode}</td>
-      <td style="font-family:'DM Mono',monospace">${r.hours.toFixed(1)} / ${r.stdHrs}</td>
+      <td style="font-family:'DM Mono',monospace">${r.hours.toFixed(1)}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--wm)">${r.stdHrs>0?r.stdHrs.toFixed(1):'—'}</td>
+      <td style="color:#fbbf24">${r.normOT.toFixed(1)}h</td>
+      <td style="color:#93c5fd">${r.holOT.toFixed(1)}h</td>
       <td>BD ${r.basic.toFixed(3)}</td>
       <td>BD ${r.hra.toFixed(3)}</td>
       <td>BD ${r.ta.toFixed(3)}</td>
       <td>BD ${r.allow.toFixed(3)}</td>
-      <td style="color:#fbbf24">BD ${r.otPay.toFixed(3)}</td>
-      <td style="color:#f87171">-BD ${r.ded.toFixed(3)}</td>
+      <td style="color:#fbbf24;font-weight:600">BD ${r.normOTPay.toFixed(3)}</td>
+      <td style="color:#93c5fd;font-weight:600">BD ${r.holOTPay.toFixed(3)}</td>
+      <td style="color:#f87171">-BD ${r.deduction.toFixed(3)}</td>
       <td style="color:#4ade80;font-weight:700">BD ${r.net.toFixed(3)}</td>
       <td>${tag}</td>
     </tr>`;
   }).join('');
-  $('resultsTotals').innerHTML = `
-    <td colspan="4" style="font-weight:700;">TOTAL — ${payrollRows.length} employees</td>
+  $('resultsTotals').innerHTML=`
+    <td colspan="5" style="font-weight:700;">TOTAL — ${payrollRows.length} employees</td>
+    <td colspan="2"></td>
     <td>BD ${totGross.toFixed(3)}</td>
     <td colspan="3"></td>
-    <td style="color:#fbbf24">BD ${totOT.toFixed(3)}</td>
+    <td style="color:#fbbf24">BD ${totNOT.toFixed(3)}</td>
+    <td style="color:#93c5fd">BD ${totHOT.toFixed(3)}</td>
     <td style="color:#f87171">-BD ${totDed.toFixed(3)}</td>
     <td style="color:#4ade80;font-weight:700">BD ${totNet.toFixed(3)}</td>
     <td></td>`;
-  $('resultsSection').style.display = 'block';
-  $('resultsSection').scrollIntoView({behavior:'smooth', block:'nearest'});
+  $('resultsSection').style.display='block';
+  $('resultsSection').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-async function saveToRecords() {
-  if (!currentUser||!payrollRows.length) return;
-  try {
+
+async function saveToRecords(){
+  if(!currentUser||!payrollRows.length)return;
+  try{
     showLoad('Saving results…');
-    for (const r of payrollRows) {
-      if (r.empId) {
-        await databases.updateDocument(AW_DB, AW_COL, r.empId, {
-          lastCalculated:  new Date().toISOString(),
-          lastHoursWorked: r.hours,
-          lastNetSalary:   r.net
+    for(const r of payrollRows){
+      if(r.empId){
+        await databases.updateDocument(AW_DB,AW_COL,r.empId,{
+          lastCalculated: new Date().toISOString(),
+          lastHoursWorked:r.hours,
+          lastNetSalary:  r.net
         });
       }
     }
     await loadEmps();
     toast('✓ Results saved to employee records');
-  } catch(e) { toast('Error: '+(e.message||''),'err'); }
-  finally { hideLoad(); }
+  }catch(e){toast('Error: '+(e.message||''),'err');}
+  finally{hideLoad();}
 }
-function exportReport() {
-  const wb = XLSX.utils.book_new();
-  const rows = [
+
+function exportReport(){
+  const wb=XLSX.utils.book_new();
+  const normPct=parseFloat($('normalOTpct').value)||125;
+  const holPct =parseFloat($('holidayOTpct').value)||150;
+  const rows=[
     ['PAYROLL PROCESSING REPORT'],
     ['Generated: '+new Date().toLocaleString()],
-    ['Employer:  '+(currentUser?.name||'—')],
+    ['Employer: '+(currentUser?.name||'—')],
+    ['Normal OT Rate: '+normPct+'%   |   Holiday OT Rate: '+holPct+'%'],
+    ['Formula: (Basic ÷ 240) × OT Hours × Rate%'],
     [],
-    ['#','Employee','Code','Hrs Worked','Std Hrs','Basic','HRA','TA','Allow','OT Pay','Deduction','Net Salary']
+    ['#','Employee','Code','Hrs Worked','Hrs Target','Normal OT Hrs','Holiday OT Hrs',
+     'Basic','HRA','TA','Allowance','Normal OT Pay','Holiday OT Pay','Deduction','Net Salary']
   ];
   payrollRows.forEach((r,i)=>{
-    rows.push([i+1, r.name, r.empCode, r.hours, r.stdHrs, r.basic, r.hra, r.ta, r.allow, r.otPay, r.ded, r.net]);
+    rows.push([i+1,r.name,r.empCode,r.hours,r.stdHrs>0?r.stdHrs:'—',
+      r.normOT,r.holOT,r.basic,r.hra,r.ta,r.allow,r.normOTPay,r.holOTPay,r.deduction,r.net]);
   });
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:4},{wch:22},{wch:12},{wch:11},{wch:11},{wch:10},{wch:10},{wch:10},{wch:12},{wch:10},{wch:12},{wch:12}];
-  XLSX.utils.book_append_sheet(wb, ws, 'Payroll');
-  XLSX.writeFile(wb, 'Payroll_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:4},{wch:24},{wch:10},{wch:11},{wch:11},{wch:13},{wch:13},
+               {wch:10},{wch:8},{wch:8},{wch:10},{wch:14},{wch:14},{wch:12},{wch:12}];
+  XLSX.utils.book_append_sheet(wb,ws,'Payroll');
+  XLSX.writeFile(wb,'Payroll_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
 
-// ─────────────────────────────────────────────
-//  IMPORT EMPLOYEES FROM EXCEL
-// ─────────────────────────────────────────────
-const IMPORT_FIELDS = [
-  { key:'name',            label:'Employee Name',      required:true  },
-  { key:'empCode',         label:'Employee Code / ID', required:false },
-  { key:'hireDate',        label:'Hire Date',          required:false },
-  { key:'workLocation',    label:'Work Location',      required:false },
-  { key:'basic',           label:'Basic Salary',       required:false },
-  { key:'hra',             label:'HRA',                required:false },
-  { key:'ta',              label:'Transport Allow.',   required:false },
-  { key:'otherAllow',      label:'Other Allowance',    required:false },
-  { key:'bonuses',         label:'Bonuses',            required:false },
-  { key:'totalSalary',     label:'Total Gross Salary', required:false },
-  { key:'hoursToBeWorked', label:'Std Hours / Month',  required:false },
-  { key:'normalOTRate',    label:'Normal OT Rate',     required:false },
-  { key:'holidayOTRate',   label:'Holiday OT Rate',    required:false },
+// ── IMPORT EMPLOYEES ──
+const IMPORT_FIELDS=[
+  {key:'name',        label:'Employee Name',     required:true},
+  {key:'empCode',     label:'Employee Code / ID',required:false},
+  {key:'hireDate',    label:'Hire Date',          required:false},
+  {key:'workLocation',label:'Work Location',      required:false},
+  {key:'basic',       label:'Basic Salary',       required:false},
+  {key:'hra',         label:'HRA',                required:false},
+  {key:'ta',          label:'Transport Allow.',   required:false},
+  {key:'otherAllow',  label:'Other Allowance',    required:false},
+  {key:'bonuses',     label:'Bonuses',            required:false},
+  {key:'totalSalary', label:'Total Gross Salary', required:false},
 ];
 
-let importHdrs = [], importRows = [];
+// FIX: trigger via JS to allow re-selection of same file
+function triggerImportFile(){
+  const fi=$('importFile');
+  fi.value='';
+  fi.click();
+}
 
-function openImportEmps() { resetImport(); $('importModal').classList.add('open'); }
-function closeImportModal() { $('importModal').classList.remove('open'); }
-function resetImport() {
-  importHdrs=[]; importRows=[];
+function openImportEmps(){resetImport();$('importModal').classList.add('open');}
+function closeImportModal(){$('importModal').classList.remove('open');}
+function resetImport(){
+  importHdrs=[];importRows=[];
   $('importStep1').style.display='block';
   $('importStep2').style.display='none';
   $('importStep3').style.display='none';
-  $('importFile').value='';
+  // Reset file input properly to allow same file re-selection
+  const fi=$('importFile');
+  fi.value='';
 }
 
-function idov(e){ e.preventDefault(); $('importDrop').classList.add('over'); }
-function idol(e){ $('importDrop').classList.remove('over'); }
-function idod(e){ e.preventDefault(); $('importDrop').classList.remove('over'); const f=e.dataTransfer.files[0]; if(f) readImportFile(f); }
-function onImportFile(e){ if(e.target.files[0]) readImportFile(e.target.files[0]); }
+function idov(e){e.preventDefault();$('importDrop').classList.add('over');}
+function idol(e){$('importDrop').classList.remove('over');}
+function idod(e){e.preventDefault();$('importDrop').classList.remove('over');const f=e.dataTransfer.files[0];if(f)readImportFile(f);}
+function onImportFile(e){if(e.target.files[0])readImportFile(e.target.files[0]);}
 
 function readImportFile(file){
   const r=new FileReader();
   r.onload=ev=>{
-    // Do NOT use cellDates:true — we handle dates manually to avoid JS Date objects
-    const wb=XLSX.read(ev.target.result,{type:'binary', cellDates:false});
+    const wb=XLSX.read(ev.target.result,{type:'binary',cellDates:false});
     const ws=wb.Sheets[wb.SheetNames[0]];
-    const json=XLSX.utils.sheet_to_json(ws,{header:1, raw:false, dateNF:'yyyy-mm-dd'});
+    const json=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,dateNF:'yyyy-mm-dd'});
     importHdrs=(json[0]||[]).map(h=>String(h||'').trim());
     importRows=json.slice(1).filter(r=>r.some(c=>c!==null&&c!==undefined&&c!==''));
     $('importFileLabel').textContent=`📂 ${file.name} — ${importRows.length} rows`;
     $('importRowCount').textContent=`${importRows.length} employees will be imported`;
-    buildImportMapper();
-    buildImportPreview();
+    buildImportMapper();buildImportPreview();
     $('importStep1').style.display='none';
     $('importStep2').style.display='block';
   };
@@ -903,123 +915,100 @@ function buildImportMapper(){
     const opts=importHdrs.map((h,i)=>{
       const hl=h.toLowerCase();
       const match=
-        (f.key==='name'            && hl.includes('name')) ||
-        (f.key==='empCode'         && (hl.includes('code')||hl===' id'||hl==='id'||hl.includes(' id'))) ||
-        (f.key==='hireDate'        && (hl.includes('hire')||hl.includes('date')||hl.includes('join'))) ||
-        (f.key==='workLocation'    && (hl.includes('locat')||hl.includes('site')||hl.includes('branch'))) ||
-        (f.key==='basic'           && (hl==='basic'||hl.includes('basic sal'))) ||
-        (f.key==='hra'             && (hl==='hra'||hl.includes('house'))) ||
-        (f.key==='ta'              && (hl==='ta'||hl.includes('transport')||hl.includes('travel'))) ||
-        (f.key==='otherAllow'      && (hl.includes('other allow')||hl.includes('other'))) ||
-        (f.key==='bonuses'         && hl.includes('bonus')) ||
-        (f.key==='totalSalary'     && (hl.includes('total sal')||hl.includes('gross')||hl==='total salary')) ||
-        (f.key==='hoursToBeWorked' && (hl.includes('hours to')||hl.includes('std hour')||hl.includes('standard')||hl==='hours to be worked')) ||
-        (f.key==='normalOTRate'    && (hl.includes('normal ot')||hl.includes('normal o'))) ||
-        (f.key==='holidayOTRate'   && hl.includes('holiday'));
-      return `<option value="${i}"${match?' selected':''}>${h}</option>`;
+        (f.key==='name'        && hl.includes('name'))||
+        (f.key==='empCode'     && (hl.includes('code')||hl===' id'||hl==='id'||hl.includes(' id')))||
+        (f.key==='hireDate'    && (hl.includes('hire')||hl.includes('date')||hl.includes('join')))||
+        (f.key==='workLocation'&& (hl.includes('locat')||hl.includes('site')||hl.includes('branch')))||
+        (f.key==='basic'       && (hl==='basic'||hl.includes('basic sal')))||
+        (f.key==='hra'         && (hl==='hra'||hl.includes('house')))||
+        (f.key==='ta'          && (hl==='ta'||hl.includes('transport')||hl.includes('travel')))||
+        (f.key==='otherAllow'  && (hl.includes('other allow')||hl.includes('other')))||
+        (f.key==='bonuses'     && hl.includes('bonus'))||
+        (f.key==='totalSalary' && (hl.includes('total sal')||hl.includes('gross')||hl==='total salary'));
+      return`<option value="${i}"${match?' selected':''}>${h}</option>`;
     }).join('');
-    return `<div><label>${f.label}${f.required?' <span style="color:#f87171">*</span>':''}</label>
+    return`<div><label>${f.label}${f.required?' <span style="color:#f87171">*</span>':''}</label>
       <select class="map-sel" id="im-${f.key}"><option value="">— Skip —</option>${opts}</select></div>`;
   }).join('');
 }
 
 function buildImportPreview(){
-  $('importPreviewHead').innerHTML='<tr>'+importHdrs.map(h=>`<th style="padding:5px 10px;font-size:9px;text-transform:uppercase;color:var(--wm);background:var(--card);white-space:nowrap;letter-spacing:.8px;">${h}</th>`).join('')+'</tr>';
+  $('importPreviewHead').innerHTML='<tr>'+importHdrs.map(h=>
+    `<th style="padding:4px 8px;font-size:9px;text-transform:uppercase;color:var(--wm);background:var(--card);white-space:nowrap;">${h}</th>`
+  ).join('')+'</tr>';
   $('importPreviewBody').innerHTML=importRows.slice(0,3).map(row=>
-    '<tr>'+importHdrs.map((_,i)=>`<td style="padding:5px 10px;border-bottom:1px solid var(--border);color:var(--wd);white-space:nowrap;">${row[i]??''}</td>`).join('')+'</tr>'
+    '<tr>'+importHdrs.map((_,i)=>
+      `<td style="padding:4px 8px;border-bottom:1px solid var(--border);color:var(--wd);white-space:nowrap;">${row[i]??''}</td>`
+    ).join('')+'</tr>'
   ).join('');
 }
 
 function getImportColIdx(key){
   const v=document.getElementById('im-'+key)?.value;
-  return (v!==''&&v!==undefined&&v!==null)?parseInt(v):null;
+  return(v!==''&&v!==undefined&&v!==null)?parseInt(v):null;
 }
-
-// ── KEY FIX: safe string converter that handles dates, numbers, everything ──
-function safeStr(v, maxLen=48){
-  if(v===undefined||v===null) return '';
-  // XLSX with raw:false returns date-looking strings as 'dd/mm/yyyy' or 'yyyy-mm-dd' already
-  // but serial numbers (Excel date serials) can slip through — detect and convert
-  const s = String(v).trim();
-  // If it looks like an Excel date serial (a 5-digit number in range 1–99999)
+function safeStr(v,maxLen=48){
+  if(v===null||v===undefined)return'';
+  const s=String(v).trim();
   if(/^\d{5}$/.test(s)){
-    const serial=parseInt(s);
-    // Excel serial to JS date (Excel epoch = Jan 0 1900)
-    const ms=(serial-25569)*86400*1000;
+    const ms=(parseInt(s)-25569)*86400*1000;
     const d=new Date(ms);
     if(!isNaN(d.getTime())){
-      const y=d.getUTCFullYear(), mo=String(d.getUTCMonth()+1).padStart(2,'0'), day=String(d.getUTCDate()).padStart(2,'0');
-      return `${y}-${mo}-${day}`;
+      const y=d.getUTCFullYear(),mo=String(d.getUTCMonth()+1).padStart(2,'0'),dy=String(d.getUTCDate()).padStart(2,'0');
+      return`${y}-${mo}-${dy}`;
     }
   }
   return s.substring(0,maxLen);
 }
-
 function safeFloat(v){
-  if(v===undefined||v===null||v==='') return 0;
+  if(v===null||v===undefined||v==='')return 0;
   const n=parseFloat(String(v).replace(/[^0-9.\-]/g,''));
   return isNaN(n)?0:n;
 }
 
 async function runImport(){
   const nameIdx=getImportColIdx('name');
-  if(nameIdx===null){ toast('Map the Employee Name column first','err'); return; }
-
+  if(nameIdx===null){toast('Map the Employee Name column first','err');return;}
   const toImport=importRows.map(row=>{
     const name=safeStr(row[nameIdx]);
-    if(!name) return null;
-    const gs=key=>{ const idx=getImportColIdx(key); return idx!==null?safeStr(row[idx]):''; };
-    const gf=key=>{ const idx=getImportColIdx(key); return idx!==null?safeFloat(row[idx]):0; };
-    return {
-      name,
-      empCode:         gs('empCode'),
-      hireDate:        gs('hireDate'),
-      workLocation:    gs('workLocation'),
-      basic:           gf('basic'),
-      hra:             gf('hra'),
-      ta:              gf('ta'),
-      otherAllow:      gf('otherAllow'),
-      bonuses:         gf('bonuses'),
-      totalSalary:     gf('totalSalary'),
-      hoursToBeWorked: gf('hoursToBeWorked')||168,
-      normalOTRate:    gf('normalOTRate'),
-      holidayOTRate:   gf('holidayOTRate'),
-      userId: currentUser.$id
+    if(!name)return null;
+    const gs=key=>{const idx=getImportColIdx(key);return idx!==null?safeStr(row[idx]):'';};
+    const gf=key=>{const idx=getImportColIdx(key);return idx!==null?safeFloat(row[idx]):0;};
+    return{
+      name,empCode:gs('empCode'),hireDate:gs('hireDate'),workLocation:gs('workLocation'),
+      basic:gf('basic'),hra:gf('hra'),ta:gf('ta'),otherAllow:gf('otherAllow'),
+      bonuses:gf('bonuses'),totalSalary:gf('totalSalary'),
+      userId:currentUser.$id
     };
   }).filter(Boolean);
 
-  if(!toImport.length){ toast('No valid rows found','err'); return; }
+  if(!toImport.length){toast('No valid rows found','err');return;}
 
-  let saved=0, failed=0, lastErr='';
+  let saved=0,failed=0,lastErr='';
   for(let i=0;i<toImport.length;i++){
     showLoad(`Importing ${i+1} / ${toImport.length} — ${toImport[i].name}`);
     try{
       await databases.createDocument(AW_DB,AW_COL,ID.unique(),toImport[i]);
       saved++;
     }catch(e){
-      console.error('Import failed for',toImport[i].name,':',e.message, toImport[i]);
-      lastErr=e.message||'';
-      failed++;
+      console.error('Import failed:',toImport[i].name,e.message,toImport[i]);
+      lastErr=e.message||'';failed++;
     }
   }
   hideLoad();
-
   $('importResultTitle').textContent=`${saved} employee${saved!==1?'s':''} imported successfully`;
-  $('importResultSub').textContent= failed>0
-    ? `${failed} row${failed!==1?'s':''} failed. Last error: ${lastErr}`
-    : 'All records saved to Appwrite.';
+  $('importResultSub').textContent=failed>0?`${failed} row(s) failed. Last error: ${lastErr}`:'All records saved to Appwrite.';
   $('importStep2').style.display='none';
   $('importStep3').style.display='block';
-  loadEmps();
-  toast(`✓ Imported ${saved} employees`);
+  loadEmps();toast(`✓ Imported ${saved} employees`);
 }
 
 function downloadImportTemplate(){
   const wb=XLSX.utils.book_new();
-  const hdrs=['NAME',' ID','HIRE DATE','WORK LOCATION','BASIC','HRA','TA','OTHER ALLOWANCE','BONUSES','TOTAL SALARY','HOURS TO BE WORKED','NORMAL OT RATE','HOLIDAY OT RATE'];
+  const hdrs=['NAME',' ID','HIRE DATE','WORK LOCATION','BASIC','HRA','TA','OTHER ALLOWANCE','BONUSES','TOTAL SALARY'];
   const sample=[
-    ['Ahmad Al-Khalifa','EMP001','2022-01-15','Manama',450,100,50,30,0,630,168,3.5,5.0],
-    ['Sara Mohammed',   'EMP002','2023-03-01','Riffa', 380,90, 40,20,0,530,168,3.0,4.5],
+    ['Ahmad Al-Khalifa','EMP001','2022-01-15','Manama',450,100,50,30,0,630],
+    ['Sara Mohammed',   'EMP002','2023-03-01','Riffa', 380,90, 40,20,0,530],
   ];
   const ws=XLSX.utils.aoa_to_sheet([hdrs,...sample]);
   ws['!cols']=hdrs.map(()=>({wch:18}));
@@ -1027,17 +1016,15 @@ function downloadImportTemplate(){
   XLSX.writeFile(wb,'EassyOffice_Employee_Import_Template.xlsx');
 }
 
-// ─────────────────────────────────────────────
-//  UTILS
-// ─────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-function showErr(el,msg){ el.textContent=msg; el.style.display='block'; }
-function showLoad(msg='Loading…'){ $('loadingMsg').textContent=msg; $('loadingCover').classList.add('show'); }
-function hideLoad(){ $('loadingCover').classList.remove('show'); }
-function toast(msg, type='ok'){
+// ── UTILS ──
+const $=id=>document.getElementById(id);
+function showErr(el,msg){el.textContent=msg;el.style.display='block';}
+function showLoad(msg='Loading…'){$('loadingMsg').textContent=msg;$('loadingCover').classList.add('show');}
+function hideLoad(){$('loadingCover').classList.remove('show');}
+function toast(msg,type='ok'){
   const t=$('toast');
   t.textContent=msg;
-  t.style.borderColor = type==='err'?'rgba(239,68,68,.4)':'var(--border)';
+  t.style.borderColor=type==='err'?'rgba(239,68,68,.4)':'var(--border)';
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3200);
 }
