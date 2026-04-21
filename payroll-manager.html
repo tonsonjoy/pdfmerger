@@ -231,15 +231,22 @@ function parsePunches(str, midpoint) {
             if (currentIn !== null) res.error = "Missing Out-Punch";
             currentIn = e.mins;
         } else {
-            if (currentIn === null) res.error = "Missing In-Punch";
-            else {
+            if (currentIn === null) {
+                res.error = "Missing In-Punch";
+                // Store dangling out so it shows on report
+                res.missingIn = { shift: e.mins < midpoint ? 'morning' : 'evening', out: e.mins };
+            } else {
                 const pair = { in: currentIn, out: e.mins, dur: (e.mins - currentIn) };
                 if (currentIn < midpoint) res.morning.push(pair); else res.evening.push(pair);
                 currentIn = null;
             }
         }
     });
-    if (currentIn !== null) res.error = "Missing Out-Punch";
+    if (currentIn !== null) {
+        res.error = "Missing Out-Punch";
+        // Store dangling in so it shows on report
+        res.missingOut = { shift: currentIn < midpoint ? 'morning' : 'evening', in: currentIn };
+    }
     res.pairCount = res.morning.length + res.evening.length;
     if (res.pairCount > 2 && !res.error) res.error = "Review Again";
     return res;
@@ -279,12 +286,21 @@ function processData() {
             pData = parsePunches(String(row[ci.punch]), midMins);
         } else {
             const i = timeToMins(row[ci.in]), o = timeToMins(row[ci.out]);
-            pData = { morning: [], evening: [], error: "", firstIn: i };
+            pData = { morning: [], evening: [], error: "", firstIn: i, missingIn: null, missingOut: null };
             if (i && o) {
                 const pair = { in: i, out: o, dur: o - i };
                 if (i < midMins) pData.morning.push(pair); else pData.evening.push(pair);
-            } else if (i && !o) pData.error = "Missing Out-Punch";
-            else if (!i && o) pData.error = "Missing In-Punch";
+            } else if (i && !o) {
+                pData.error = "Missing Out-Punch";
+                // Store the in-time so it still shows on the report
+                if (i < midMins) pData.missingOut = { shift: 'morning', in: i };
+                else pData.missingOut = { shift: 'evening', in: i };
+            } else if (!i && o) {
+                pData.error = "Missing In-Punch";
+                // Store the out-time so it still shows on the report
+                if (o < midMins) pData.missingIn = { shift: 'morning', out: o };
+                else pData.missingIn = { shift: 'evening', out: o };
+            }
         }
 
         if (pData.firstIn === null && !pData.error) return null;
@@ -305,11 +321,15 @@ function processData() {
 
         return {
             Date: row[ci.date], Code: row[ci.code], Name: row[ci.name],
-            mIn: pData.morning.length ? minsToHHMM(pData.morning[0].in) : '',
-            mOut: pData.morning.length ? minsToHHMM(pData.morning[pData.morning.length-1].out) : '',
+            mIn: pData.morning.length ? minsToHHMM(pData.morning[0].in)
+                : (pData.missingOut?.shift === 'morning' ? minsToHHMM(pData.missingOut.in) : ''),
+            mOut: pData.morning.length ? minsToHHMM(pData.morning[pData.morning.length-1].out)
+                : (pData.missingIn?.shift === 'morning' ? minsToHHMM(pData.missingIn.out) : ''),
             mWork,
-            eIn: pData.evening.length ? minsToHHMM(pData.evening[0].in) : '',
-            eOut: pData.evening.length ? minsToHHMM(pData.evening[pData.evening.length-1].out) : '',
+            eIn: pData.evening.length ? minsToHHMM(pData.evening[0].in)
+                : (pData.missingOut?.shift === 'evening' ? minsToHHMM(pData.missingOut.in) : ''),
+            eOut: pData.evening.length ? minsToHHMM(pData.evening[pData.evening.length-1].out)
+                : (pData.missingIn?.shift === 'evening' ? minsToHHMM(pData.missingIn.out) : ''),
             eWork,
             Total: totalWorked, Late: lateMins, OT: otMins,
             RoundedTotal: roundedTotal, RoundedMinutes: roundedTotal % 60,
