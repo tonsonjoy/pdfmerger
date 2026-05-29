@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EassyAttend — Time & Attendance</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- ─── APPWRITE CONFIG ────────────────────────────────────────────────── -->
+<script>
+const APPWRITE = {
+  endpoint:  'https://cloud.appwrite.io/v1',   // ← /v1 added (critical)
+  projectId: '6a18b9b3002ef85ecb8c',
+  dbId:      '6a19a038003b6342a208',
+  col: {
+    employees: 'employees',
+    locations:  'locations',
+    timelogs:   'timelogs',
+  },
+  bucketId:  'selfies',
+  adminUser: 'mediafarmingspace@gmail.com',
+  adminPass: '123456789',
+};
+const QR_TTL_SECONDS = 20;
+</script>
+<!-- ──────────────────────────────────────────────────────────────────── -->
+
+<style>
+:root{
+  --ink:#0d1117;--ink2:#4b5563;--ink3:#9ca3af;
+  --surface:#ffffff;--surface2:#f8fafc;--surface3:#f1f5f9;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --primary:#0f4c8a;--primary-lt:#dbeafe;--primary-dk:#0c3a6d;
+  --success:#0f7a55;--success-lt:#d1fae5;
+  --warn:#b45309;--warn-lt:#fef3c7;
+  --danger:#b91c1c;--danger-lt:#fee2e2;
+  --radius:10px;--radius-lg:16px;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'DM Sans',sans-serif;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 12px rgba(0,0,0,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--surface2);color:var(--ink);font-size:15px;line-height:1.6}
+.hidden{display:none!important}
+button{font-family:var(--sans);cursor:pointer}
+input,select{font-family:var(--sans)}
+
+/* ── VIEWS ── */
+.view{min-height:100vh;display:none}
+.view.active{display:flex;flex-direction:column}
+
+/* ── HOME ── */
+#v-home{align-items:center;justify-content:center;background:var(--ink);min-height:100vh}
+.home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;padding:2rem;width:100%;max-width:960px}
+.home-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-lg);padding:2.5rem 2rem;cursor:pointer;transition:.2s;text-align:center;color:#fff}
+.home-card:hover{background:rgba(255,255,255,.12);transform:translateY(-3px)}
+.home-card.disabled{opacity:.4;cursor:default;pointer-events:none}
+.home-card .hc-icon{font-size:3rem;margin-bottom:1rem}
+.home-card h2{font-size:1.1rem;font-weight:600;margin-bottom:.4rem}
+.home-card p{font-size:.82rem;color:rgba(255,255,255,.55);line-height:1.5}
+.home-logo{color:#fff;font-family:var(--mono);font-size:1.1rem;font-weight:600;margin-bottom:2.5rem;letter-spacing:.04em;text-align:center}
+.home-logo span{color:#60a5fa}
+
+/* ── KIOSK ── */
+#v-kiosk{background:var(--ink);color:#fff;align-items:center;justify-content:center;text-align:center}
+.kiosk-inner{max-width:480px;width:100%;padding:2rem}
+.kiosk-brand{font-family:var(--mono);font-size:1rem;color:rgba(255,255,255,.45);margin-bottom:.5rem;letter-spacing:.08em;text-transform:uppercase}
+.kiosk-location{font-size:1.6rem;font-weight:600;margin-bottom:2rem;letter-spacing:-.02em}
+#kiosk-qr-wrap{background:#fff;display:inline-flex;padding:20px;border-radius:var(--radius-lg);margin-bottom:1.5rem;position:relative;min-width:280px;min-height:280px;align-items:center;justify-content:center}
+#kiosk-qr-wrap.expired::after{content:'EXPIRED';position:absolute;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:1.1rem;color:#f87171;font-weight:600;border-radius:var(--radius-lg)}
+.kiosk-timer-bar{width:100%;height:4px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden;margin-bottom:1rem}
+.kiosk-timer-fill{height:100%;background:linear-gradient(90deg,#60a5fa,#34d399);transition:width .5s linear;border-radius:4px}
+.kiosk-status{font-size:.82rem;color:rgba(255,255,255,.45);font-family:var(--mono)}
+.kiosk-config{position:fixed;top:1.5rem;right:1.5rem;z-index:10}
+.btn-ghost{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:.45rem 1rem;border-radius:var(--radius);font-size:.8rem;transition:.2s;cursor:pointer}
+.btn-ghost:hover{background:rgba(255,255,255,.18)}
+#kiosk-setup{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100}
+#kiosk-setup .modal{background:#1e2938;border:1px solid rgba(255,255,255,.12);border-radius:var(--radius-lg);padding:2rem;width:100%;max-width:380px;color:#fff}
+#kiosk-setup .modal h3{font-size:1rem;margin-bottom:1.2rem;font-family:var(--mono)}
+#kiosk-setup select,#kiosk-setup input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:#fff;padding:.6rem .9rem;border-radius:var(--radius);margin-bottom:.9rem;font-size:.9rem}
+#kiosk-setup select option{background:#1e2938}
+.btn-primary{background:var(--primary);border:none;color:#fff;padding:.65rem 1.4rem;border-radius:var(--radius);font-size:.9rem;font-weight:500;transition:.2s;width:100%;cursor:pointer}
+.btn-primary:hover{background:var(--primary-dk)}
+.kiosk-clock{font-family:var(--mono);font-size:1.3rem;color:rgba(255,255,255,.7);margin-bottom:.3rem}
+.kiosk-date{font-family:var(--mono);font-size:.8rem;color:rgba(255,255,255,.35);margin-bottom:2rem}
+.kiosk-back{position:fixed;top:1.5rem;left:1.5rem}
+
+/* ── PUNCH (mobile) ── */
+#v-punch{background:#0d1117;color:#fff;align-items:center;justify-content:center;min-height:100svh}
+.punch-inner{width:100%;max-width:420px;padding:1.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.punch-brand{font-family:var(--mono);font-size:.8rem;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase}
+.punch-location-badge{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:.3rem .9rem;font-size:.8rem;color:rgba(255,255,255,.7)}
+#punch-error-screen{text-align:center;color:#f87171}
+#punch-error-screen .err-icon{font-size:3rem;margin-bottom:1rem}
+#punch-error-screen h2{font-size:1.2rem;margin-bottom:.5rem}
+#punch-error-screen p{font-size:.85rem;color:rgba(255,255,255,.5);line-height:1.6}
+#punch-main{width:100%;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.emp-selector-wrap{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:var(--radius);padding:.6rem .9rem}
+#emp-select{background:transparent;border:none;color:#fff;width:100%;font-size:.95rem;font-family:var(--sans);outline:none}
+#emp-select option{background:#1a2332}
+#camera-wrap{width:100%;border-radius:var(--radius-lg);overflow:hidden;background:#111;aspect-ratio:3/4;position:relative;border:2px solid rgba(255,255,255,.12)}
+#camera-video{width:100%;height:100%;object-fit:cover}
+#camera-canvas{display:none}
+.camera-overlay{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.face-guide{width:65%;aspect-ratio:1;border:2px dashed rgba(255,255,255,.3);border-radius:50%}
+.punch-type-tabs{display:flex;gap:8px;width:100%}
+.ptab{flex:1;padding:.6rem;border-radius:var(--radius);border:1.5px solid rgba(255,255,255,.18);background:transparent;color:rgba(255,255,255,.6);font-size:.9rem;font-weight:500;transition:.2s;cursor:pointer}
+.ptab.active{border-color:#60a5fa;background:rgba(96,165,250,.15);color:#60a5fa}
+#btn-capture{width:100%;padding:1rem;border-radius:var(--radius-lg);background:#60a5fa;border:none;color:#0d1117;font-size:1rem;font-weight:600;transition:.2s;cursor:pointer}
+#btn-capture:hover{background:#93c5fd}
+#btn-capture:disabled{background:rgba(255,255,255,.15);color:rgba(255,255,255,.4);cursor:not-allowed}
+#punch-preview{width:100%;border-radius:var(--radius-lg);overflow:hidden;border:2px solid #60a5fa;display:none}
+#preview-img{width:100%;display:block}
+.punch-actions{display:flex;gap:10px;width:100%}
+.punch-actions button{flex:1;padding:.75rem;border-radius:var(--radius);font-size:.9rem;font-weight:500;cursor:pointer}
+#btn-retake{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff}
+#btn-submit{background:#34d399;border:none;color:#0d1117}
+#btn-submit:disabled{background:rgba(255,255,255,.1);color:rgba(255,255,255,.4)}
+#punch-success{text-align:center;color:#34d399;width:100%}
+#punch-success .ok-icon{font-size:4rem;margin-bottom:1rem}
+#punch-success h2{font-size:1.3rem;margin-bottom:.4rem}
+#punch-success p{font-size:.85rem;color:rgba(255,255,255,.5)}
+.spinner{width:28px;height:28px;border:3px solid rgba(255,255,255,.15);border-top-color:#60a5fa;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── DASHBOARD ── */
+#v-dash{background:var(--surface2)}
+.dash-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:50}
+.dash-logo{font-family:var(--mono);font-size:.95rem;font-weight:600;color:var(--ink)}
+.dash-logo span{color:var(--primary)}
+.dash-nav{display:flex;gap:1rem;align-items:center}
+.dash-nav a{font-size:.85rem;color:var(--ink2);text-decoration:none;padding:.3rem .6rem;border-radius:6px;transition:.15s;cursor:pointer}
+.dash-nav a:hover{background:var(--surface3)}
+.dash-nav a.active{color:var(--primary);background:var(--primary-lt)}
+.btn-sm{padding:.35rem .75rem;border-radius:6px;font-size:.8rem;font-weight:500;border:1px solid var(--border2);background:var(--surface);color:var(--ink2);cursor:pointer;transition:.15s}
+.btn-sm:hover{background:var(--surface3)}
+.dash-body{padding:2rem;max-width:1280px;margin:0 auto}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;box-shadow:var(--shadow)}
+.stat-card .sc-label{font-size:.78rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+.stat-card .sc-val{font-size:1.6rem;font-weight:600;font-family:var(--mono)}
+.stat-card.info .sc-val{color:var(--primary)}
+.stat-card.ok .sc-val{color:var(--success)}
+.stat-card.warn .sc-val{color:var(--warn)}
+.stat-card.danger .sc-val{color:var(--danger)}
+.filter-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;flex-wrap:wrap;gap:.75rem;align-items:center;box-shadow:var(--shadow)}
+.filter-bar label{font-size:.8rem;color:var(--ink3);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.filter-bar input,.filter-bar select{border:1px solid var(--border2);border-radius:6px;padding:.35rem .7rem;font-size:.85rem;color:var(--ink);background:var(--surface);font-family:var(--sans)}
+.filter-group{display:flex;align-items:center;gap:.4rem}
+.logs-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.logs-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.logs-table th{background:var(--surface3);padding:.75rem 1rem;text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);font-weight:600;border-bottom:1px solid var(--border)}
+.logs-table td{padding:.75rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.logs-table tr:last-child td{border-bottom:none}
+.logs-table tr:hover td{background:var(--surface2)}
+.selfie-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;border:2px solid var(--border);cursor:pointer;transition:.15s}
+.selfie-thumb:hover{border-color:var(--primary);transform:scale(1.05)}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:.73rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.badge-pending{background:var(--warn-lt);color:var(--warn)}
+.badge-approved{background:var(--success-lt);color:var(--success)}
+.badge-rejected{background:var(--danger-lt);color:var(--danger)}
+.badge-in{background:var(--primary-lt);color:var(--primary)}
+.badge-out{background:#f3e8ff;color:#6b21a8}
+.action-btns{display:flex;gap:6px}
+.btn-approve{background:var(--success-lt);border:1px solid #6ee7b7;color:var(--success);border-radius:6px;padding:.3rem .6rem;font-size:.8rem;font-weight:500;cursor:pointer;transition:.15s}
+.btn-approve:hover{background:#a7f3d0}
+.btn-reject{background:var(--danger-lt);border:1px solid #fca5a5;color:var(--danger);border-radius:6px;padding:.3rem .6rem;font-size:.8rem;font-weight:500;cursor:pointer;transition:.15s}
+.btn-reject:hover{background:#fecaca}
+.empty-state{padding:3rem;text-align:center;color:var(--ink3);font-size:.9rem}
+.empty-state .es-icon{font-size:2.5rem;margin-bottom:.75rem;display:block}
+
+/* ── LOGIN ── */
+#v-dash-login{align-items:center;justify-content:center;background:var(--surface2);min-height:100vh;display:none}
+#v-dash-login.active{display:flex}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem;width:100%;max-width:380px;box-shadow:var(--shadow-md)}
+.login-logo{font-family:var(--mono);font-size:1rem;font-weight:600;color:var(--primary);margin-bottom:.3rem}
+.login-sub{font-size:.85rem;color:var(--ink3);margin-bottom:2rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.8rem;font-weight:500;color:var(--ink2);margin-bottom:.35rem}
+.form-group input{width:100%;border:1px solid var(--border2);border-radius:var(--radius);padding:.65rem .9rem;font-size:.9rem;color:var(--ink);transition:.15s;outline:none}
+.form-group input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,76,138,.1)}
+.login-card .btn-primary{width:100%;margin-top:.5rem;padding:.75rem;font-size:.95rem}
+.login-err{font-size:.82rem;color:var(--danger);margin-top:.75rem;text-align:center;padding:.5rem;background:var(--danger-lt);border-radius:6px}
+
+/* ── LIGHTBOX ── */
+#lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999;align-items:center;justify-content:center;cursor:pointer}
+#lightbox.show{display:flex}
+#lightbox img{max-width:90vw;max-height:90vh;border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+
+/* ── CONNECTION TESTER ── */
+#v-test{background:var(--surface2);padding:2rem;min-height:100vh}
+.test-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;max-width:700px;margin:0 auto;box-shadow:var(--shadow-md)}
+.test-card h2{font-size:1.1rem;font-weight:600;margin-bottom:.3rem;color:var(--ink)}
+.test-card .sub{font-size:.85rem;color:var(--ink3);margin-bottom:2rem}
+.test-item{display:flex;align-items:flex-start;gap:1rem;padding:1rem;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.75rem;transition:.2s}
+.test-item.pass{border-color:#6ee7b7;background:var(--success-lt)}
+.test-item.fail{border-color:#fca5a5;background:var(--danger-lt)}
+.test-item.running{border-color:#93c5fd;background:var(--primary-lt)}
+.test-icon{font-size:1.4rem;flex-shrink:0;margin-top:.1rem}
+.test-label{font-size:.9rem;font-weight:500;color:var(--ink)}
+.test-detail{font-size:.8rem;color:var(--ink3);margin-top:.2rem;font-family:var(--mono);word-break:break-all}
+.test-item.pass .test-detail{color:var(--success)}
+.test-item.fail .test-detail{color:var(--danger)}
+.test-actions{display:flex;gap:.75rem;margin-top:1.5rem;flex-wrap:wrap}
+.btn-test{background:var(--primary);border:none;color:#fff;padding:.65rem 1.4rem;border-radius:var(--radius);font-size:.9rem;font-weight:500;cursor:pointer;transition:.2s}
+.btn-test:hover{background:var(--primary-dk)}
+.btn-test:disabled{background:var(--border2);color:var(--ink3);cursor:not-allowed}
+.test-progress{height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:1.5rem}
+.test-progress-fill{height:100%;background:var(--primary);transition:width .4s ease;border-radius:4px}
+.seed-section{margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.seed-section h3{font-size:.95rem;font-weight:600;margin-bottom:.5rem}
+.seed-section p{font-size:.83rem;color:var(--ink3);margin-bottom:1rem}
+.seed-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.seed-btn{background:var(--surface3);border:1px solid var(--border2);color:var(--ink2);padding:.6rem 1rem;border-radius:var(--radius);font-size:.83rem;font-weight:500;cursor:pointer;transition:.15s;text-align:left}
+.seed-btn:hover{background:var(--border);color:var(--ink)}
+.seed-btn .sb-title{font-weight:600;display:block;margin-bottom:.15rem}
+.seed-btn .sb-sub{font-size:.75rem;color:var(--ink3)}
+.seed-log{font-family:var(--mono);font-size:.78rem;color:var(--ink2);background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-top:1rem;max-height:180px;overflow-y:auto;white-space:pre-wrap;line-height:1.8}
+.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--ink3);font-size:.85rem;text-decoration:none;margin-bottom:1.5rem;cursor:pointer;border:none;background:none;padding:0}
+.back-link:hover{color:var(--primary)}
+</style>
+</head>
+<body>
+
+<!-- ════════ HOME ════════ -->
+<div id="v-home" class="view active">
+  <div class="home-logo">Eassy<span>Attend</span> · Time & Attendance</div>
+  <div class="home-grid">
+    <div class="home-card" onclick="route('kiosk')">
+      <div class="hc-icon">🖥️</div>
+      <h2>Office Kiosk</h2>
+      <p>Display the rotating QR code at reception for employee check-in.</p>
+    </div>
+    <div class="home-card" onclick="route('dash')">
+      <div class="hc-icon">📊</div>
+      <h2>HR Dashboard</h2>
+      <p>Review, approve and reject daily attendance punches with selfies.</p>
+    </div>
+    <div class="home-card" onclick="route('test')">
+      <div class="hc-icon">🔧</div>
+      <h2>System Test</h2>
+      <p>Verify Appwrite connection, collections, storage and seed demo data.</p>
+    </div>
+    <div class="home-card disabled">
+      <div class="hc-icon">📱</div>
+      <h2>Employee Punch</h2>
+      <p>Accessed only by scanning the live QR code from the kiosk.</p>
+    </div>
+  </div>
+  <p style="color:rgba(255,255,255,.2);font-size:.75rem;margin-top:2rem;font-family:var(--mono)">EassyOffice.com · Powered by Appwrite</p>
+</div>
+
+<!-- ════════ KIOSK ════════ -->
+<div id="v-kiosk" class="view">
+  <button class="btn-ghost kiosk-back" onclick="route('home')">← Back</button>
+  <button class="btn-ghost kiosk-config" onclick="openKioskSetup()">⚙ Configure</button>
+  <div class="kiosk-inner">
+    <div class="kiosk-brand">EassyAttend Kiosk</div>
+    <div class="kiosk-location" id="kiosk-loc-name">Main Office</div>
+    <div class="kiosk-clock" id="kiosk-clock">--:--:--</div>
+    <div class="kiosk-date" id="kiosk-date"></div>
+    <div id="kiosk-qr-wrap">
+      <div id="kiosk-qr"></div>
+    </div>
+    <div class="kiosk-timer-bar"><div class="kiosk-timer-fill" id="kiosk-timer-fill" style="width:100%"></div></div>
+    <div class="kiosk-status" id="kiosk-status">Generating secure token...</div>
+  </div>
+  <div id="kiosk-setup" class="hidden">
+    <div class="modal">
+      <h3>⚙ Kiosk Configuration</h3>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.5);display:block;margin-bottom:.35rem">Branch Location</label>
+      <select id="setup-location"><option value="">Loading locations...</option></select>
+      <label style="font-size:.8rem;color:rgba(255,255,255,.5);display:block;margin-bottom:.35rem">Kiosk Label (optional)</label>
+      <input type="text" id="setup-label" placeholder="e.g. Reception Desk A">
+      <button class="btn-primary" onclick="applyKioskSetup()">Apply & Start</button>
+      <button class="btn-ghost" style="margin-top:.6rem;width:100%" onclick="closeKioskSetup()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ EMPLOYEE PUNCH (via QR scan) ════════ -->
+<div id="v-punch" class="view">
+  <div class="punch-inner">
+    <div class="punch-brand">EassyAttend</div>
+    <div id="punch-error-screen" class="hidden">
+      <div class="err-icon">⛔</div>
+      <h2 id="punch-err-title">Invalid QR Code</h2>
+      <p id="punch-err-body">This code has expired or is invalid.<br>Please scan the current code from the kiosk.</p>
+    </div>
+    <div id="punch-main" class="hidden">
+      <div class="punch-location-badge" id="punch-loc-badge">📍 Loading...</div>
+      <div class="emp-selector-wrap">
+        <select id="emp-select"><option value="">Select your name...</option></select>
+      </div>
+      <div class="punch-type-tabs">
+        <button class="ptab active" data-type="in" onclick="selectPunchType('in',this)">🟢 Punch In</button>
+        <button class="ptab" data-type="out" onclick="selectPunchType('out',this)">🔴 Punch Out</button>
+      </div>
+      <div id="camera-wrap">
+        <video id="camera-video" autoplay playsinline muted></video>
+        <canvas id="camera-canvas"></canvas>
+        <div class="camera-overlay"><div class="face-guide"></div></div>
+      </div>
+      <button id="btn-capture" onclick="captureFrame()">📸 Capture Selfie</button>
+      <div id="punch-preview"><img id="preview-img" src="" alt="Selfie preview"></div>
+      <div class="punch-actions hidden" id="punch-actions">
+        <button id="btn-retake" onclick="retake()">↩ Retake</button>
+        <button id="btn-submit" onclick="submitPunch()">✅ Confirm Punch</button>
+      </div>
+      <div id="punch-loading" class="hidden"><div class="spinner"></div></div>
+    </div>
+    <div id="punch-success" class="hidden">
+      <div class="ok-icon">✅</div>
+      <h2 id="punch-ok-title">Punched In!</h2>
+      <p id="punch-ok-body">Your attendance has been recorded.</p>
+      <p style="font-size:.75rem;color:rgba(255,255,255,.3);margin-top:1rem;font-family:var(--mono)" id="punch-ok-time"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ HR LOGIN ════════ -->
+<div id="v-dash-login" class="view">
+  <div class="login-card">
+    <div class="login-logo">EassyAttend</div>
+    <div class="login-sub">HR Admin Portal — Sign in to continue</div>
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="hr@company.com" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-primary" onclick="doLogin()" id="btn-login">Sign In</button>
+    <div class="login-err hidden" id="login-err"></div>
+    <p style="margin-top:1rem;font-size:.78rem;color:var(--ink3);text-align:center">
+      <a onclick="route('home')" style="color:var(--primary);cursor:pointer;text-decoration:none">← Back to home</a>
+    </p>
+  </div>
+</div>
+
+<!-- ════════ HR DASHBOARD ════════ -->
+<div id="v-dash" class="view">
+  <header class="dash-header">
+    <div class="dash-logo">Eassy<span>Attend</span></div>
+    <nav class="dash-nav">
+      <a class="active">Today's Punches</a>
+      <a onclick="route('home')">← Exit</a>
+    </nav>
+    <div style="display:flex;gap:.75rem;align-items:center">
+      <span style="font-size:.8rem;color:var(--ink3)" id="dash-user-name"></span>
+      <button class="btn-sm" onclick="doLogout()">Sign out</button>
+    </div>
+  </header>
+  <div class="dash-body">
+    <div class="stat-row">
+      <div class="stat-card info"><div class="sc-label">Total Punches</div><div class="sc-val" id="st-total">—</div></div>
+      <div class="stat-card warn"><div class="sc-label">Pending Review</div><div class="sc-val" id="st-pending">—</div></div>
+      <div class="stat-card ok"><div class="sc-label">Approved</div><div class="sc-val" id="st-approved">—</div></div>
+      <div class="stat-card danger"><div class="sc-label">Rejected</div><div class="sc-val" id="st-rejected">—</div></div>
+    </div>
+    <div class="filter-bar">
+      <div class="filter-group"><label>Date</label><input type="date" id="f-date" onchange="applyFilters()"></div>
+      <div class="filter-group"><label>Location</label><select id="f-location" onchange="applyFilters()"><option value="">All Locations</option></select></div>
+      <div class="filter-group"><label>Status</label>
+        <select id="f-status" onchange="applyFilters()">
+          <option value="">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
+        </select>
+      </div>
+      <div class="filter-group"><label>Type</label>
+        <select id="f-type" onchange="applyFilters()">
+          <option value="">In & Out</option><option value="in">Punch In</option><option value="out">Punch Out</option>
+        </select>
+      </div>
+      <button class="btn-sm" onclick="loadLogs()" style="margin-left:auto">↻ Refresh</button>
+    </div>
+    <div class="logs-table-wrap">
+      <table class="logs-table">
+        <thead><tr><th>Selfie</th><th>Employee</th><th>Location</th><th>Time</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="logs-tbody"><tr><td colspan="7" class="empty-state"><span class="es-icon">⏳</span>Loading punches...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SYSTEM TEST ════════ -->
+<div id="v-test" class="view">
+  <div style="max-width:700px;margin:0 auto">
+    <button class="back-link" onclick="route('home')">← Back to home</button>
+    <div class="test-card">
+      <h2>🔧 Appwrite Connection Test</h2>
+      <p class="sub">Runs 6 checks against your Appwrite project. Fix any failures before going live.</p>
+      <div class="test-progress"><div class="test-progress-fill" id="test-progress" style="width:0%"></div></div>
+      <div id="test-items">
+        <div class="test-item" id="ti-sdk"><span class="test-icon">⏸</span><div><div class="test-label">Load Appwrite SDK</div><div class="test-detail">Waiting...</div></div></div>
+        <div class="test-item" id="ti-reach"><span class="test-icon">⏸</span><div><div class="test-label">Reach Appwrite endpoint</div><div class="test-detail">Waiting...</div></div></div>
+        <div class="test-item" id="ti-db"><span class="test-icon">⏸</span><div><div class="test-label">Database exists</div><div class="test-detail">Waiting...</div></div></div>
+        <div class="test-item" id="ti-col"><span class="test-icon">⏸</span><div><div class="test-label">Collections: employees, locations, timelogs</div><div class="test-detail">Waiting...</div></div></div>
+        <div class="test-item" id="ti-bucket"><span class="test-icon">⏸</span><div><div class="test-label">Storage bucket "selfies"</div><div class="test-detail">Waiting...</div></div></div>
+        <div class="test-item" id="ti-auth"><span class="test-icon">⏸</span><div><div class="test-label">HR admin login</div><div class="test-detail">Waiting...</div></div></div>
+      </div>
+      <div class="test-actions">
+        <button class="btn-test" id="btn-run-test" onclick="runAllTests()">▶ Run Tests</button>
+        <button class="btn-sm" id="btn-retest" onclick="resetTests()" style="display:none">↺ Reset</button>
+      </div>
+
+      <!-- Seed data section -->
+      <div class="seed-section">
+        <h3>📦 Seed Demo Data</h3>
+        <p>Populate your Appwrite collections with sample employees and locations to test the full flow.</p>
+        <div class="seed-grid">
+          <button class="seed-btn" onclick="seedLocations()">
+            <span class="sb-title">📍 Seed Locations</span>
+            <span class="sb-sub">Main Hospital, Pharmacy, Budaiya Clinic</span>
+          </button>
+          <button class="seed-btn" onclick="seedEmployees()">
+            <span class="sb-title">👥 Seed Employees</span>
+            <span class="sb-sub">4 demo staff members</span>
+          </button>
+          <button class="seed-btn" onclick="seedTestPunch()">
+            <span class="sb-title">🧪 Create Test Punch</span>
+            <span class="sb-sub">Dummy log entry for dashboard</span>
+          </button>
+          <button class="seed-btn" onclick="checkCollectionCounts()">
+            <span class="sb-title">📊 Count Documents</span>
+            <span class="sb-sub">Show totals for all collections</span>
+          </button>
+        </div>
+        <div class="seed-log hidden" id="seed-log"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="this.classList.remove('show')">
+  <img id="lightbox-img" src="" alt="Selfie">
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   SDK LOADER
+══════════════════════════════════════════════════════════════ */
+let client,databases,account,storage;
+async function loadSDK(){
+  if(window.Appwrite) return window.Appwrite;
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/appwrite@16/dist/iife/sdk.js';
+    s.onload=()=>res(window.Appwrite);
+    s.onerror=()=>rej(new Error('Failed to load Appwrite SDK from CDN'));
+    document.head.appendChild(s);
+  });
+}
+async function initAppwrite(){
+  if(client) return;
+  const AW=await loadSDK();
+  client=new AW.Client();
+  client.setEndpoint(APPWRITE.endpoint).setProject(APPWRITE.projectId);
+  databases=new AW.Databases(client);
+  account=new AW.Account(client);
+  storage=new AW.Storage(client);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOKEN HELPERS
+══════════════════════════════════════════════════════════════ */
+function generateToken(locationId){
+  const payload={ts:Date.now(),locationId,rand:Math.random().toString(36).slice(2,10)};
+  return btoa(JSON.stringify(payload));
+}
+function parseToken(tok){try{return JSON.parse(atob(tok));}catch{return null;}}
+function isTokenValid(tok){
+  const p=parseToken(tok);
+  if(!p) return false;
+  return (Date.now()-p.ts)<(QR_TTL_SECONDS*1000);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ROUTER
+══════════════════════════════════════════════════════════════ */
+function route(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  if(view==='dash'){
+    if(!sessionStorage.getItem('aw_session')){ showView('v-dash-login'); }
+    else{ showView('v-dash'); initDash(); }
+  } else if(view==='kiosk'){
+    showView('v-kiosk'); initKiosk();
+  } else if(view==='test'){
+    showView('v-test'); resetTests();
+  } else {
+    showView('v-'+view);
+  }
+}
+function showView(id){const el=document.getElementById(id);if(el)el.classList.add('active');}
+
+window.addEventListener('DOMContentLoaded',async()=>{
+  const params=new URLSearchParams(location.search);
+  const tok=params.get('t');
+  if(tok){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    showView('v-punch');
+    await initPunch(tok);
+  } else {
+    showView('v-home');
+  }
+});
+
+/* ══════════════════════════════════════════════════════════════
+   KIOSK
+══════════════════════════════════════════════════════════════ */
+let kioskState={locationId:'loc_default',locationName:'Main Office',qrTimer:null,clockTimer:null};
+let qrInstance=null;
+
+async function initKiosk(){
+  await initAppwrite();
+  await loadLocationsIntoSetup();
+  startClock();
+  generateKioskQR();
+  scheduleQRRotation();
+}
+function startClock(){
+  const update=()=>{
+    const now=new Date();
+    document.getElementById('kiosk-clock').textContent=now.toLocaleTimeString('en-BH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    document.getElementById('kiosk-date').textContent=now.toLocaleDateString('en-BH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  };
+  update(); kioskState.clockTimer=setInterval(update,1000);
+}
+function generateKioskQR(){
+  const tok=generateToken(kioskState.locationId);
+  const url=`${location.origin}${location.pathname}?t=${encodeURIComponent(tok)}`;
+  const wrap=document.getElementById('kiosk-qr');
+  wrap.innerHTML='';
+  const qrWrap=document.getElementById('kiosk-qr-wrap');
+  qrWrap.classList.remove('expired');
+  qrInstance=new QRCode(wrap,{text:url,width:240,height:240,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  document.getElementById('kiosk-status').textContent=`Valid for ${QR_TTL_SECONDS}s · Auto-refreshes`;
+  animateTimer();
+}
+function animateTimer(){
+  const fill=document.getElementById('kiosk-timer-fill');
+  const start=Date.now();
+  const tick=()=>{
+    const elapsed=(Date.now()-start)/1000;
+    const pct=Math.max(0,100-(elapsed/QR_TTL_SECONDS)*100);
+    fill.style.width=pct+'%';
+    if(elapsed>=QR_TTL_SECONDS){
+      document.getElementById('kiosk-qr-wrap').classList.add('expired');
+      document.getElementById('kiosk-status').textContent='Code expired — regenerating...';
+      return;
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+function scheduleQRRotation(){
+  clearInterval(kioskState.qrTimer);
+  kioskState.qrTimer=setInterval(generateKioskQR,QR_TTL_SECONDS*1000);
+}
+async function loadLocationsIntoSetup(){
+  const sel=document.getElementById('setup-location');
+  try{
+    const res=await databases.listDocuments(APPWRITE.dbId,APPWRITE.col.locations,[]);
+    if(res.documents.length){
+      sel.innerHTML='';
+      res.documents.forEach(d=>{
+        const o=document.createElement('option');
+        o.value=d.$id; o.textContent=d.name;
+        if(d.$id===kioskState.locationId) o.selected=true;
+        sel.appendChild(o);
+      });
+    }
+  }catch{
+    sel.innerHTML=`<option value="loc_main">Main Hospital</option><option value="loc_pharm">Pharmacy Branch</option><option value="loc_bud">Budaiya Clinic</option>`;
+  }
+}
+function openKioskSetup(){document.getElementById('kiosk-setup').classList.remove('hidden');}
+function closeKioskSetup(){document.getElementById('kiosk-setup').classList.add('hidden');}
+function applyKioskSetup(){
+  const sel=document.getElementById('setup-location');
+  kioskState.locationId=sel.value||'loc_main';
+  kioskState.locationName=sel.options[sel.selectedIndex]?.text||'Main Office';
+  document.getElementById('kiosk-loc-name').textContent=kioskState.locationName;
+  closeKioskSetup(); generateKioskQR(); scheduleQRRotation();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EMPLOYEE PUNCH
+══════════════════════════════════════════════════════════════ */
+let punchState={token:null,locationId:null,capturedBlob:null,punchType:'in'};
+let videoStream=null;
+
+async function initPunch(tok){
+  await initAppwrite();
+  const punchErr=document.getElementById('punch-error-screen');
+  const punchMain=document.getElementById('punch-main');
+
+  // Decode token (handle URL encoding)
+  const decoded=decodeURIComponent(tok);
+  if(!isTokenValid(decoded)){
+    punchErr.classList.remove('hidden');
+    document.getElementById('punch-err-title').textContent='QR Code Expired';
+    document.getElementById('punch-err-body').textContent='This code has expired. Please scan the current QR code shown on the office kiosk.';
+    return;
+  }
+
+  const parsed=parseToken(decoded);
+  punchState.token=decoded;
+  punchState.locationId=parsed.locationId;
+
+  let locName='Office';
+  try{
+    const loc=await databases.getDocument(APPWRITE.dbId,APPWRITE.col.locations,parsed.locationId);
+    locName=loc.name;
+  }catch{ locName=parsed.locationId||'Office'; }
+  document.getElementById('punch-loc-badge').textContent='📍 '+locName;
+
+  await loadEmployeesIntoSelect();
+  punchMain.classList.remove('hidden');
+  await startCamera();
+}
+
+async function loadEmployeesIntoSelect(){
+  const sel=document.getElementById('emp-select');
+  try{
+    const res=await databases.listDocuments(APPWRITE.dbId,APPWRITE.col.employees,[]);
+    if(res.documents.length){
+      sel.innerHTML='<option value="">Select your name...</option>';
+      res.documents.forEach(d=>{
+        const o=document.createElement('option');
+        o.value=d.$id;
+        o.textContent=d.name+(d.role?` — ${d.role}`:'');
+        sel.appendChild(o);
+      });
+    }
+  }catch{
+    sel.innerHTML=`<option value="">Select your name...</option>
+      <option value="demo_emp1">Ahmed Al-Mansoori</option>
+      <option value="demo_emp2">Fatima Hassan</option>
+      <option value="demo_emp3">Mohammed Khalid</option>
+      <option value="demo_emp4">Sara Abdullah</option>`;
+  }
+}
+
+async function startCamera(){
+  const wrap=document.getElementById('camera-wrap');
+  try{
+    videoStream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:'user',width:{ideal:720},height:{ideal:960}},audio:false
+    });
+    document.getElementById('camera-video').srcObject=videoStream;
+    document.getElementById('btn-capture').disabled=false;
+  }catch(e){
+    wrap.innerHTML=`<div style="padding:2rem;text-align:center;color:rgba(255,255,255,.5);font-size:.85rem;line-height:1.8">⚠ Camera access denied.<br>Please allow camera in your browser settings<br>and reload this page.</div>`;
+    document.getElementById('btn-capture').disabled=true;
+  }
+}
+
+function captureFrame(){
+  const video=document.getElementById('camera-video');
+  const canvas=document.getElementById('camera-canvas');
+  canvas.width=video.videoWidth||640;
+  canvas.height=video.videoHeight||480;
+  canvas.getContext('2d').drawImage(video,0,0);
+  canvas.toBlob(blob=>{
+    punchState.capturedBlob=blob;
+    document.getElementById('preview-img').src=URL.createObjectURL(blob);
+    document.getElementById('punch-preview').style.display='block';
+    document.getElementById('camera-wrap').style.display='none';
+    document.getElementById('btn-capture').style.display='none';
+    document.getElementById('punch-actions').classList.remove('hidden');
+  },'image/jpeg',0.85);
+}
+
+function retake(){
+  punchState.capturedBlob=null;
+  document.getElementById('punch-preview').style.display='none';
+  document.getElementById('camera-wrap').style.display='block';
+  document.getElementById('btn-capture').style.display='block';
+  document.getElementById('punch-actions').classList.add('hidden');
+}
+
+function selectPunchType(type,btn){
+  punchState.punchType=type;
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function submitPunch(){
+  if(!punchState.capturedBlob){alert('Please capture a selfie first.');return;}
+  const empId=document.getElementById('emp-select').value;
+  if(!empId){alert('Please select your name.');return;}
+
+  const submitBtn=document.getElementById('btn-submit');
+  const retakeBtn=document.getElementById('btn-retake');
+  const loadingEl=document.getElementById('punch-loading');
+  submitBtn.disabled=true; retakeBtn.disabled=true;
+  loadingEl.classList.remove('hidden');
+
+  try{
+    await initAppwrite();
+    let imageUrl='';
+    try{
+      const file=new File([punchState.capturedBlob],`punch_${Date.now()}.jpg`,{type:'image/jpeg'});
+      const uploaded=await storage.createFile(APPWRITE.bucketId,'unique()',file);
+      imageUrl=`${APPWRITE.endpoint}/storage/buckets/${APPWRITE.bucketId}/files/${uploaded.$id}/view?project=${APPWRITE.projectId}`;
+    }catch{
+      // Fallback: store as base64 if bucket not ready
+      imageUrl=await new Promise(r=>{const rd=new FileReader();rd.onload=e=>r(e.target.result);rd.readAsDataURL(punchState.capturedBlob);});
+    }
+
+    const ts=new Date().toISOString();
+    await databases.createDocument(APPWRITE.dbId,APPWRITE.col.timelogs,'unique()',{
+      employeeId:punchState.locationId?empId:empId,
+      locationId:punchState.locationId||'unknown',
+      punchType:punchState.punchType,
+      punchTime:ts,
+      imageUrl:imageUrl,
+      status:'pending',
+      token:punchState.token.slice(0,200),
+    });
+
+    if(videoStream) videoStream.getTracks().forEach(t=>t.stop());
+    loadingEl.classList.add('hidden');
+    document.getElementById('punch-main').classList.add('hidden');
+    document.getElementById('punch-success').classList.remove('hidden');
+    document.getElementById('punch-ok-title').textContent=punchState.punchType==='in'?'Punched In! ✅':'Punched Out! ✅';
+    document.getElementById('punch-ok-body').textContent='Your attendance has been recorded and sent to HR.';
+    document.getElementById('punch-ok-time').textContent=new Date(ts).toLocaleString('en-BH');
+  }catch(err){
+    loadingEl.classList.add('hidden');
+    submitBtn.disabled=false; retakeBtn.disabled=false;
+    alert('Submission failed:\n'+err.message+'\n\nTip: Check Appwrite collection permissions (timelogs → Create = Any).');
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HR DASHBOARD
+══════════════════════════════════════════════════════════════ */
+let dashLogs=[],dashLocations={},dashEmployees={};
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const errEl=document.getElementById('login-err');
+  const btn=document.getElementById('btn-login');
+  if(!email||!pass){errEl.textContent='Please enter email and password.';errEl.classList.remove('hidden');return;}
+  errEl.classList.add('hidden');
+  btn.disabled=true; btn.textContent='Signing in...';
+  try{
+    await initAppwrite();
+    // Clear any existing session first
+    try{await account.deleteSession('current');}catch{}
+    const ses=await account.createEmailPasswordSession(email,pass);
+    sessionStorage.setItem('aw_session',ses.$id);
+    const user=await account.get();
+    sessionStorage.setItem('aw_user',user.name||user.email);
+    document.getElementById('v-dash-login').classList.remove('active');
+    showView('v-dash');
+    initDash();
+  }catch(e){
+    errEl.textContent='Login failed: '+e.message;
+    errEl.classList.remove('hidden');
+  }finally{
+    btn.disabled=false; btn.textContent='Sign In';
+  }
+}
+
+async function doLogout(){
+  try{await account.deleteSession('current');}catch{}
+  sessionStorage.removeItem('aw_session'); sessionStorage.removeItem('aw_user');
+  client=null; databases=null; account=null; storage=null;
+  document.getElementById('v-dash').classList.remove('active');
+  route('home');
+}
+
+async function initDash(){
+  await initAppwrite();
+  document.getElementById('dash-user-name').textContent=sessionStorage.getItem('aw_user')||'HR Admin';
+  document.getElementById('f-date').value=new Date().toISOString().slice(0,10);
+  await loadDashLocations();
+  await loadLogs();
+}
+
+async function loadDashLocations(){
+  try{
+    const res=await databases.listDocuments(APPWRITE.dbId,APPWRITE.col.locations,[]);
+    const sel=document.getElementById('f-location');
+    sel.innerHTML='<option value="">All Locations</option>';
+    res.documents.forEach(d=>{
+      dashLocations[d.$id]=d.name;
+      const o=document.createElement('option');o.value=d.$id;o.textContent=d.name;sel.appendChild(o);
+    });
+  }catch{}
+}
+
+async function loadLogs(){
+  const tbody=document.getElementById('logs-tbody');
+  tbody.innerHTML=`<tr><td colspan="7" class="empty-state"><span class="es-icon">⏳</span>Loading...</td></tr>`;
+  try{
+    await initAppwrite();
+    try{
+      const empRes=await databases.listDocuments(APPWRITE.dbId,APPWRITE.col.employees,[]);
+      empRes.documents.forEach(e=>dashEmployees[e.$id]=e.name);
+    }catch{}
+    const {Query}=await loadSDK();
+    const res=await databases.listDocuments(APPWRITE.dbId,APPWRITE.col.timelogs,[Query.orderDesc('punchTime'),Query.limit(200)]);
+    dashLogs=res.documents;
+    applyFilters();
+  }catch(e){
+    tbody.innerHTML=`<tr><td colspan="7" class="empty-state"><span class="es-icon">⚠</span>Error: ${e.message}<br><small>Check Appwrite permissions for timelogs collection.</small></td></tr>`;
+  }
+}
+
+function applyFilters(){
+  const date=document.getElementById('f-date').value;
+  const loc=document.getElementById('f-location').value;
+  const status=document.getElementById('f-status').value;
+  const type=document.getElementById('f-type').value;
+  const filtered=dashLogs.filter(l=>{
+    if(date&&!l.punchTime?.startsWith(date))return false;
+    if(loc&&l.locationId!==loc)return false;
+    if(status&&l.status!==status)return false;
+    if(type&&l.punchType!==type)return false;
+    return true;
+  });
+  renderStats(filtered); renderTable(filtered);
+}
+
+function renderStats(logs){
+  document.getElementById('st-total').textContent=logs.length;
+  document.getElementById('st-pending').textContent=logs.filter(l=>l.status==='pending').length;
+  document.getElementById('st-approved').textContent=logs.filter(l=>l.status==='approved').length;
+  document.getElementById('st-rejected').textContent=logs.filter(l=>l.status==='rejected').length;
+}
+
+function renderTable(logs){
+  const tbody=document.getElementById('logs-tbody');
+  if(!logs.length){tbody.innerHTML=`<tr><td colspan="7" class="empty-state"><span class="es-icon">📭</span>No punches found for the selected filters.</td></tr>`;return;}
+  tbody.innerHTML=logs.map(l=>{
+    const empName=dashEmployees[l.employeeId]||l.employeeId||'Unknown';
+    const locName=dashLocations[l.locationId]||l.locationId||'—';
+    const time=l.punchTime?new Date(l.punchTime).toLocaleTimeString('en-BH',{hour:'2-digit',minute:'2-digit'}):'—';
+    const statusBadge=`<span class="badge badge-${l.status||'pending'}">${l.status||'pending'}</span>`;
+    const typeBadge=`<span class="badge badge-${l.punchType==='in'?'in':'out'}">${l.punchType==='in'?'In':'Out'}</span>`;
+    const isImg=l.imageUrl&&!l.imageUrl.startsWith('data:');
+    const selfie=l.imageUrl
+      ?`<img class="selfie-thumb" src="${l.imageUrl}" alt="selfie" onclick="openLightbox('${l.imageUrl.replace(/'/g,"\\'")}')">` 
+      :`<div style="width:44px;height:44px;background:var(--surface3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">👤</div>`;
+    const actions=l.status==='pending'?`<div class="action-btns">
+      <button class="btn-approve" onclick="updateStatus('${l.$id}','approved',this)">✓ Approve</button>
+      <button class="btn-reject" onclick="updateStatus('${l.$id}','rejected',this)">✕ Reject</button>
+    </div>`:`<span style="font-size:.8rem;color:var(--ink3)">—</span>`;
+    return `<tr data-id="${l.$id}"><td>${selfie}</td><td><span style="font-weight:500">${empName}</span></td><td style="color:var(--ink2)">${locName}</td><td style="font-family:var(--mono);font-size:.82rem">${time}</td><td>${typeBadge}</td><td>${statusBadge}</td><td>${actions}</td></tr>`;
+  }).join('');
+}
+
+async function updateStatus(docId,newStatus,btn){
+  btn.disabled=true; btn.textContent='...';
+  try{
+    await databases.updateDocument(APPWRITE.dbId,APPWRITE.col.timelogs,docId,{status:newStatus});
+    const idx=dashLogs.findIndex(l=>l.$id===docId);
+    if(idx>-1) dashLogs[idx].status=newStatus;
+    applyFilters();
+  }catch(e){
+    alert('Update failed: '+e.message);
+    btn.disabled=false; btn.textContent=newStatus==='approved'?'✓ Approve':'✕ Reject';
+  }
+}
+
+function openLightbox(url){
+  document.getElementById('lightbox-img').src=url;
+  document.getElementById('lightbox').classList.add('show');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SYSTEM TEST
+══════════════════════════════════════════════════════════════ */
+function setTestItem(id,state,detail){
+  const el=document.getElementById(id);
+  el.className='test-item '+state;
+  const icons={running:'⏳',pass:'✅',fail:'❌'};
+  el.querySelector('.test-icon').textContent=icons[state]||'⏸';
+  el.querySelector('.test-detail').textContent=detail;
+}
+
+function setProgress(pct){
+  document.getElementById('test-progress').style.width=pct+'%';
+}
+
+function resetTests(){
+  const items=['ti-sdk','ti-reach','ti-db','ti-col','ti-bucket','ti-auth'];
+  items.forEach(id=>{
+    const el=document.getElementById(id);
+    el.className='test-item';
+    el.querySelector('.test-icon').textContent='⏸';
+    el.querySelector('.test-detail').textContent='Waiting...';
+  });
+  setProgress(0);
+  document.getElementById('btn-run-test').style.display='';
+  document.getElementById('btn-retest').style.display='none';
+  document.getElementById('seed-log').classList.add('hidden');
+}
+
+async function runAllTests(){
+  document.getElementById('btn-run-test').style.display='none';
+  document.getElementById('btn-retest').style.display='';
+  client=null; databases=null; account=null; storage=null;
+
+  // Test 1: SDK
+  setTestItem('ti-sdk','running','Loading SDK from jsdelivr CDN...');
+  setProgress(5);
+  try{
+    await loadSDK();
+    setTestItem('ti-sdk','pass','Appwrite SDK v16 loaded OK');
+    setProgress(16);
+  }catch(e){setTestItem('ti-sdk','fail',e.message);setProgress(16);return;}
+
+  // Test 2: Endpoint reachable
+  setTestItem('ti-reach','running','Pinging '+APPWRITE.endpoint+'...');
+  setProgress(20);
+  try{
+    await initAppwrite();
+    const r=await fetch(APPWRITE.endpoint+'/health',{method:'GET'});
+    if(!r.ok&&r.status!==401) throw new Error('HTTP '+r.status);
+    setTestItem('ti-reach','pass','Endpoint reachable (HTTP '+r.status+')');
+    setProgress(33);
+  }catch(e){setTestItem('ti-reach','fail','Cannot reach: '+e.message+' — check endpoint URL');setProgress(33);}
+
+  // Test 3: Database
+  setTestItem('ti-db','running','Looking up database ID '+APPWRITE.dbId+'...');
+  setProgress(37);
+  try{
+    await databases.get(APPWRITE.dbId);
+    setTestItem('ti-db','pass','Database found: '+APPWRITE.dbId);
+    setProgress(50);
+  }catch(e){
+    const hint=e.message.includes('401')?'401 Unauthorized — add your domain to Appwrite Platforms list':e.message.includes('404')?'404 — database ID not found, check APPWRITE.dbId':e.message;
+    setTestItem('ti-db','fail',hint);setProgress(50);
+  }
+
+  // Test 4: Collections
+  setTestItem('ti-col','running','Checking employees, locations, timelogs...');
+  setProgress(55);
+  try{
+    const cols=['employees','locations','timelogs'];
+    const results=[];
+    for(const c of cols){
+      try{
+        const r=await databases.listDocuments(APPWRITE.dbId,c,[]);
+        results.push(`${c}(${r.total})`);
+      }catch(e2){
+        if(e2.message.includes('Collection with the requested ID could not be found')||e2.message.includes('404')){
+          results.push(`${c} ❌ NOT FOUND`);
+        }else{
+          results.push(`${c} ⚠ ${e2.message.slice(0,40)}`);
+        }
+      }
+    }
+    const allOk=results.every(r=>!r.includes('❌'));
+    setTestItem('ti-col',allOk?'pass':'fail',results.join(' · '));
+    setProgress(66);
+  }catch(e){setTestItem('ti-col','fail',e.message);setProgress(66);}
+
+  // Test 5: Storage bucket
+  setTestItem('ti-bucket','running','Checking bucket "selfies"...');
+  setProgress(70);
+  try{
+    const b=await storage.getBucket(APPWRITE.bucketId);
+    setTestItem('ti-bucket','pass',`Bucket "${b.name}" found · max ${Math.round(b.maximumFileSize/1024/1024)}MB`);
+    setProgress(83);
+  }catch(e){
+    const hint=e.message.includes('404')?'Bucket "selfies" not found — create it in Appwrite Storage':e.message;
+    setTestItem('ti-bucket','fail',hint);setProgress(83);
+  }
+
+  // Test 6: Auth
+  setTestItem('ti-auth','running','Testing login with '+APPWRITE.adminUser+'...');
+  setProgress(88);
+  try{
+    try{await account.deleteSession('current');}catch{}
+    const ses=await account.createEmailPasswordSession(APPWRITE.adminUser,APPWRITE.adminPass);
+    const u=await account.get();
+    setTestItem('ti-auth','pass',`Logged in as: ${u.name||u.email}`);
+    // Store session for dashboard
+    sessionStorage.setItem('aw_session',ses.$id);
+    sessionStorage.setItem('aw_user',u.name||u.email);
+  }catch(e){
+    const hint=e.message.includes('401')||e.message.includes('Invalid credentials')?'Wrong email/password — check APPWRITE.adminUser and adminPass':e.message;
+    setTestItem('ti-auth','fail',hint);
+  }
+  setProgress(100);
+}
+
+/* ── SEED HELPERS ── */
+function seedLog(msg){
+  const el=document.getElementById('seed-log');
+  el.classList.remove('hidden');
+  el.textContent+=(el.textContent?'\n':'')+msg;
+  el.scrollTop=el.scrollHeight;
+}
+
+async function seedLocations(){
+  await initAppwrite();
+  const locs=[
+    {name:'Main Hospital',authorizedIp:'*'},
+    {name:'Pharmacy Branch',authorizedIp:'*'},
+    {name:'Budaiya Clinic',authorizedIp:'*'},
+  ];
+  seedLog('Seeding locations...');
+  for(const l of locs){
+    try{
+      const d=await databases.createDocument(APPWRITE.dbId,APPWRITE.col.locations,'unique()',l);
+      seedLog(`✅ Created: ${l.name} (ID: ${d.$id})`);
+    }catch(e){seedLog(`❌ ${l.name}: ${e.message}`);}
+  }
+  seedLog('Done. Reload the kiosk to see them in the dropdown.');
+}
+
+async function seedEmployees(){
+  await initAppwrite();
+  const emps=[
+    {name:'Ahmed Al-Mansoori',role:'Doctor',baseLocation:'Main Hospital',email:'ahmed@clinic.bh'},
+    {name:'Fatima Hassan',role:'Nurse',baseLocation:'Main Hospital',email:'fatima@clinic.bh'},
+    {name:'Mohammed Khalid',role:'Pharmacist',baseLocation:'Pharmacy Branch',email:'mohammed@clinic.bh'},
+    {name:'Sara Abdullah',role:'Receptionist',baseLocation:'Budaiya Clinic',email:'sara@clinic.bh'},
+  ];
+  seedLog('Seeding employees...');
+  for(const e of emps){
+    try{
+      const d=await databases.createDocument(APPWRITE.dbId,APPWRITE.col.employees,'unique()',e);
+      seedLog(`✅ Created: ${e.name} — ${e.role} (ID: ${d.$id})`);
+    }catch(err){seedLog(`❌ ${e.name}: ${err.message}`);}
+  }
+  seedLog('Done. Employees will appear in the punch dropdown.');
+}
+
+async function seedTestPunch(){
+  await initAppwrite();
+  seedLog('Creating test punch log...');
+  try{
+    const d=await databases.createDocument(APPWRITE.dbId,APPWRITE.col.timelogs,'unique()',{
+      employeeId:'demo_emp1',
+      locationId:'loc_main',
+      punchType:'in',
+      punchTime:new Date().toISOString(),
+      imageUrl:'',
+      status:'pending',
+      token:'test-token',
+    });
+    seedLog(`✅ Test punch created (ID: ${d.$id}) — check HR Dashboard.`);
+  }catch(e){seedLog(`❌ Failed: ${e.message}`);}
+}
+
+async function checkCollectionCounts(){
+  await initAppwrite();
+  seedLog('Counting documents...');
+  for(const [k,v] of Object.entries(APPWRITE.col)){
+    try{
+      const r=await databases.listDocuments(APPWRITE.dbId,v,[]);
+      seedLog(`  ${k}: ${r.total} documents`);
+    }catch(e){seedLog(`  ${k}: ❌ ${e.message}`);}
+  }
+}
+</script>
+</body>
+</html>
