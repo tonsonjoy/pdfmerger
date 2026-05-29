@@ -4,207 +4,279 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EassyOffice — Browser-Based Office Suite</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="https://eassyoffice.com/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-:root{
-  --black:#090909;--off-black:#111;--card:#161616;--card-h:#1d1d1d;
-  --border:#272727;--border-l:#333;--white:#f0f0f0;
-  --wd:rgba(240,240,240,.6);--wm:rgba(240,240,240,.3);--wf:rgba(240,240,240,.06);
-  --green:#22c55e;--teal:#0ea5e9;--amber:#f59e0b;--blue:#3b82f6;
-  --r-xl:20px;--r-lg:14px;--r-md:10px;--r-sm:7px;
-}
-body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
-  opacity:.45;}
-.sgrid{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
-  background-size:64px 64px;}
+  :root {
+    --ink: #0d1117;
+    --ink2: #4b5563;
+    --ink3: #9ca3af;
+    --surface: #ffffff;
+    --surface2: #f8fafc;
+    --border: #e2e8f0;
+    --primary: #0f4c8a;
+    --primary-lt: #dbeafe;
+    --radius: 10px;
+    --radius-lg: 16px;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--ink); color: #fff; font-size: 15px; line-height: 1.6; min-height: 100vh; }
 
-.wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:0 24px 120px;}
+  /* ── NAV ── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .9rem 2rem; border-bottom: 1px solid rgba(255,255,255,.08);
+    position: sticky; top: 0; background: rgba(13,17,23,.95);
+    backdrop-filter: blur(10px); z-index: 100;
+  }
+  .nav-logo { display: flex; align-items: center; gap: .7rem; text-decoration: none; }
+  .nav-logo img { width: 32px; height: 32px; border-radius: 6px; }
+  .nav-logo span { font-family: var(--mono); font-size: .95rem; font-weight: 600; color: #fff; letter-spacing: .02em; }
+  .nav-logo span em { color: #60a5fa; font-style: normal; }
+  .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+  .nav-links a { color: rgba(255,255,255,.55); font-size: .88rem; text-decoration: none; transition: .15s; }
+  .nav-links a:hover { color: #fff; }
 
-/* ── NAV ── */
-nav{display:flex;align-items:center;padding:22px 0 0;margin-bottom:80px;animation:fadeUp .5s ease both;}
-.logo-img{height:46px;width:auto;object-fit:contain;}
-.nav-links{margin-left:auto;display:flex;align-items:center;gap:6px;}
-.nav-link{font-size:11px;font-weight:500;color:var(--wm);padding:6px 13px;border-radius:var(--r-sm);border:1px solid transparent;text-decoration:none;transition:all .16s;font-family:'DM Mono',monospace;letter-spacing:.3px;}
-.nav-link:hover{color:var(--wd);border-color:var(--border);}
-.nav-link.active{color:var(--white);background:var(--wf);border-color:var(--border-l);}
+  /* ── HERO ── */
+  .hero {
+    text-align: center; padding: 5rem 2rem 3.5rem;
+    max-width: 720px; margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: rgba(96,165,250,.12); border: 1px solid rgba(96,165,250,.25);
+    border-radius: 20px; padding: .3rem .9rem; font-size: .78rem;
+    color: #93c5fd; font-family: var(--mono); letter-spacing: .06em;
+    text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem); font-weight: 600;
+    letter-spacing: -.03em; line-height: 1.15; margin-bottom: 1.2rem;
+  }
+  .hero h1 em { color: #60a5fa; font-style: normal; }
+  .hero p { color: rgba(255,255,255,.5); font-size: 1.05rem; max-width: 520px; margin: 0 auto; }
 
-/* ── HERO ── */
-.hero{margin-bottom:72px;animation:fadeUp .6s .06s ease both;}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--wf);border:1px solid var(--border);padding:5px 12px;border-radius:100px;font-size:10px;font-family:'DM Mono',monospace;color:var(--wm);letter-spacing:.8px;text-transform:uppercase;margin-bottom:22px;}
-.eyebrow .dot{width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);}
-h1{font-size:clamp(38px,7vw,72px);font-weight:700;letter-spacing:-3px;line-height:1.01;margin-bottom:22px;}
-h1 em{font-style:normal;color:rgba(240,240,240,.22);}
-.hero-sub{font-size:15px;color:var(--wd);font-weight:300;max-width:480px;line-height:1.85;}
+  /* ── TOOLS GRID ── */
+  .tools-section { padding: 2rem 2rem 5rem; max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: .75rem; font-family: var(--mono); color: rgba(255,255,255,.3);
+    text-transform: uppercase; letter-spacing: .1em; margin-bottom: 1.5rem;
+    padding-left: .25rem;
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+  .tool-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column;
+    transition: .2s;
+    position: relative; overflow: hidden;
+  }
+  .tool-card:hover {
+    background: rgba(255,255,255,.07);
+    border-color: rgba(255,255,255,.18);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  }
+  .tool-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    opacity: 0; transition: opacity .2s;
+  }
+  .tool-card:hover::before { opacity: 1; }
+  .card-pdf::before    { background: linear-gradient(90deg, #f87171, #fb923c); }
+  .card-hours::before  { background: linear-gradient(90deg, #34d399, #60a5fa); }
+  .card-payroll::before{ background: linear-gradient(90deg, #a78bfa, #60a5fa); }
+  .card-attend::before { background: linear-gradient(90deg, #60a5fa, #34d399); }
 
-/* ── SECTION LABEL ── */
-.slabel{font-size:9px;color:var(--wm);text-transform:uppercase;letter-spacing:1.8px;font-weight:700;margin-bottom:20px;font-family:'DM Mono',monospace;}
+  .card-icon {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1rem;
+  }
+  .card-pdf    .card-icon { background: rgba(248,113,113,.12); }
+  .card-hours  .card-icon { background: rgba(52,211,153,.12); }
+  .card-payroll.card-icon { background: rgba(167,139,250,.12); }
+  .card-attend .card-icon { background: rgba(96,165,250,.12); }
 
-/* ── TOOL CARDS ── */
-.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:72px;}
-@media(max-width:700px){.tools-grid{grid-template-columns:1fr;}}
-@media(max-width:960px) and (min-width:701px){.tools-grid{grid-template-columns:1fr 1fr;}}
+  .card-tag {
+    display: inline-block; font-size: .68rem; font-family: var(--mono);
+    text-transform: uppercase; letter-spacing: .07em;
+    padding: .15rem .55rem; border-radius: 4px; margin-bottom: .6rem;
+    font-weight: 600;
+  }
+  .tag-local  { background: rgba(52,211,153,.15); color: #34d399; }
+  .tag-cloud  { background: rgba(96,165,250,.15); color: #60a5fa; }
+  .tag-new    { background: rgba(250,204,21,.15); color: #fbbf24; }
 
-.tool-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:26px 24px;display:flex;flex-direction:column;gap:0;position:relative;overflow:hidden;transition:all .22s;text-decoration:none;color:inherit;animation:fadeUp .5s ease both;}
-.tool-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -20%,rgba(255,255,255,.03),transparent 65%);pointer-events:none;transition:.3s;}
-.tool-card:hover{border-color:var(--border-l);background:var(--card-h);transform:translateY(-3px);box-shadow:0 20px 60px rgba(0,0,0,.4);}
-.tool-card:hover::before{background:radial-gradient(ellipse at 50% -20%,rgba(255,255,255,.06),transparent 65%);}
+  .card-title { font-size: 1.05rem; font-weight: 600; margin-bottom: .5rem; color: #fff; }
+  .card-desc  { font-size: .83rem; color: rgba(255,255,255,.45); line-height: 1.6; flex: 1; }
+  .card-features {
+    list-style: none; margin-top: 1rem; display: flex; flex-direction: column; gap: .3rem;
+  }
+  .card-features li {
+    font-size: .78rem; color: rgba(255,255,255,.35);
+    display: flex; align-items: center; gap: .5rem;
+  }
+  .card-features li::before { content: '—'; color: rgba(255,255,255,.2); flex-shrink: 0; }
+  .card-arrow {
+    margin-top: 1.2rem; font-size: .82rem; color: rgba(255,255,255,.3);
+    display: flex; align-items: center; gap: .4rem; transition: .2s;
+  }
+  .tool-card:hover .card-arrow { color: #60a5fa; gap: .6rem; }
 
-.tc-icon-wrap{width:44px;height:44px;border-radius:12px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:18px;background:var(--off-black);flex-shrink:0;}
-.tc-tag{font-size:9px;font-family:'DM Mono',monospace;letter-spacing:1.2px;text-transform:uppercase;padding:3px 9px;border-radius:100px;border:1px solid;margin-bottom:12px;display:inline-block;}
-.tc-name{font-size:18px;font-weight:700;letter-spacing:-.4px;margin-bottom:8px;}
-.tc-desc{font-size:12px;color:var(--wm);line-height:1.7;margin-bottom:20px;flex:1;}
-.tc-list{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:22px;}
-.tc-list li{font-size:11px;color:var(--wd);font-family:'DM Mono',monospace;letter-spacing:.2px;}
-.tc-list li::before{content:'→ ';color:var(--border-l);}
-.tc-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--r-lg);font-size:12px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:.3px;border:1px solid;transition:all .18s;width:fit-content;text-decoration:none;}
+  /* ── WHY SECTION ── */
+  .why-section {
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding: 4rem 2rem; max-width: 1100px; margin: 0 auto;
+  }
+  .why-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem; margin-top: 2rem;
+  }
+  .why-item { text-align: center; }
+  .why-icon { font-size: 1.8rem; margin-bottom: .75rem; }
+  .why-title { font-size: .95rem; font-weight: 600; margin-bottom: .4rem; }
+  .why-desc { font-size: .82rem; color: rgba(255,255,255,.4); line-height: 1.6; }
 
-/* PDF card */
-.tc-pdf .tc-icon-wrap{background:rgba(14,165,233,.07);border-color:rgba(14,165,233,.2);}
-.tc-pdf .tc-tag{color:var(--teal);border-color:rgba(14,165,233,.3);background:rgba(14,165,233,.06);}
-.tc-pdf .tc-btn{color:var(--teal);border-color:rgba(14,165,233,.3);background:rgba(14,165,233,.05);}
-.tc-pdf .tc-btn:hover{background:rgba(14,165,233,.15);border-color:var(--teal);}
-.tc-pdf:hover{border-color:rgba(14,165,233,.25);}
-
-/* Hours card */
-.tc-hours .tc-icon-wrap{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.2);}
-.tc-hours .tc-tag{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06);}
-.tc-hours .tc-btn{color:var(--amber);border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05);}
-.tc-hours .tc-btn:hover{background:rgba(245,158,11,.15);border-color:var(--amber);}
-.tc-hours:hover{border-color:rgba(245,158,11,.25);}
-
-/* Payroll card */
-.tc-payroll .tc-icon-wrap{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.2);}
-.tc-payroll .tc-tag{color:var(--green);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.06);}
-.tc-payroll .tc-btn{color:var(--green);border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05);}
-.tc-payroll .tc-btn:hover{background:rgba(34,197,94,.15);border-color:var(--green);}
-.tc-payroll:hover{border-color:rgba(34,197,94,.25);}
-
-/* ── FEATURE STRIP ── */
-.feat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:72px;animation:fadeUp .5s .15s ease both;}
-@media(max-width:560px){.feat-strip{grid-template-columns:1fr;}}
-.fs-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);padding:20px 18px;}
-.fs-icon{font-size:20px;margin-bottom:11px;display:block;}
-.fs-title{font-size:12px;font-weight:700;margin-bottom:5px;}
-.fs-desc{font-size:11px;color:var(--wm);line-height:1.7;}
-
-/* ── FOOTER ── */
-footer{text-align:center;padding:40px 0 0;border-top:1px solid var(--border);animation:fadeUp .5s .2s ease both;}
-.foot-priv{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:8px 18px;font-size:11px;color:var(--wm);font-family:'DM Mono',monospace;margin-bottom:16px;}
-.pdot{width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);}
-.foot-copy{font-size:11px;color:rgba(240,240,240,.2);}
-.foot-email{font-size:12px;color:var(--wm);margin-bottom:12px;}
-.foot-email a{color:var(--wd);text-decoration:none;transition:.15s;}
-.foot-email a:hover{color:var(--white);}
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-thumb{background:var(--border-l);border-radius:100px;}
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding: 1.5rem 2rem; text-align: center;
+    font-size: .78rem; color: rgba(255,255,255,.25); font-family: var(--mono);
+  }
+  footer a { color: rgba(255,255,255,.4); text-decoration: none; }
+  footer a:hover { color: rgba(255,255,255,.7); }
 </style>
 </head>
 <body>
-<div class="sgrid"></div>
-<div class="wrap">
 
-  <!-- NAV -->
-  <nav>
-    <img src="logo.png" alt="EassyOffice" class="logo-img">
-    <div class="nav-links">
-      <a href="index.html" class="nav-link active">Tools</a>
-      <a href="features.html" class="nav-link">Why Us</a>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <div class="hero">
-    <div class="eyebrow"><span class="dot"></span>Browser-Based · Zero Upload · Free Forever</div>
-    <h1>Your office suite,<br><em>in your browser.</em></h1>
-    <p class="hero-sub">Three powerful tools — PDF processing, attendance tracking, and payroll — running entirely on your device. No accounts. No servers. No data leaving your machine.</p>
+<nav>
+  <a class="nav-logo" href="/">
+    <img src="https://eassyoffice.com/logo.png" alt="EassyOffice logo">
+    <span>Eassy<em>Office</em></span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Tools</a>
+    <a href="features.html">Why Us</a>
   </div>
+</nav>
 
-  <!-- TOOLS -->
-  <div class="slabel" style="margin-bottom:18px;">Available Tools</div>
+<section class="hero">
+  <div class="hero-badge">Browser-Based · Zero Upload · Free Forever</div>
+  <h1>Your office suite,<br><em>in your browser.</em></h1>
+  <p>Four powerful tools — PDF processing, payroll, hours calculation, and attendance tracking — running entirely in your browser. No accounts needed for local tools.</p>
+</section>
+
+<section class="tools-section">
+  <div class="section-label">Available Tools</div>
   <div class="tools-grid">
 
-    <!-- PDF TOOLS -->
-    <a href="pdf-tools.html" class="tool-card tc-pdf" style="animation-delay:.07s">
-      <div class="tc-icon-wrap">📄</div>
-      <span class="tc-tag">PDF Tools</span>
-      <div class="tc-name">PDF Tools</div>
-      <p class="tc-desc">Merge, split, and compress PDF files instantly. No uploads — everything runs locally in your browser at full speed.</p>
-      <ul class="tc-list">
+    <!-- PDF Tools -->
+    <a href="pdf-tools.html" class="tool-card card-pdf">
+      <div class="card-icon">📄</div>
+      <span class="card-tag tag-local">100% Local</span>
+      <div class="card-title">PDF Tools</div>
+      <div class="card-desc">Merge, split, and compress PDF files instantly. No uploads — everything runs locally in your browser at full speed.</div>
+      <ul class="card-features">
         <li>Merge multiple PDFs</li>
         <li>Split by page range</li>
         <li>Compress with custom settings</li>
         <li>Drag-and-drop reorder</li>
       </ul>
-      <span class="tc-btn">Open Tool →</span>
+      <div class="card-arrow">Open Tool →</div>
     </a>
 
-    <!-- WORKING HOURS -->
-    <a href="payroll-manager.html" class="tool-card tc-hours" style="animation-delay:.12s">
-      <div class="tc-icon-wrap">⏱</div>
-      <span class="tc-tag">Attendance</span>
-      <div class="tc-name">Hours Calculator</div>
-      <p class="tc-desc">Upload attendance sheets and calculate precise working hours, late arrivals, overtime, and shift breakdowns with custom rounding rules.</p>
-      <ul class="tc-list">
+    <!-- Hours Calculator -->
+    <a href="payroll-manager.html" class="tool-card card-hours">
+      <div class="card-icon">⏱</div>
+      <span class="card-tag tag-local">100% Local</span>
+      <div class="card-title">Attendance Hours Calculator</div>
+      <div class="card-desc">Upload attendance sheets and calculate precise working hours, late arrivals, overtime, and shift breakdowns with custom rounding rules.</div>
+      <ul class="card-features">
         <li>Upload XLSX / CSV attendance</li>
-        <li>Morning & evening shift detection</li>
-        <li>Custom OT & rounding rules</li>
+        <li>Morning &amp; evening shift detection</li>
+        <li>Custom OT &amp; rounding rules</li>
         <li>Export detailed XLSX report</li>
       </ul>
-      <span class="tc-btn">Open Tool →</span>
+      <div class="card-arrow">Open Tool →</div>
     </a>
 
-    <!-- PAYROLL PROCESSING -->
-    <a href="payroll-processing.html" class="tool-card tc-payroll" style="animation-delay:.17s">
-      <div class="tc-icon-wrap">💰</div>
-      <span class="tc-tag">Payroll · Cloud</span>
-      <div class="tc-name">Payroll Processing</div>
-      <p class="tc-desc">Calculate total salary for each employee based on hours worked. Employer login via Appwrite — employee data is saved securely in the cloud.</p>
-      <ul class="tc-list">
+    <!-- Payroll -->
+    <a href="payroll-processing.html" class="tool-card card-payroll">
+      <div class="card-icon">💰</div>
+      <span class="card-tag tag-cloud">Cloud Sync</span>
+      <div class="card-title">Payroll Processing</div>
+      <div class="card-desc">Calculate total salary for each employee based on hours worked. Employer login via Appwrite — employee data is saved securely in the cloud.</div>
+      <ul class="card-features">
         <li>Upload hours sheet or enter manually</li>
-        <li>Auto-calculates net salary & OT</li>
-        <li>Employer login & employee records</li>
+        <li>Auto-calculates net salary &amp; OT</li>
+        <li>Employer login &amp; employee records</li>
         <li>Download payroll report XLSX</li>
       </ul>
-      <span class="tc-btn">Open Tool →</span>
+      <div class="card-arrow">Open Tool →</div>
+    </a>
+
+    <!-- EassyAttend — NEW -->
+    <a href="attendance-system.html" class="tool-card card-attend">
+      <div class="card-icon">🎯</div>
+      <span class="card-tag tag-new">New · Cloud</span>
+      <div class="card-title">EassyAttend — Time &amp; Attendance</div>
+      <div class="card-desc">QR-code kiosk + selfie punch-in for staff. Dynamic codes refresh every 20 seconds. HR dashboard with approve/reject and selfie verification.</div>
+      <ul class="card-features">
+        <li>Rotating QR kiosk display</li>
+        <li>Selfie capture on employee phone</li>
+        <li>HR dashboard with selfie review</li>
+        <li>Approve / reject with one click</li>
+      </ul>
+      <div class="card-arrow">Open Tool →</div>
     </a>
 
   </div>
+</section>
 
-  <!-- FEATURES -->
-  <div class="slabel">Why EassyOffice</div>
-  <div class="feat-strip">
-    <div class="fs-item">
-      <span class="fs-icon">🔒</span>
-      <div class="fs-title">100% Private</div>
-      <div class="fs-desc">PDF and Hours tools process files entirely on your device. Nothing is ever uploaded to a server.</div>
+<section class="why-section">
+  <div class="section-label">Why EassyOffice</div>
+  <div class="why-grid">
+    <div class="why-item">
+      <div class="why-icon">🔒</div>
+      <div class="why-title">100% Private</div>
+      <div class="why-desc">PDF and Hours tools process files entirely on your device. Nothing is ever uploaded to a server.</div>
     </div>
-    <div class="fs-item">
-      <span class="fs-icon">⚡</span>
-      <div class="fs-title">Instant Processing</div>
-      <div class="fs-desc">No server queues or upload waits. Tools run at full local CPU speed — results in seconds.</div>
+    <div class="why-item">
+      <div class="why-icon">⚡</div>
+      <div class="why-title">Instant Processing</div>
+      <div class="why-desc">No server queues or upload waits. Tools run at full local CPU speed — results in seconds.</div>
     </div>
-    <div class="fs-item">
-      <span class="fs-icon">🆓</span>
-      <div class="fs-title">Free Forever</div>
-      <div class="fs-desc">No subscriptions, no trial expiry, no credit card. All tools are completely free with no hidden limits.</div>
+    <div class="why-item">
+      <div class="why-icon">🆓</div>
+      <div class="why-title">Free Forever</div>
+      <div class="why-desc">No subscriptions, no trial expiry, no credit card. All tools are completely free with no hidden limits.</div>
+    </div>
+    <div class="why-item">
+      <div class="why-icon">☁️</div>
+      <div class="why-title">Cloud When Needed</div>
+      <div class="why-desc">Payroll and Attendance tools use Appwrite for secure cloud sync — your data, your Appwrite project.</div>
     </div>
   </div>
+</section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="foot-priv"><span class="pdot"></span>Files never leave your device</div>
-    <div class="foot-email">Support: <a href="mailto:mediafarmingspace@gmail.com">mediafarmingspace@gmail.com</a></div>
-    <div class="foot-copy">© 2025 EassyOffice · Browser-Based Excellence</div>
-  </footer>
+<footer>
+  Files never leave your device for local tools &nbsp;·&nbsp;
+  Support: <a href="mailto:mediafarmingspace@gmail.com">mediafarmingspace@gmail.com</a>
+  &nbsp;·&nbsp; © 2025 EassyOffice · Browser-Based Excellence
+</footer>
 
-</div>
 </body>
 </html>
