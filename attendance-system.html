@@ -189,37 +189,7 @@ input,select{font-family:var(--sans)}
 #lightbox.show{display:flex}
 #lightbox img{max-width:90vw;max-height:90vh;border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.5)}
 
-/* ── CONNECTION TESTER ── */
-#v-test{background:var(--surface2);padding:2rem;min-height:100vh}
-.test-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;max-width:700px;margin:0 auto;box-shadow:var(--shadow-md)}
-.test-card h2{font-size:1.1rem;font-weight:600;margin-bottom:.3rem;color:var(--ink)}
-.test-card .sub{font-size:.85rem;color:var(--ink3);margin-bottom:2rem}
-.test-item{display:flex;align-items:flex-start;gap:1rem;padding:1rem;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.75rem;transition:.2s}
-.test-item.pass{border-color:#6ee7b7;background:var(--success-lt)}
-.test-item.fail{border-color:#fca5a5;background:var(--danger-lt)}
-.test-item.running{border-color:#93c5fd;background:var(--primary-lt)}
-.test-icon{font-size:1.4rem;flex-shrink:0;margin-top:.1rem}
-.test-label{font-size:.9rem;font-weight:500;color:var(--ink)}
-.test-detail{font-size:.8rem;color:var(--ink3);margin-top:.2rem;font-family:var(--mono);word-break:break-all}
-.test-item.pass .test-detail{color:var(--success)}
-.test-item.fail .test-detail{color:var(--danger)}
-.test-actions{display:flex;gap:.75rem;margin-top:1.5rem;flex-wrap:wrap}
-.btn-test{background:var(--primary);border:none;color:#fff;padding:.65rem 1.4rem;border-radius:var(--radius);font-size:.9rem;font-weight:500;cursor:pointer;transition:.2s}
-.btn-test:hover{background:var(--primary-dk)}
-.btn-test:disabled{background:var(--border2);color:var(--ink3);cursor:not-allowed}
-.test-progress{height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:1.5rem}
-.test-progress-fill{height:100%;background:var(--primary);transition:width .4s ease;border-radius:4px}
-.seed-section{margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)}
-.seed-section h3{font-size:.95rem;font-weight:600;margin-bottom:.5rem}
-.seed-section p{font-size:.83rem;color:var(--ink3);margin-bottom:1rem}
-.seed-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
-.seed-btn{background:var(--surface3);border:1px solid var(--border2);color:var(--ink2);padding:.6rem 1rem;border-radius:var(--radius);font-size:.83rem;font-weight:500;cursor:pointer;transition:.15s;text-align:left}
-.seed-btn:hover{background:var(--border);color:var(--ink)}
-.seed-btn .sb-title{font-weight:600;display:block;margin-bottom:.15rem}
-.seed-btn .sb-sub{font-size:.75rem;color:var(--ink3)}
-.seed-log{font-family:var(--mono);font-size:.78rem;color:var(--ink2);background:var(--surface3);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-top:1rem;max-height:180px;overflow-y:auto;white-space:pre-wrap;line-height:1.8}
-.back-link{display:inline-flex;align-items:center;gap:.4rem;color:var(--ink3);font-size:.85rem;text-decoration:none;margin-bottom:1.5rem;cursor:pointer;border:none;background:none;padding:0}
-.back-link:hover{color:var(--primary)}
+
 </style>
 </head>
 <body>
@@ -237,11 +207,6 @@ input,select{font-family:var(--sans)}
       <div class="hc-icon">📊</div>
       <h2>HR Dashboard</h2>
       <p>Review, approve and reject daily attendance punches with selfies.</p>
-    </div>
-    <div class="home-card" onclick="route('test')">
-      <div class="hc-icon">🔧</div>
-      <h2>System Test</h2>
-      <p>Verify Appwrite connection, collections, storage and seed demo data.</p>
     </div>
     <div class="home-card disabled">
       <div class="hc-icon">📱</div>
@@ -385,55 +350,6 @@ input,select{font-family:var(--sans)}
   </div>
 </div>
 
-<!-- ════════ SYSTEM TEST ════════ -->
-<div id="v-test" class="view">
-  <div style="max-width:700px;margin:0 auto">
-    <button class="back-link" onclick="route('home')">← Back to home</button>
-    <div class="test-card">
-      <h2>🔧 Appwrite Connection Test</h2>
-      <p class="sub">Runs 6 checks against your Appwrite project. Fix any failures before going live.</p>
-      <div class="test-progress"><div class="test-progress-fill" id="test-progress" style="width:0%"></div></div>
-      <div id="test-items">
-        <div class="test-item" id="ti-sdk"><span class="test-icon">⏸</span><div><div class="test-label">Load Appwrite SDK</div><div class="test-detail">Waiting...</div></div></div>
-        <div class="test-item" id="ti-reach"><span class="test-icon">⏸</span><div><div class="test-label">Reach Appwrite endpoint</div><div class="test-detail">Waiting...</div></div></div>
-        <div class="test-item" id="ti-db"><span class="test-icon">⏸</span><div><div class="test-label">Database exists</div><div class="test-detail">Waiting...</div></div></div>
-        <div class="test-item" id="ti-col"><span class="test-icon">⏸</span><div><div class="test-label">Collections: employees, locations, timelogs</div><div class="test-detail">Waiting...</div></div></div>
-        <div class="test-item" id="ti-bucket"><span class="test-icon">⏸</span><div><div class="test-label">Storage bucket "selfies"</div><div class="test-detail">Waiting...</div></div></div>
-        <div class="test-item" id="ti-auth"><span class="test-icon">⏸</span><div><div class="test-label">HR admin login</div><div class="test-detail">Waiting...</div></div></div>
-      </div>
-      <div class="test-actions">
-        <button class="btn-test" id="btn-run-test" onclick="runAllTests()">▶ Run Tests</button>
-        <button class="btn-sm" id="btn-retest" onclick="resetTests()" style="display:none">↺ Reset</button>
-      </div>
-
-      <!-- Seed data section -->
-      <div class="seed-section">
-        <h3>📦 Seed Demo Data</h3>
-        <p>Populate your Appwrite collections with sample employees and locations to test the full flow.</p>
-        <div class="seed-grid">
-          <button class="seed-btn" onclick="seedLocations()">
-            <span class="sb-title">📍 Seed Locations</span>
-            <span class="sb-sub">Main Hospital, Pharmacy, Budaiya Clinic</span>
-          </button>
-          <button class="seed-btn" onclick="seedEmployees()">
-            <span class="sb-title">👥 Seed Employees</span>
-            <span class="sb-sub">4 demo staff members</span>
-          </button>
-          <button class="seed-btn" onclick="seedTestPunch()">
-            <span class="sb-title">🧪 Create Test Punch</span>
-            <span class="sb-sub">Dummy log entry for dashboard</span>
-          </button>
-          <button class="seed-btn" onclick="checkCollectionCounts()">
-            <span class="sb-title">📊 Count Documents</span>
-            <span class="sb-sub">Show totals for all collections</span>
-          </button>
-        </div>
-        <div class="seed-log hidden" id="seed-log"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Lightbox -->
 <div id="lightbox" onclick="this.classList.remove('show')">
   <img id="lightbox-img" src="" alt="Selfie">
@@ -488,8 +404,6 @@ function route(view){
     else{ showView('v-dash'); initDash(); }
   } else if(view==='kiosk'){
     showView('v-kiosk'); initKiosk();
-  } else if(view==='test'){
-    showView('v-test'); resetTests();
   } else {
     showView('v-'+view);
   }
@@ -876,195 +790,7 @@ function openLightbox(url){
   document.getElementById('lightbox').classList.add('show');
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SYSTEM TEST
-══════════════════════════════════════════════════════════════ */
-function setTestItem(id,state,detail){
-  const el=document.getElementById(id);
-  el.className='test-item '+state;
-  const icons={running:'⏳',pass:'✅',fail:'❌'};
-  el.querySelector('.test-icon').textContent=icons[state]||'⏸';
-  el.querySelector('.test-detail').textContent=detail;
-}
 
-function setProgress(pct){
-  document.getElementById('test-progress').style.width=pct+'%';
-}
-
-function resetTests(){
-  const items=['ti-sdk','ti-reach','ti-db','ti-col','ti-bucket','ti-auth'];
-  items.forEach(id=>{
-    const el=document.getElementById(id);
-    el.className='test-item';
-    el.querySelector('.test-icon').textContent='⏸';
-    el.querySelector('.test-detail').textContent='Waiting...';
-  });
-  setProgress(0);
-  document.getElementById('btn-run-test').style.display='';
-  document.getElementById('btn-retest').style.display='none';
-  document.getElementById('seed-log').classList.add('hidden');
-}
-
-async function runAllTests(){
-  document.getElementById('btn-run-test').style.display='none';
-  document.getElementById('btn-retest').style.display='';
-  client=null; databases=null; account=null; storage=null;
-
-  // Test 1: SDK
-  setTestItem('ti-sdk','running','Loading SDK from jsdelivr CDN...');
-  setProgress(5);
-  try{
-    await loadSDK();
-    setTestItem('ti-sdk','pass','Appwrite SDK v16 loaded OK');
-    setProgress(16);
-  }catch(e){setTestItem('ti-sdk','fail',e.message);setProgress(16);return;}
-
-  // Test 2: Endpoint reachable
-  setTestItem('ti-reach','running','Pinging '+APPWRITE.endpoint+'...');
-  setProgress(20);
-  try{
-    await initAppwrite();
-    const r=await fetch(APPWRITE.endpoint+'/health',{method:'GET'});
-    if(!r.ok&&r.status!==401) throw new Error('HTTP '+r.status);
-    setTestItem('ti-reach','pass','Endpoint reachable (HTTP '+r.status+')');
-    setProgress(33);
-  }catch(e){setTestItem('ti-reach','fail','Cannot reach: '+e.message+' — check endpoint URL');setProgress(33);}
-
-  // Test 3: Database
-  setTestItem('ti-db','running','Looking up database ID '+APPWRITE.dbId+'...');
-  setProgress(37);
-  try{
-    await databases.get(APPWRITE.dbId);
-    setTestItem('ti-db','pass','Database found: '+APPWRITE.dbId);
-    setProgress(50);
-  }catch(e){
-    const hint=e.message.includes('401')?'401 Unauthorized — add your domain to Appwrite Platforms list':e.message.includes('404')?'404 — database ID not found, check APPWRITE.dbId':e.message;
-    setTestItem('ti-db','fail',hint);setProgress(50);
-  }
-
-  // Test 4: Collections
-  setTestItem('ti-col','running','Checking employees, locations, timelogs...');
-  setProgress(55);
-  try{
-    const cols=['employees','locations','timelogs'];
-    const results=[];
-    for(const c of cols){
-      try{
-        const r=await databases.listDocuments(APPWRITE.dbId,c,[]);
-        results.push(`${c}(${r.total})`);
-      }catch(e2){
-        if(e2.message.includes('Collection with the requested ID could not be found')||e2.message.includes('404')){
-          results.push(`${c} ❌ NOT FOUND`);
-        }else{
-          results.push(`${c} ⚠ ${e2.message.slice(0,40)}`);
-        }
-      }
-    }
-    const allOk=results.every(r=>!r.includes('❌'));
-    setTestItem('ti-col',allOk?'pass':'fail',results.join(' · '));
-    setProgress(66);
-  }catch(e){setTestItem('ti-col','fail',e.message);setProgress(66);}
-
-  // Test 5: Storage bucket
-  setTestItem('ti-bucket','running','Checking bucket "selfies"...');
-  setProgress(70);
-  try{
-    const b=await storage.getBucket(APPWRITE.bucketId);
-    setTestItem('ti-bucket','pass',`Bucket "${b.name}" found · max ${Math.round(b.maximumFileSize/1024/1024)}MB`);
-    setProgress(83);
-  }catch(e){
-    const hint=e.message.includes('404')?'Bucket "selfies" not found — create it in Appwrite Storage':e.message;
-    setTestItem('ti-bucket','fail',hint);setProgress(83);
-  }
-
-  // Test 6: Auth
-  setTestItem('ti-auth','running','Testing login with '+APPWRITE.adminUser+'...');
-  setProgress(88);
-  try{
-    try{await account.deleteSession('current');}catch{}
-    const ses=await account.createEmailPasswordSession(APPWRITE.adminUser,APPWRITE.adminPass);
-    const u=await account.get();
-    setTestItem('ti-auth','pass',`Logged in as: ${u.name||u.email}`);
-    // Store session for dashboard
-    sessionStorage.setItem('aw_session',ses.$id);
-    sessionStorage.setItem('aw_user',u.name||u.email);
-  }catch(e){
-    const hint=e.message.includes('401')||e.message.includes('Invalid credentials')?'Wrong email/password — check APPWRITE.adminUser and adminPass':e.message;
-    setTestItem('ti-auth','fail',hint);
-  }
-  setProgress(100);
-}
-
-/* ── SEED HELPERS ── */
-function seedLog(msg){
-  const el=document.getElementById('seed-log');
-  el.classList.remove('hidden');
-  el.textContent+=(el.textContent?'\n':'')+msg;
-  el.scrollTop=el.scrollHeight;
-}
-
-async function seedLocations(){
-  await initAppwrite();
-  const locs=[
-    {name:'Main Hospital',authorizedIp:'*'},
-    {name:'Pharmacy Branch',authorizedIp:'*'},
-    {name:'Budaiya Clinic',authorizedIp:'*'},
-  ];
-  seedLog('Seeding locations...');
-  for(const l of locs){
-    try{
-      const d=await databases.createDocument(APPWRITE.dbId,APPWRITE.col.locations,'unique()',l);
-      seedLog(`✅ Created: ${l.name} (ID: ${d.$id})`);
-    }catch(e){seedLog(`❌ ${l.name}: ${e.message}`);}
-  }
-  seedLog('Done. Reload the kiosk to see them in the dropdown.');
-}
-
-async function seedEmployees(){
-  await initAppwrite();
-  const emps=[
-    {name:'Ahmed Al-Mansoori',role:'Doctor',baseLocation:'Main Hospital',email:'ahmed@clinic.bh'},
-    {name:'Fatima Hassan',role:'Nurse',baseLocation:'Main Hospital',email:'fatima@clinic.bh'},
-    {name:'Mohammed Khalid',role:'Pharmacist',baseLocation:'Pharmacy Branch',email:'mohammed@clinic.bh'},
-    {name:'Sara Abdullah',role:'Receptionist',baseLocation:'Budaiya Clinic',email:'sara@clinic.bh'},
-  ];
-  seedLog('Seeding employees...');
-  for(const e of emps){
-    try{
-      const d=await databases.createDocument(APPWRITE.dbId,APPWRITE.col.employees,'unique()',e);
-      seedLog(`✅ Created: ${e.name} — ${e.role} (ID: ${d.$id})`);
-    }catch(err){seedLog(`❌ ${e.name}: ${err.message}`);}
-  }
-  seedLog('Done. Employees will appear in the punch dropdown.');
-}
-
-async function seedTestPunch(){
-  await initAppwrite();
-  seedLog('Creating test punch log...');
-  try{
-    const d=await databases.createDocument(APPWRITE.dbId,APPWRITE.col.timelogs,'unique()',{
-      employeeId:'demo_emp1',
-      locationId:'loc_main',
-      punchType:'in',
-      punchTime:new Date().toISOString(),
-      imageUrl:'',
-      status:'pending',
-      token:'test-token',
-    });
-    seedLog(`✅ Test punch created (ID: ${d.$id}) — check HR Dashboard.`);
-  }catch(e){seedLog(`❌ Failed: ${e.message}`);}
-}
-
-async function checkCollectionCounts(){
-  await initAppwrite();
-  seedLog('Counting documents...');
-  for(const [k,v] of Object.entries(APPWRITE.col)){
-    try{
-      const r=await databases.listDocuments(APPWRITE.dbId,v,[]);
-      seedLog(`  ${k}: ${r.total} documents`);
-    }catch(e){seedLog(`  ${k}: ❌ ${e.message}`);}
-  }
-}
 </script>
 </body>
 </html>
