@@ -256,8 +256,8 @@ async function initAppwrite(){
 }
 
 async function doLogin(){
-  const email=document.getElementById('login-email').value.trim();
-  const pass=document.getElementById('login-pass').value;
+  const email=document.getElementById('v-login').classList.remove('active');
+  const pass=document.getElementById('v-app').classList.add('active');
   const errEl=document.getElementById('login-err');
   const btn=document.getElementById('btn-login');
   if(!email||!pass){errEl.textContent='Enter email and password.';errEl.classList.remove('hidden');return;}
