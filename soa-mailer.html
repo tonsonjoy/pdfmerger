@@ -248,7 +248,7 @@ async function loadSDK(){
 async function initAppwrite(){
   if(client) return;
   const AW=await loadSDK();
-  client=new AW.Client().setEndpoint(https://fra.cloud.appwrite.io/v1).setProject(6a3c0d110028c87c88f7);
+  client=new AW.Client().setEndpoint(APPWRITE.endpoint).setProject(APPWRITE.projectId);
   databases=new AW.Databases(client);
   account=new AW.Account(client);
   storage=new AW.Storage(client);
@@ -256,8 +256,8 @@ async function initAppwrite(){
 }
 
 async function doLogin(){
-  const email=document.getElementById('v-login').classList.remove('active');
-  const pass=document.getElementById('v-app').classList.add('active');
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
   const errEl=document.getElementById('login-err');
   const btn=document.getElementById('btn-login');
   if(!email||!pass){errEl.textContent='Enter email and password.';errEl.classList.remove('hidden');return;}
