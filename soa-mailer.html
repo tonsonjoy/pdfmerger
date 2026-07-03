@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EassySOA — Bulk Statement Mailer</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- ─── CONFIG ─────────────────────────────────────────────────────────── -->
+<script>
+const APPWRITE = {
+  endpoint:  'https://fra.cloud.appwrite.io/v1',
+  projectId: '6a3c0d110028c87c88f7',
+  dbId:      '6a3d5aa7001a54c857c3',
+  col: { logs: 'soa_logs' },
+  bucketId:  'soa_pdfs',
+  functionId:'6a3c11be0017699e0c2f',   // Appwrite Function that calls Brevo
+  adminUser: 'mediafarmingspace@gmail.com',
+  adminPass: '123456789',
+};
+</script>
+<!-- ──────────────────────────────────────────────────────────────────── -->
+
+<style>
+:root{
+  --ink:#0d1117;--ink2:#4b5563;--ink3:#9ca3af;
+  --surface:#fff;--surface2:#f8fafc;--surface3:#f1f5f9;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --primary:#0f4c8a;--primary-lt:#dbeafe;--primary-dk:#0c3a6d;
+  --success:#0f7a55;--success-lt:#d1fae5;
+  --warn:#b45309;--warn-lt:#fef3c7;
+  --danger:#b91c1c;--danger-lt:#fee2e2;
+  --radius:10px;--radius-lg:16px;
+  --mono:'IBM Plex Mono',monospace;--sans:'DM Sans',sans-serif;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 12px rgba(0,0,0,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--surface2);color:var(--ink);font-size:15px;line-height:1.6}
+.hidden{display:none!important}
+button{font-family:var(--sans);cursor:pointer}
+
+/* views */
+.view{min-height:100vh;display:none}
+.view.active{display:flex;flex-direction:column}
+
+/* login */
+#v-login{align-items:center;justify-content:center;background:var(--surface2)}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem;width:100%;max-width:380px;box-shadow:var(--shadow-md)}
+.login-logo{font-family:var(--mono);font-size:1rem;font-weight:600;color:var(--primary);margin-bottom:.3rem}
+.login-sub{font-size:.85rem;color:var(--ink3);margin-bottom:2rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.8rem;font-weight:500;color:var(--ink2);margin-bottom:.35rem}
+.form-group input{width:100%;border:1px solid var(--border2);border-radius:var(--radius);padding:.65rem .9rem;font-size:.9rem;outline:none}
+.form-group input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,76,138,.1)}
+.btn-primary{background:var(--primary);border:none;color:#fff;padding:.7rem 1.4rem;border-radius:var(--radius);font-size:.9rem;font-weight:500;width:100%}
+.btn-primary:hover{background:var(--primary-dk)}
+.btn-primary:disabled{background:var(--border2);color:var(--ink3);cursor:not-allowed}
+.login-err{font-size:.82rem;color:var(--danger);margin-top:.75rem;text-align:center;padding:.5rem;background:var(--danger-lt);border-radius:6px}
+
+/* app shell */
+#v-app{background:var(--surface2)}
+.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:50}
+.app-logo{font-family:var(--mono);font-size:.95rem;font-weight:600}
+.app-logo span{color:var(--primary)}
+.app-body{padding:2rem;max-width:1100px;margin:0 auto;width:100%}
+
+/* steps */
+.steps{display:flex;gap:1rem;margin-bottom:2rem}
+.step{flex:1;text-align:center;padding:.6rem;border-radius:var(--radius);font-size:.82rem;font-weight:500;color:var(--ink3);background:var(--surface);border:1px solid var(--border)}
+.step.active{color:var(--primary);background:var(--primary-lt);border-color:var(--primary)}
+.step.done{color:var(--success);background:var(--success-lt);border-color:#6ee7b7}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;box-shadow:var(--shadow);margin-bottom:1.5rem}
+.card h3{font-size:1rem;font-weight:600;margin-bottom:.3rem}
+.card .sub{font-size:.83rem;color:var(--ink3);margin-bottom:1.25rem}
+
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:2.5rem;text-align:center;cursor:pointer;transition:.2s}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--primary);background:var(--primary-lt)}
+.drop-zone .dz-icon{font-size:2.5rem;margin-bottom:.75rem}
+.drop-zone .dz-text{font-size:.9rem;color:var(--ink2);font-weight:500}
+.drop-zone .dz-sub{font-size:.78rem;color:var(--ink3);margin-top:.3rem}
+input[type=file]{display:none}
+
+.file-chip{display:inline-flex;align-items:center;gap:.5rem;background:var(--surface3);border:1px solid var(--border);border-radius:8px;padding:.4rem .8rem;font-size:.83rem;margin:.25rem}
+.file-chip .fc-x{cursor:pointer;color:var(--danger);font-weight:600}
+
+table.preview{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:1rem}
+table.preview th{background:var(--surface3);padding:.6rem .8rem;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);border-bottom:1px solid var(--border)}
+table.preview td{padding:.6rem .8rem;border-bottom:1px solid var(--border)}
+table.preview tr:hover td{background:var(--surface2)}
+.cell-edit{border:1px solid transparent;background:transparent;width:100%;font-size:.85rem;font-family:var(--sans);padding:.2rem .3rem;border-radius:4px}
+.cell-edit:focus{border-color:var(--primary);background:var(--surface);outline:none}
+.match-ok{color:var(--success);font-weight:600}
+.match-fail{color:var(--danger);font-weight:600}
+
+.btn-row{display:flex;gap:.75rem;margin-top:1.5rem;justify-content:flex-end}
+.btn-sm{padding:.55rem 1.2rem;border-radius:var(--radius);font-size:.85rem;font-weight:500;border:1px solid var(--border2);background:var(--surface);color:var(--ink2)}
+.btn-sm:hover{background:var(--surface3)}
+.btn-send{background:var(--success);border:none;color:#fff;padding:.6rem 1.6rem;border-radius:var(--radius);font-size:.9rem;font-weight:600}
+.btn-send:hover{background:#0a5c40}
+.btn-send:disabled{background:var(--border2);color:var(--ink3);cursor:not-allowed}
+
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-bottom:1.5rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;text-align:center}
+.stat-card .sv{font-size:1.5rem;font-weight:600;font-family:var(--mono)}
+.stat-card .sl{font-size:.72rem;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em}
+.stat-card.ok .sv{color:var(--success)}
+.stat-card.fail .sv{color:var(--danger)}
+.stat-card.pending .sv{color:var(--warn)}
+
+.progress-bar{height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:1rem}
+.progress-fill{height:100%;background:var(--primary);transition:width .3s}
+
+.badge{display:inline-block;padding:.15rem .55rem;border-radius:20px;font-size:.7rem;font-weight:600;text-transform:uppercase}
+.badge-sent{background:var(--success-lt);color:var(--success)}
+.badge-failed{background:var(--danger-lt);color:var(--danger)}
+.badge-pending{background:var(--warn-lt);color:var(--warn)}
+.badge-nomatch{background:#f3e8ff;color:#6b21a8}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="v-login" class="view active">
+  <div class="login-card">
+    <div class="login-logo">EassySOA</div>
+    <div class="login-sub">Bulk Statement Mailer — Sign in</div>
+    <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="hr@company.com"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-pass" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn-primary" id="btn-login" onclick="doLogin()">Sign In</button>
+    <div class="login-err hidden" id="login-err"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="v-app" class="view">
+  <header class="app-header">
+    <div class="app-logo">Eassy<span>SOA</span></div>
+    <button class="btn-sm" onclick="doLogout()">Sign out</button>
+  </header>
+
+  <div class="app-body">
+    <div class="steps">
+      <div class="step active" id="step-1">1. Upload CSV/XLSX</div>
+      <div class="step" id="step-2">2. Upload PDFs</div>
+      <div class="step" id="step-3">3. Review & Match</div>
+      <div class="step" id="step-4">4. Send</div>
+    </div>
+
+    <!-- STEP 1: CSV -->
+    <div class="card" id="panel-1">
+      <h3>Upload Client List</h3>
+      <p class="sub">CSV or XLSX with columns: <b>name</b>, <b>email</b>, <b>amount</b>, <b>pdf_filename</b> (must match uploaded PDF names exactly)</p>
+      <div class="drop-zone" id="dz-csv" onclick="document.getElementById('inp-csv').click()">
+        <div class="dz-icon">📊</div>
+        <div class="dz-text">Click or drag CSV/XLSX here</div>
+        <div class="dz-sub">Required columns: name, email, amount, pdf_filename</div>
+      </div>
+      <input type="file" id="inp-csv" accept=".csv,.xlsx,.xls" onchange="handleCSV(this.files[0])">
+      <div id="csv-status"></div>
+    </div>
+
+    <!-- STEP 2: PDFs -->
+    <div class="card hidden" id="panel-2">
+      <h3>Upload Statement PDFs</h3>
+      <p class="sub">Upload all client PDF statements. Filenames must match the <b>pdf_filename</b> column exactly.</p>
+      <div class="drop-zone" id="dz-pdf" onclick="document.getElementById('inp-pdf').click()">
+        <div class="dz-icon">📄</div>
+        <div class="dz-text">Click or drag PDF files here (multiple allowed)</div>
+        <div class="dz-sub" id="pdf-count">0 PDFs uploaded</div>
+      </div>
+      <input type="file" id="inp-pdf" accept=".pdf" multiple onchange="handlePDFs(this.files)">
+      <div id="pdf-chips" style="margin-top:1rem"></div>
+      <div class="btn-row">
+        <button class="btn-sm" onclick="goStep(1)">← Back</button>
+        <button class="btn-send" onclick="goStep(3)" id="btn-to-review">Continue to Review →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Review -->
+    <div class="card hidden" id="panel-3">
+      <h3>Review & Match</h3>
+      <p class="sub">Confirm each row matches a PDF before sending. Edit any cell directly.</p>
+      <div class="stat-row">
+        <div class="stat-card"><div class="sv" id="rv-total">0</div><div class="sl">Total Rows</div></div>
+        <div class="stat-card ok"><div class="sv" id="rv-matched">0</div><div class="sl">Matched</div></div>
+        <div class="stat-card fail"><div class="sv" id="rv-unmatched">0</div><div class="sl">No PDF Match</div></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="preview" id="review-table"><thead><tr><th>Name</th><th>Email</th><th>Amount</th><th>PDF Filename</th><th>Match</th></tr></thead><tbody id="review-tbody"></tbody></table>
+      </div>
+      <div class="btn-row">
+        <button class="btn-sm" onclick="goStep(2)">← Back</button>
+        <button class="btn-send" onclick="goStep(4)" id="btn-to-send">Continue to Send →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Send -->
+    <div class="card hidden" id="panel-4">
+      <h3>Send Statements</h3>
+      <p class="sub">Customize email subject/body, then send. Only matched rows will be sent.</p>
+      <div class="form-group">
+        <label>Send From</label>
+        <select id="sender-select" style="width:100%;border:1px solid var(--border2);border-radius:var(--radius);padding:.65rem .9rem;font-size:.9rem;font-family:var(--sans);color:var(--ink);background:var(--surface)">
+          <option value="medlinedentalreceivables@gmail.com" data-name="Medline Dental Laboratory">Medline Dental Laboratory — medlinedentalreceivables@gmail.com</option>
+          <option value="medlinemedicalreceivables@gmail.com" data-name="Medline Medical Equipments">Medline Medical Equipments — medlinemedicalreceivables@gmail.com</option>
+          <option value="mediafarmingspace@gmail.com" data-name="eassyoffice">eassyoffice — mediafarmingspace@gmail.com</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Subject</label><input type="text" id="mail-subject" value="Your Statement of Account — {{name}}"></div>
+      <div class="form-group"><label>Email Body</label>
+        <textarea id="mail-body" rows="6" style="width:100%;border:1px solid var(--border2);border-radius:var(--radius);padding:.65rem .9rem;font-size:.9rem;font-family:var(--sans)">Dear {{name}},
+
+Please find attached your Statement of Account for the current period, totaling {{amount}}.
+
+If you have any questions, feel free to reach out.
+
+Best regards,
+Accounts Team</textarea>
+      </div>
+      <p class="sub" style="margin-top:.5rem">Placeholders: <code>{{name}}</code> <code>{{amount}}</code> <code>{{email}}</code></p>
+
+      <div class="progress-bar hidden" id="send-progress-wrap"><div class="progress-fill" id="send-progress" style="width:0%"></div></div>
+      <div class="stat-row hidden" id="send-stats">
+        <div class="stat-card pending"><div class="sv" id="ss-pending">0</div><div class="sl">Pending</div></div>
+        <div class="stat-card ok"><div class="sv" id="ss-sent">0</div><div class="sl">Sent</div></div>
+        <div class="stat-card fail"><div class="sv" id="ss-failed">0</div><div class="sl">Failed</div></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="preview" id="send-table"><thead><tr><th>Name</th><th>Email</th><th>Status</th></tr></thead><tbody id="send-tbody"></tbody></table>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-sm" onclick="goStep(3)" id="btn-back-3">← Back</button>
+        <button class="btn-send" onclick="startSend()" id="btn-start-send">📨 Send All Statements</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════ SDK / AUTH ══════ */
+let client,databases,account,storage,functions;
+async function loadSDK(){
+  if(window.Appwrite) return window.Appwrite;
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src='https://cdn.jsdelivr.net/npm/appwrite@16/dist/iife/sdk.js';
+    s.onload=()=>res(window.Appwrite);
+    s.onerror=()=>rej(new Error('SDK load failed'));
+    document.head.appendChild(s);
+  });
+}
+async function initAppwrite(){
+  if(client) return;
+  const AW=await loadSDK();
+  client=new AW.Client().setEndpoint(APPWRITE.endpoint).setProject(APPWRITE.projectId);
+  databases=new AW.Databases(client);
+  account=new AW.Account(client);
+  storage=new AW.Storage(client);
+  functions=new AW.Functions(client);
+}
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const errEl=document.getElementById('login-err');
+  const btn=document.getElementById('btn-login');
+  if(!email||!pass){errEl.textContent='Enter email and password.';errEl.classList.remove('hidden');return;}
+  errEl.classList.add('hidden'); btn.disabled=true; btn.textContent='Signing in...';
+  try{
+    await initAppwrite();
+    try{await account.deleteSession('current');}catch{}
+    await account.createEmailPasswordSession(email,pass);
+    document.getElementById('v-login').classList.remove('active');
+    document.getElementById('v-app').classList.add('active');
+  }catch(e){
+    errEl.textContent='Login failed: '+e.message;
+    errEl.classList.remove('hidden');
+  }finally{btn.disabled=false;btn.textContent='Sign In';}
+}
+async function doLogout(){
+  try{await account.deleteSession('current');}catch{}
+  location.reload();
+}
+window.addEventListener('DOMContentLoaded',()=>{});
+
+/* ══════ STEP NAV ══════ */
+let currentStep=1;
+function goStep(n){
+  for(let i=1;i<=4;i++){
+    document.getElementById('panel-'+i).classList.toggle('hidden',i!==n);
+    const s=document.getElementById('step-'+i);
+    s.classList.remove('active','done');
+    if(i<n)s.classList.add('done'); else if(i===n)s.classList.add('active');
+  }
+  currentStep=n;
+  if(n===3) renderReview();
+  if(n===4) renderSendTable();
+}
+
+/* ══════ STATE ══════ */
+let csvRows=[];     // {name,email,amount,pdf_filename}
+let pdfFiles={};    // filename -> File object
+
+/* ══════ STEP 1: CSV/XLSX ══════ */
+const dzCsv=document.getElementById('dz-csv');
+['dragover','dragleave','drop'].forEach(evt=>{
+  dzCsv.addEventListener(evt,e=>{
+    e.preventDefault();
+    dzCsv.classList.toggle('drag',evt==='dragover');
+    if(evt==='drop') handleCSV(e.dataTransfer.files[0]);
+  });
+});
+
+function handleCSV(file){
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const data=new Uint8Array(e.target.result);
+    const wb=XLSX.read(data,{type:'array'});
+    const sheet=wb.Sheets[wb.SheetNames[0]];
+    const json=XLSX.utils.sheet_to_json(sheet,{defval:''});
+    csvRows=json.map(r=>({
+      name:String(r.name||r.Name||'').trim(),
+      email:String(r.email||r.Email||'').trim(),
+      amount:String(r.amount||r.Amount||'').trim(),
+      pdf_filename:String(r.pdf_filename||r.PDF_Filename||r.pdf||'').trim(),
+    })).filter(r=>r.email);
+    document.getElementById('csv-status').innerHTML=
+      `<div class="file-chip">✅ ${csvRows.length} rows loaded from ${file.name}</div>`;
+    document.getElementById('panel-2').classList.remove('hidden');
+    if(csvRows.length) goStep(2);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+/* ══════ STEP 2: PDFs ══════ */
+const dzPdf=document.getElementById('dz-pdf');
+['dragover','dragleave','drop'].forEach(evt=>{
+  dzPdf.addEventListener(evt,e=>{
+    e.preventDefault();
+    dzPdf.classList.toggle('drag',evt==='dragover');
+    if(evt==='drop') handlePDFs(e.dataTransfer.files);
+  });
+});
+function handlePDFs(files){
+  for(const f of files){ if(f.type==='application/pdf') pdfFiles[f.name]=f; }
+  renderPdfChips();
+}
+function renderPdfChips(){
+  const names=Object.keys(pdfFiles);
+  document.getElementById('pdf-count').textContent=names.length+' PDFs uploaded';
+  document.getElementById('pdf-chips').innerHTML=names.map(n=>
+    `<span class="file-chip">📄 ${n} <span class="fc-x" onclick="removePdf('${n.replace(/'/g,"\\'")}')">✕</span></span>`
+  ).join('');
+}
+function removePdf(name){ delete pdfFiles[name]; renderPdfChips(); }
+
+/* ══════ STEP 3: Review/Match ══════ */
+function renderReview(){
+  let matched=0,unmatched=0;
+  document.getElementById('review-tbody').innerHTML=csvRows.map((r,i)=>{
+    const isMatch=!!pdfFiles[r.pdf_filename];
+    isMatch?matched++:unmatched++;
+    return `<tr>
+      <td><input class="cell-edit" value="${esc(r.name)}" onchange="csvRows[${i}].name=this.value"></td>
+      <td><input class="cell-edit" value="${esc(r.email)}" onchange="csvRows[${i}].email=this.value"></td>
+      <td><input class="cell-edit" value="${esc(r.amount)}" onchange="csvRows[${i}].amount=this.value"></td>
+      <td><input class="cell-edit" value="${esc(r.pdf_filename)}" onchange="csvRows[${i}].pdf_filename=this.value;renderReview()"></td>
+      <td>${isMatch?'<span class="match-ok">✓ Matched</span>':'<span class="match-fail">✕ No PDF</span>'}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('rv-total').textContent=csvRows.length;
+  document.getElementById('rv-matched').textContent=matched;
+  document.getElementById('rv-unmatched').textContent=unmatched;
+  document.getElementById('btn-to-send').disabled=matched===0;
+}
+function esc(s){return String(s).replace(/"/g,'&quot;');}
+
+/* ══════ STEP 4: Send ══════ */
+function renderSendTable(){
+  const matchedRows=csvRows.filter(r=>pdfFiles[r.pdf_filename]);
+  document.getElementById('send-tbody').innerHTML=matchedRows.map((r,i)=>
+    `<tr id="send-row-${i}"><td>${esc(r.name)}</td><td>${esc(r.email)}</td><td><span class="badge badge-pending" id="send-badge-${i}">Pending</span></td></tr>`
+  ).join('');
+}
+
+async function startSend(){
+  await initAppwrite();
+  const matchedRows=csvRows.filter(r=>pdfFiles[r.pdf_filename]);
+  if(!matchedRows.length){alert('No matched rows to send.');return;}
+
+  document.getElementById('btn-start-send').disabled=true;
+  document.getElementById('btn-back-3').disabled=true;
+  document.getElementById('send-progress-wrap').classList.remove('hidden');
+  document.getElementById('send-stats').classList.remove('hidden');
+
+  const subjectTpl=document.getElementById('mail-subject').value;
+  const bodyTpl=document.getElementById('mail-body').value;
+  const senderSel=document.getElementById('sender-select');
+  const fromEmail=senderSel.value;
+  const fromName=senderSel.options[senderSel.selectedIndex].dataset.name;
+
+  let sent=0,failed=0;
+  for(let i=0;i<matchedRows.length;i++){
+    const r=matchedRows[i];
+    const badge=document.getElementById('send-badge-'+i);
+    badge.textContent='Sending...'; badge.className='badge badge-pending';
+    try{
+      const pdfFile=pdfFiles[r.pdf_filename];
+      const base64=await fileToBase64(pdfFile);
+      const subject=fillTpl(subjectTpl,r);
+      const body=fillTpl(bodyTpl,r);
+
+      const exec=await functions.createExecution(APPWRITE.functionId,JSON.stringify({
+        to:r.email, toName:r.name, subject, body,
+        attachmentName:r.pdf_filename, attachmentBase64:base64,
+        fromEmail, fromName,
+      }),false);
+      const res=JSON.parse(exec.responseBody||'{}');
+      if(res.success){
+        badge.textContent='Sent ✓'; badge.className='badge badge-sent'; sent++;
+      }else{
+        throw new Error(res.error||'Send failed');
+      }
+      await logResult(r,'sent','');
+    }catch(e){
+      badge.textContent='Failed ✕'; badge.className='badge badge-failed'; failed++;
+      await logResult(r,'failed',e.message);
+    }
+    document.getElementById('ss-pending').textContent=matchedRows.length-sent-failed;
+    document.getElementById('ss-sent').textContent=sent;
+    document.getElementById('ss-failed').textContent=failed;
+    document.getElementById('send-progress').style.width=Math.round(((i+1)/matchedRows.length)*100)+'%';
+  }
+  document.getElementById('btn-start-send').textContent='✅ Done — '+sent+' sent, '+failed+' failed';
+}
+
+function fillTpl(tpl,r){
+  return tpl.replace(/\{\{name\}\}/g,r.name).replace(/\{\{amount\}\}/g,r.amount).replace(/\{\{email\}\}/g,r.email);
+}
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const rd=new FileReader();
+    rd.onload=()=>res(rd.result.split(',')[1]);
+    rd.onerror=rej;
+    rd.readAsDataURL(file);
+  });
+}
+async function logResult(r,status,err){
+  try{
+    await databases.createDocument(APPWRITE.dbId,APPWRITE.col.logs,'unique()',{
+      clientName:r.name, clientEmail:r.email, amount:r.amount,
+      pdfFilename:r.pdf_filename, status, error:err||'', sentAt:new Date().toISOString(),
+    });
+  }catch{}
+}
+</script>
+</body>
+</html>
