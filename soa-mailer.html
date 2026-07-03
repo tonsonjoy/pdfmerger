@@ -201,6 +201,14 @@ table.preview tr:hover td{background:var(--surface2)}
     <div class="card hidden" id="panel-4">
       <h3>Send Statements</h3>
       <p class="sub">Customize email subject/body, then send. Only matched rows will be sent.</p>
+      <div class="form-group">
+        <label>Send From</label>
+        <select id="sender-select" style="width:100%;border:1px solid var(--border2);border-radius:var(--radius);padding:.65rem .9rem;font-size:.9rem;font-family:var(--sans);color:var(--ink);background:var(--surface)">
+          <option value="medlinedentalreceivables@gmail.com" data-name="Medline Dental Laboratory">Medline Dental Laboratory — medlinedentalreceivables@gmail.com</option>
+          <option value="medlinemedicalreceivables@gmail.com" data-name="Medline Medical Equipments">Medline Medical Equipments — medlinemedicalreceivables@gmail.com</option>
+          <option value="mediafarmingspace@gmail.com" data-name="eassyoffice">eassyoffice — mediafarmingspace@gmail.com</option>
+        </select>
+      </div>
       <div class="form-group"><label>Subject</label><input type="text" id="mail-subject" value="Your Statement of Account — {{name}}"></div>
       <div class="form-group"><label>Email Body</label>
         <textarea id="mail-body" rows="6" style="width:100%;border:1px solid var(--border2);border-radius:var(--radius);padding:.65rem .9rem;font-size:.9rem;font-family:var(--sans)">Dear {{name}},
@@ -248,7 +256,7 @@ async function loadSDK(){
 async function initAppwrite(){
   if(client) return;
   const AW=await loadSDK();
-  client=new AW.Client().setEndpoint(APPWRITE.endpoint).setProject(APPWRITE.projectId);
+  client=new AW.Client().setEndpoint(https://fra.cloud.appwrite.io/v1).setProject(6a3c0d110028c87c88f7);
   databases=new AW.Databases(client);
   account=new AW.Account(client);
   storage=new AW.Storage(client);
@@ -256,8 +264,8 @@ async function initAppwrite(){
 }
 
 async function doLogin(){
-  const email=document.getElementById('login-email').value.trim();
-  const pass=document.getElementById('login-pass').value;
+  const email=document.getElementById('v-login').classList.remove('active');
+  const pass=document.getElementById('v-app').classList.add('active');
   const errEl=document.getElementById('login-err');
   const btn=document.getElementById('btn-login');
   if(!email||!pass){errEl.textContent='Enter email and password.';errEl.classList.remove('hidden');return;}
@@ -392,6 +400,9 @@ async function startSend(){
 
   const subjectTpl=document.getElementById('mail-subject').value;
   const bodyTpl=document.getElementById('mail-body').value;
+  const senderSel=document.getElementById('sender-select');
+  const fromEmail=senderSel.value;
+  const fromName=senderSel.options[senderSel.selectedIndex].dataset.name;
 
   let sent=0,failed=0;
   for(let i=0;i<matchedRows.length;i++){
@@ -407,6 +418,7 @@ async function startSend(){
       const exec=await functions.createExecution(APPWRITE.functionId,JSON.stringify({
         to:r.email, toName:r.name, subject, body,
         attachmentName:r.pdf_filename, attachmentBase64:base64,
+        fromEmail, fromName,
       }),false);
       const res=JSON.parse(exec.responseBody||'{}');
       if(res.success){
